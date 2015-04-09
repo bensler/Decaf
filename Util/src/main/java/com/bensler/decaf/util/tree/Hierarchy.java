@@ -189,9 +189,11 @@ public class Hierarchy extends Object implements Serializable {
         return ((node == syntheticRoot_) ? null : (((parent == null) && hasSyntheticRoot()) ? syntheticRoot_ : parent));
     }
 
-    public Hierarchical resolve(final Hierarchical ref) {
+    public Hierarchical resolve(final Object ref) {
+        final int refHash = ref.hashCode();
+
         for (Hierarchical node : children_.keySet()) {
-            if (node.equals(ref)) {
+            if ((refHash == node.hashCode()) && node.equals(ref)) {
                 return node;
             }
         }
