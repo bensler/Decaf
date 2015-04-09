@@ -1,14 +1,13 @@
 package com.bensler.decaf.util.tree;
 
-import static org.junit.Assert.fail;
-
+import org.junit.Assert;
 import org.junit.Test;
 
 public class HierarchyTest {
 
     @Test
     public void testIsEmpty() {
-        fail("Not yet implemented");
+        Assert.assertTrue("Freshly created Hierarchy is not empty!", new Hierarchy().isEmpty());
     }
 
 }

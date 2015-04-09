@@ -12,10 +12,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import com.bensler.flob.biz.NamedEntityImpl;
-import com.bensler.flob.biz.Referrable;
-import com.bensler.flob.biz.Viewable;
-import com.bensler.flob.util.CanceledException;
+import com.bensler.decaf.util.CanceledException;
+import com.bensler.decaf.util.NamedImpl;
 
 /**
  * A Hierarchy forms a tree out of a collection of Hierarchicals. A synthetic root is used if there are more than one
@@ -191,7 +189,7 @@ public class Hierarchy extends Object implements Serializable {
         return ((node == syntheticRoot_) ? null : (((parent == null) && hasSyntheticRoot()) ? syntheticRoot_ : parent));
     }
 
-    public Hierarchical resolve(final Viewable ref) {
+    public Hierarchical resolve(final Hierarchical ref) {
         for (Hierarchical node : children_.keySet()) {
             if (node.equals(ref)) {
                 return node;
@@ -199,10 +197,6 @@ public class Hierarchy extends Object implements Serializable {
         }
 
         return null;
-    }
-
-    public Hierarchical resolve(final Hierarchical entity) {
-        return ((entity != null) ? resolve((Viewable) entity) : null);
     }
 
     /**
@@ -302,13 +296,6 @@ public class Hierarchy extends Object implements Serializable {
     }
 
     /**
-     * Checks if a Entity (EntityImpl or EntityRef) is a member of this hierarchy.
-     */
-    public boolean contains(final Viewable entity) {
-        return children_.containsKey(entity);
-    }
-
-    /**
      * Checks if a node is a member of this hierarchy.
      */
     public boolean contains(final Hierarchical node) {
@@ -328,10 +315,10 @@ public class Hierarchy extends Object implements Serializable {
         return (root_ == syntheticRoot_);
     }
 
-    public static final class Root extends NamedEntityImpl implements Hierarchical {
+    public static final class Root extends NamedImpl implements Hierarchical {
 
         public Root() {
-            super(Referrable.NO_KEY, "/");
+            super("/");
         }
 
         public Hierarchical getParent() {
@@ -385,21 +372,6 @@ public class Hierarchy extends Object implements Serializable {
      */
     public String toString() {
         return String.valueOf(getRoot()) + getMembers();
-    }
-
-    @SuppressWarnings("unchecked")
-    public Set resolveAll(final Collection<Viewable> viewables) {
-        final Set res = new HashSet();
-
-        for (Viewable viewable : viewables) {
-            final Hierarchical entity = resolve(viewable);
-
-            if (entity != null) {
-                res.add(entity);
-            }
-        }
-
-        return res;
     }
 
     /**
