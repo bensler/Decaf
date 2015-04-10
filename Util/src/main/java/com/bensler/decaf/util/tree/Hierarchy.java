@@ -338,7 +338,6 @@ public class Hierarchy extends Object implements Serializable {
         }
 
         return list;
-
     }
 
     public Hierarchical getSyntheticRoot() {
