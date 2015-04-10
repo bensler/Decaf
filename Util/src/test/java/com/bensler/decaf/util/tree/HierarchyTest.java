@@ -22,6 +22,10 @@ public class HierarchyTest {
         Assert.assertTrue("syntheticRoot should be root", tree.hasSyntheticRoot());
         tree.add(home);
         Assert.assertEquals("'home' should be root", home, tree.getRoot());
+        tree.add(root);
+        tree.remove(home, false);
+        Assert.assertTrue("syntheticRoot should be root", tree.hasSyntheticRoot());
+        Assert.assertEquals("there should be [/, alice, bob] under synth root", 3, tree.getChildren(tree.getRoot()).size());
     }
 
 }

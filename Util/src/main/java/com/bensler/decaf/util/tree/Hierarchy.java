@@ -1,7 +1,6 @@
 package com.bensler.decaf.util.tree;
 
 import java.io.Serializable;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -177,9 +176,9 @@ public class Hierarchy extends Object implements Serializable {
         if (children == null) {
             children = new HashSet<Hierarchical>(2);
             children_.put(parent, children);
+        } else {
+            children.remove(child);
         }
-
-        children.remove(child);
         children.add(child);
     }
 
@@ -190,14 +189,15 @@ public class Hierarchy extends Object implements Serializable {
     }
 
     public Hierarchical resolve(final Object ref) {
-        final int refHash = ref.hashCode();
+        if (ref != null) {
+            final int refHash = ref.hashCode();
 
-        for (Hierarchical node : children_.keySet()) {
-            if ((refHash == node.hashCode()) && node.equals(ref)) {
-                return node;
+            for (Hierarchical node : children_.keySet()) {
+                if ((refHash == node.hashCode()) && node.equals(ref)) {
+                    return node;
+                }
             }
         }
-
         return null;
     }
 
@@ -238,7 +238,9 @@ public class Hierarchy extends Object implements Serializable {
     }
 
     public void remove(final Hierarchical member, final boolean recursive) {
-        if (hasSyntheticRoot() && (member == syntheticRoot_)) {
+        final boolean synthRoot = hasSyntheticRoot();
+
+        if (synthRoot && (member == syntheticRoot_)) {
             throw new IllegalArgumentException("Want not remove synthetic root.");
         }
 
@@ -254,11 +256,13 @@ public class Hierarchy extends Object implements Serializable {
             } else {
                 final Set<? extends Hierarchical> children = getChildren(member);
 
-                for (Hierarchical child : children) {
-                    addChild(child, syntheticRoot_);
-                }
-
                 if (!children.isEmpty()) {
+                    for (Hierarchical child : children) {
+                        addChild(child, syntheticRoot_);
+                    }
+                    if (!synthRoot) {
+                        addChild(root_, syntheticRoot_);
+                    }
                     root_ = syntheticRoot_;
                 }
             }
@@ -320,9 +324,10 @@ public class Hierarchy extends Object implements Serializable {
     public static final class Root extends NamedImpl implements Hierarchical {
 
         public Root() {
-            super("/");
+            super("SynthRoot");
         }
 
+        @Override
         public Hierarchical getParent() {
             return null;
         }
@@ -352,6 +357,7 @@ public class Hierarchy extends Object implements Serializable {
             collector_ = new ArrayList<Hierarchical>();
         }
 
+        @Override
         public void visit(final Hierarchical member) {
             collector_.add(member);
         }
@@ -371,6 +377,7 @@ public class Hierarchy extends Object implements Serializable {
     /**
      * @see  java.lang.Object#toString()
      */
+    @Override
     public String toString() {
         return String.valueOf(getRoot()) + getMembers();
     }
