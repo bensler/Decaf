@@ -1,5 +1,7 @@
 package com.bensler.decaf.util.tree;
 
+import java.util.Arrays;
+
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -23,6 +25,7 @@ public class HierarchyTest {
         tree.add(home);
         Assert.assertEquals("'home' should be root", home, tree.getRoot());
         tree.add(root);
+        Assert.assertEquals("'alice's path should be [/, home, alice]", Arrays.asList(root, home, alicesHome), tree.getPath(alicesHome));
         tree.remove(home, false);
         Assert.assertTrue("syntheticRoot should be root", tree.hasSyntheticRoot());
         Assert.assertEquals("there should be [/, alice, bob] under synth root", 3, tree.getChildren(tree.getRoot()).size());
