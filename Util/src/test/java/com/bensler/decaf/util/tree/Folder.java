@@ -22,4 +22,9 @@ public class Folder extends Object implements Hierarchical, Named {
         return name_;
     }
 
+    @Override
+    public String toString() {
+      return name_;
+    }
+
 }
