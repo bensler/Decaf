@@ -15,7 +15,6 @@ import com.bensler.decaf.swing.Viewable;
 import com.bensler.decaf.swing.view.PropertyView;
 import com.bensler.decaf.util.tree.Hierarchical;
 import com.bensler.decaf.util.tree.Hierarchy;
-import com.bensler.flob.biz.Entity;
 
 /**
  */
@@ -44,16 +43,13 @@ public class TreeModel extends DefaultTreeModel {
   protected               Hierarchy                             data_;
 
   private                 TreeFilter                            filter_;
-  
-  private                 boolean                               catchNewEntities_;
- 
-  TreeModel(PropertyView view, boolean catchNewEntities) {
+
+  TreeModel(PropertyView view) {
     super(null, false);
     parentChildArrayMap_ = new HashMap<Hierarchical, List<Hierarchical>>();
     data_ = new Hierarchy();
     filter_ = ACCEPT_ALL;
     view_ = view;
-    catchNewEntities_ = catchNewEntities;
   }
   
   /** @see javax.swing.tree.TreeModel#getRoot()
@@ -298,7 +294,7 @@ public class TreeModel extends DefaultTreeModel {
     }
   }
 
-  boolean contains(Viewable entity) {
+  boolean contains(Hierarchical entity) {
     return data_.contains(entity);
   }
 
@@ -350,38 +346,6 @@ public class TreeModel extends DefaultTreeModel {
 
   public Set<? extends Hierarchical> getMembers() {
     return data_.getMembers();
-  }
-
-  void entityChanged(Viewable entity) {
-    final Hierarchical hierarchical = (Hierarchical)entity;
-    
-    if (contains(hierarchical)) {
-      updateNode(hierarchical);
-    }
-  }
-
-  void entityCreated(Viewable entity) {
-    final Hierarchical hierarchical = (Hierarchical)entity;
-
-    if (catchNewEntities_ && contains(hierarchical.getParent())) {
-      addNode(hierarchical);
-    }
-  }
-
-  void entityRemoved(Viewable entity) {
-    final Hierarchical hierarchical = (Hierarchical)entity;
-    
-    if (contains(hierarchical.getParent())) {
-      remove(hierarchical);
-    }
-  }
-
-  void setCatchNewEntities(boolean catchNewEntities) {
-    catchNewEntities_ = catchNewEntities;
-  }
-  
-  boolean isCatchingNewEntities() {
-    return catchNewEntities_;
   }
  
 }

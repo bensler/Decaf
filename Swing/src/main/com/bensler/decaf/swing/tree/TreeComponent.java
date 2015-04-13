@@ -9,8 +9,8 @@ import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 
 import com.bensler.decaf.swing.Viewable;
+import com.bensler.decaf.swing.awt.ColorHelper;
 import com.bensler.decaf.swing.view.PropertyView;
-import com.bensler.flob.gui.awt.ColorHelper;
 
 public class TreeComponent extends JTree implements TreeModel.RootChangeListener {
 
@@ -29,7 +29,10 @@ public class TreeComponent extends JTree implements TreeModel.RootChangeListener
     super(newModel);
     backgroundSelectionColor_ = UIManager.getColor("Tree.selectionBackground");
     foregroundSelectionColor_ = UIManager.getColor("Tree.selectionForeground");
-    backgroundSelectionColorUnfocused_ = ColorHelper.mix(backgroundSelectionColor_, 2, UIManager.getColor("Tree.background"), 1);
+    backgroundSelectionColorUnfocused_ = ColorHelper.mix(
+      backgroundSelectionColor_, 2, 
+      UIManager.getColor("Tree.background"), 1
+    );
     masterSelListener_ = null;
     tree_ = tree;
     view_ = view;

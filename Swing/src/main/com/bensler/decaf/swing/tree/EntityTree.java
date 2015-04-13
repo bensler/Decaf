@@ -28,19 +28,19 @@ import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 
 import com.bensler.decaf.swing.Viewable;
+import com.bensler.decaf.swing.view.EntityComponent;
 import com.bensler.decaf.swing.view.PropertyView;
+import com.bensler.decaf.swing.view.SelectionMode;
 import com.bensler.decaf.util.tree.Hierarchical;
 import com.bensler.decaf.util.tree.Hierarchy;
 import com.bensler.flob.biz.Entity;
 import com.bensler.flob.biz.msg.EntityListener;
 import com.bensler.flob.clnt.app.Client;
 import com.bensler.flob.clnt.prefs.PrefKey;
-import com.bensler.flob.gui.EntityComponent;
 import com.bensler.flob.gui.EntitySelectionListener;
 import com.bensler.flob.gui.FocusableComponent;
 import com.bensler.flob.gui.NoSelectionModel;
 import com.bensler.flob.gui.PopupShower;
-import com.bensler.flob.gui.SelectionMode;
 import com.bensler.flob.gui.awt.MouseTrigger;
 import com.bensler.flob.gui.dnd.DndController;
 import com.bensler.flob.gui.dnd.DragBeginListener;
@@ -58,7 +58,7 @@ import com.bensler.flob.gui.tree.TreeState;
  */
 public class EntityTree extends Object implements EntityComponent, 
 TreeSelectionListener, DragBeginListener, DragEndListener, PopupShower.PopupCreator,  
-MouseTrigger.PopupListener, EntityListener, FocusListener, FocusableComponent {
+MouseTrigger.PopupListener, FocusListener, FocusableComponent {
   
   private   final         Set<FocusListener>  focusListeners_;
   
@@ -77,11 +77,7 @@ MouseTrigger.PopupListener, EntityListener, FocusListener, FocusableComponent {
   protected               TreeModel           model_;
   
   private                 DragSituation       dragSituation_;
-  
-  private                 TreeState           state_;
-  
-  private                 boolean             informFocusedBoManager_;
-  
+
   private                 SelectionMode       selectionMode_;
   
   private                 TreeSelectionModel  defSelModel_;
@@ -116,7 +112,6 @@ MouseTrigger.PopupListener, EntityListener, FocusListener, FocusableComponent {
     selectionListeners_ = new HashSet<EntitySelectionListener>(1);
     selection_ = new ArrayList<Viewable>(1);
     silentSelectionChange_ = false;
-    applyState();
     setSelectionMode(SelectionMode.SINGLE);
     ctxActions_ = null;
   }
@@ -248,20 +243,7 @@ MouseTrigger.PopupListener, EntityListener, FocusListener, FocusableComponent {
       if (ctxActions_ != null) {
         ctxActions_.setActionsEnabled(selection, false);
       }
-      informFocusedEntityManager();
     }
-  }
-
-  private void informFocusedEntityManager() {
-    if (informFocusedBoManager_) {
-      informFocusedEntityManager(selection_);
-    }
-  }
-  
-  public boolean isFocused() {
-    return (
-      (!informFocusedBoManager_) || Client.getInstance().getFocusedComponentController().hasFocus(tree_)
-    );
   }
 
   protected void informFocusedEntityManager(List<Viewable> selection) {
@@ -332,8 +314,6 @@ MouseTrigger.PopupListener, EntityListener, FocusListener, FocusableComponent {
   }
 
   public void setData(Hierarchy hierarchy) {
-    // save the old expanded nodes
-    saveState();
     hierarchy.getChildren(hierarchy.getRoot());
     model_.setData(hierarchy);
     tree_.setRootVisible(!hierarchy.hasSyntheticRoot());
@@ -420,7 +400,6 @@ MouseTrigger.PopupListener, EntityListener, FocusListener, FocusableComponent {
    */
   public void dragMoved(TransferringEntities transferringEntities) {
     // remove the given bos
-    saveState();
     for (Entity entity : transferringEntities.getEntities()) {
       if (contains(entity)) {
         removeData((Hierarchical)entity);
@@ -531,10 +510,6 @@ MouseTrigger.PopupListener, EntityListener, FocusListener, FocusableComponent {
     requestFocus();
   }
 
-  protected void saveState() {
-    state_ = getState();
-  }
-  
   public TreeState getState() {
     if (!model_.data_.isEmpty()) {    
       return new TreeState(
@@ -544,20 +519,6 @@ MouseTrigger.PopupListener, EntityListener, FocusListener, FocusableComponent {
     } else {
       return null;
     }
-  }
-
-  protected void applyState() {
-    if (state_ != null) {
-      setState(state_);
-    }
-  }
-
-  public void setState(TreeState state) {
-    state.apply(this);
-  }
-  
-  public void setInformFocusedBoManager(boolean inform) {
-    informFocusedBoManager_ = inform;
   }
 
   /** repaints the whole tree. Should be called when the SingleView 
@@ -608,30 +569,9 @@ MouseTrigger.PopupListener, EntityListener, FocusListener, FocusableComponent {
     Client.getEntityMessaging().addListener(bizClass, this);
   }
 
-  public void entityChanged(Entity entity) {
-    final int index = selection_.indexOf(entity);
-    
-    if (index >= 0) {
-      selection_.set(index, entity);
-    }
-    model_.entityChanged(entity);
-  }
-
-  public void entityCreated(Entity entity) {
-    model_.entityCreated(entity);
-  }
-
-  public void entityRemoved(Entity entity) {
-    if (selection_.contains(entity)) {
-      selection_.remove(entity);
-    }
-    model_.entityRemoved(entity);
-  }
-
   public void focusGained(FocusEvent evt) {
     Client.getInstance().getFocusedComponentController().setFocusedComponent(this);
     fireFocusGained();
-    informFocusedEntityManager();
     repaint();
   }
 
