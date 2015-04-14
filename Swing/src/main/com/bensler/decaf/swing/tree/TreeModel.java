@@ -316,10 +316,6 @@ public class TreeModel extends DefaultTreeModel {
     }
   }
 
-  public Set< ? extends Hierarchical> getLeafNodes() {
-    return data_.getLeafNodes();
-  }
-
   public void clear() {
     setData(new Hierarchy());
   }

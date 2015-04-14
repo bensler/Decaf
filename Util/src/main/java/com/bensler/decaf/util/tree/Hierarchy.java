@@ -36,6 +36,7 @@ public class Hierarchy extends Object implements Serializable {
     private Hierarchical root_;
 
     /**
+     * used by TreeModel *
      * Creates a new Hierarchy using all nodes of the given hierarchy.
      */
     public Hierarchy(final Hierarchy hierarchy) {
@@ -69,6 +70,8 @@ public class Hierarchy extends Object implements Serializable {
     }
 
     /**
+     * used by TreeModel *
+     * 
      * Adds a new member to this Hierarchy. If node is already a part of this hierarchy, it will be removed silently
      * before adding again. If this hierarchy has a synthetic root the new node may be the new parent of formerly
      * unbound nodes. They will be no longer children of synthetic root. If synthetic root loses all of its children the
@@ -188,6 +191,7 @@ public class Hierarchy extends Object implements Serializable {
         return ((node == syntheticRoot_) ? null : (((parent == null) && hasSyntheticRoot()) ? syntheticRoot_ : parent));
     }
 
+    /** used by TreeModel */
     public Hierarchical resolve(final Object ref) {
         if (ref != null) {
             final int refHash = ref.hashCode();
@@ -202,6 +206,7 @@ public class Hierarchy extends Object implements Serializable {
     }
 
     /**
+     * used by TreeModel *
      * @return  the root node of this Hierarchy.
      */
     public Hierarchical getRoot() {
@@ -209,6 +214,7 @@ public class Hierarchy extends Object implements Serializable {
     }
 
     /**
+     * used by TreeModel *
      * @return  true if this hierarchies only member is its own synthetic root.
      */
     public boolean isEmpty() {
@@ -237,6 +243,7 @@ public class Hierarchy extends Object implements Serializable {
         return result;
     }
 
+    /** used by TreeModel */
     public void remove(final Hierarchical member, final boolean recursive) {
         final boolean synthRoot = hasSyntheticRoot();
 
@@ -287,6 +294,7 @@ public class Hierarchy extends Object implements Serializable {
         }
     }
 
+    /** used by TreeModel */
     @SuppressWarnings("unchecked")
     public Set<? extends Hierarchical> getChildren(final Hierarchical member) {
         final Set<Hierarchical> children = children_.get(member);
@@ -302,6 +310,7 @@ public class Hierarchy extends Object implements Serializable {
     }
 
     /**
+     * used by TreeModel *
      * Checks if a node is a member of this hierarchy.
      */
     public boolean contains(final Hierarchical node) {
@@ -317,6 +326,7 @@ public class Hierarchy extends Object implements Serializable {
         children_.put(root_, null);
     }
 
+    /** used by TreeModel */
     public boolean hasSyntheticRoot() {
         return (root_ == syntheticRoot_);
     }
@@ -334,6 +344,7 @@ public class Hierarchy extends Object implements Serializable {
 
     }
 
+    /** used by TreeModel */
     public List<Hierarchical> getPath(Hierarchical node) {
         final List<Hierarchical> list = new ArrayList<Hierarchical>(4);
 
@@ -345,6 +356,7 @@ public class Hierarchy extends Object implements Serializable {
         return list;
     }
 
+    /** used by TreeModel */
     public Hierarchical getSyntheticRoot() {
         return syntheticRoot_;
     }
