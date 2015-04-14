@@ -29,17 +29,11 @@ import javax.swing.tree.TreeSelectionModel;
 
 import com.bensler.decaf.swing.Viewable;
 import com.bensler.decaf.swing.view.EntityComponent;
+import com.bensler.decaf.swing.view.NoSelectionModel;
 import com.bensler.decaf.swing.view.PropertyView;
 import com.bensler.decaf.swing.view.SelectionMode;
 import com.bensler.decaf.util.tree.Hierarchical;
 import com.bensler.decaf.util.tree.Hierarchy;
-import com.bensler.flob.biz.Entity;
-import com.bensler.flob.biz.msg.EntityListener;
-import com.bensler.flob.clnt.app.Client;
-import com.bensler.flob.clnt.prefs.PrefKey;
-import com.bensler.flob.gui.EntitySelectionListener;
-import com.bensler.flob.gui.FocusableComponent;
-import com.bensler.flob.gui.NoSelectionModel;
 import com.bensler.flob.gui.PopupShower;
 import com.bensler.flob.gui.awt.MouseTrigger;
 import com.bensler.flob.gui.dnd.DndController;
@@ -70,8 +64,6 @@ MouseTrigger.PopupListener, FocusListener, FocusableComponent {
 
   protected final         TreeComponent       tree_;
   
-  private   final         Map<HierarchicalWrapper, Viewable> viewableWrappers_;
-  
   private                 boolean             silentSelectionChange_;
 
   protected               TreeModel           model_;
@@ -84,15 +76,12 @@ MouseTrigger.PopupListener, FocusListener, FocusableComponent {
 
   protected               boolean             editable_;
   
-  private                 ContextActions      ctxActions_;
-  
   public EntityTree(PropertyView propView) {
     super();
     final UnwrappingRenderer unwrapper = new UnwrappingRenderer(propView);
     
     focusListeners_ = new HashSet<FocusListener>();
     model_ = createModel(propView);
-    viewableWrappers_ = new HashMap<HierarchicalWrapper, Viewable>();
     tree_ = new TreeComponent(this, model_, propView);
 //    tree_.setCellRenderer(new UnwrappingRenderer(propView));
     tree_.setCellRenderer(unwrapper);
@@ -113,7 +102,6 @@ MouseTrigger.PopupListener, FocusListener, FocusableComponent {
     selection_ = new ArrayList<Viewable>(1);
     silentSelectionChange_ = false;
     setSelectionMode(SelectionMode.SINGLE);
-    ctxActions_ = null;
   }
   
   public void setEditable(boolean editable) {
@@ -134,7 +122,7 @@ MouseTrigger.PopupListener, FocusListener, FocusableComponent {
   }
 
   protected TreeModel createModel(PropertyView view) {
-    return new TreeModel(view, false);
+    return new TreeModel(view);
   }
   
   public JScrollPane getScrollPane() {
@@ -240,9 +228,6 @@ MouseTrigger.PopupListener, FocusListener, FocusableComponent {
       for (EntitySelectionListener listener : selectionListeners_) {
         listener.selectionChanged(this, selection);
       }
-      if (ctxActions_ != null) {
-        ctxActions_.setActionsEnabled(selection, false);
-      }
     }
   }
 
@@ -292,15 +277,7 @@ MouseTrigger.PopupListener, FocusListener, FocusableComponent {
   public void addData(Hierarchical hierarchical) {
     model_.addNode(hierarchical);
   }
-  
-  public HierarchicalWrapper addViewable(Viewable viewable, Hierarchical parent) {
-    final HierarchicalWrapper wrapper = new HierarchicalWrapper(viewable, parent);
-    
-    viewableWrappers_.put(wrapper, viewable);
-    addData(wrapper);
-    return wrapper;
-  }
-  
+
   public void updateData(Hierarchical hierarchical) {
     model_.updateNode(hierarchical);
   }
@@ -473,11 +450,7 @@ MouseTrigger.PopupListener, FocusListener, FocusableComponent {
       tree_.expandPath(new TreePath(path).getParentPath());
     }
   }
-  
-  public void setContextActions(ContextActions ctxActions) {
-    ctxActions_ = (ctxActions.isEmpty() ? null : ctxActions);
-  }
-  
+
   /** @see com.bensler.flob.gui.awt.MouseTrigger.PopupListener#popupTriggered(java.awt.event.MouseEvent)
    */
   public void popupTriggered(MouseEvent evt) {
@@ -493,11 +466,7 @@ MouseTrigger.PopupListener, FocusListener, FocusableComponent {
   protected ActionGroup createContextActionGroup() {
     final ActionGroup actionGroup = new ActionGroup();
     
-    if (ctxActions_ == null) {
-      Client.getRegistry().lookupContextActions(actionGroup, selection_);
-    } else {
-      actionGroup.addActions(ctxActions_.createActionGroup(false).getActionsList());
-    }
+    Client.getRegistry().lookupContextActions(actionGroup, selection_);
     return actionGroup;
   }
 
@@ -557,9 +526,6 @@ MouseTrigger.PopupListener, FocusListener, FocusableComponent {
       JTree tree, Object value, boolean selected, boolean expanded, 
       boolean leaf, int row, boolean hasFocus
     ) {
-      if (viewableWrappers_.containsKey(value)) {
-        value = viewableWrappers_.get(value);
-      }
       return view_.getTreeCellRendererComponent(tree, value, selected, expanded, leaf, row, hasFocus);
     }
     
