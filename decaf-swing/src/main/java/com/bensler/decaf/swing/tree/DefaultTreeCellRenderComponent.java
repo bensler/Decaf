@@ -1,4 +1,4 @@
-package com.bensler.decaf.swing.view;
+package com.bensler.decaf.swing.tree;
 
 import java.awt.Color;
 import java.awt.Dimension;
@@ -9,9 +9,8 @@ import javax.swing.JTree;
 import javax.swing.UIManager;
 import javax.swing.border.EmptyBorder;
 
-import com.bensler.decaf.swing.tree.TreeComponent;
-import com.bensler.flob.gui.tree.IconProvider;
-import com.bensler.flob.gui.tree.SimpleIconProvider;
+import com.bensler.decaf.swing.view.RendererBase;
+import com.bensler.decaf.swing.view.TreeRenderComponent;
 
 /**
  */
@@ -31,10 +30,10 @@ public class DefaultTreeCellRenderComponent extends RendererBase implements Tree
   public DefaultTreeCellRenderComponent() {
     this(new SimpleIconProvider(null, null, null));
   }
-  
+
   public DefaultTreeCellRenderComponent(IconProvider iconProvider) {
     final Object drawsFocusBorderAroundIcon = UIManager.get("Tree.drawsFocusBorderAroundIcon");
-    
+
     icons_ = iconProvider;
     borderSelectionColor_ = UIManager.getColor("Tree.selectionBorderColor");
     drawsFocusBorderAroundIcon_ = (drawsFocusBorderAroundIcon != null && ((Boolean)drawsFocusBorderAroundIcon).booleanValue());
@@ -45,7 +44,7 @@ public class DefaultTreeCellRenderComponent extends RendererBase implements Tree
   public void paint(Graphics g) {
     final Color   bsColor     = borderSelectionColor_;
           int     imageOffset = getLabelStart();
-    
+
     g.setColor(getBackground());
     if(getComponentOrientation().isLeftToRight()) {
       g.fillRect(imageOffset, 0, getWidth() - imageOffset, getHeight());
@@ -68,7 +67,7 @@ public class DefaultTreeCellRenderComponent extends RendererBase implements Tree
 
   private int getLabelStart() {
     final Icon currentIcon = getIcon();
-    
+
     if ((currentIcon != null) && (getText() != null)) {
       return currentIcon.getIconWidth() + Math.max(0, getIconTextGap() - 1);
     }
@@ -89,7 +88,7 @@ public class DefaultTreeCellRenderComponent extends RendererBase implements Tree
   }
 
   public void prepareForTree(
-    JTree aTree, boolean selected, boolean expanded, 
+    JTree aTree, boolean selected, boolean expanded,
     boolean leaf, int row, boolean hasFocus
   ) {
     final TreeComponent tree = (TreeComponent)aTree;
@@ -97,10 +96,10 @@ public class DefaultTreeCellRenderComponent extends RendererBase implements Tree
       leaf ? icons_.getLeafIcon()
       : (expanded ? icons_.getOpenIcon() : icons_.getClosedIcon())
     );
-    
-    hasFocus_ = tree.getTree().isFocused();
+
+    hasFocus_ = tree.hasFocus();
     selected_ = selected;
-    
+
     setFont(tree.getFont());
     setForeground(
       selected_ ? tree.getForegroundSelectionColor() : tree.getForeground()

@@ -2,20 +2,15 @@ package com.bensler.decaf.swing.tree;
 
 import java.awt.Color;
 import java.awt.Component;
-import java.awt.Point;
-import java.awt.dnd.DragGestureEvent;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
-import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import javax.swing.JScrollPane;
@@ -39,8 +34,7 @@ import com.bensler.decaf.util.tree.Hierarchy;
  * This is a tree that displays a Hierarchy.
  */
 public class EntityTree extends Object implements EntityComponent,
-TreeSelectionListener, /*DragBeginListener, DragEndListener,*/ PopupShower.PopupCreator,
-FocusListener, FocusableComponent {
+TreeSelectionListener, FocusListener {
 
   private   final         Set<FocusListener>  focusListeners_;
 
@@ -409,18 +403,6 @@ FocusListener, FocusableComponent {
     if (path.length > 1) {
       tree_.expandPath(new TreePath(path).getParentPath());
     }
-  }
-
-  /** for context menu */
-  public ActionGroup getActionGroup(Object ctx) {
-    return createContextActionGroup();
-  }
-
-  protected ActionGroup createContextActionGroup() {
-    final ActionGroup actionGroup = new ActionGroup();
-
-    Client.getRegistry().lookupContextActions(actionGroup, selection_);
-    return actionGroup;
   }
 
   public TreeState getState() {

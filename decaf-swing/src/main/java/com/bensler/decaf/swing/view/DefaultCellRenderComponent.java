@@ -8,11 +8,7 @@ import javax.swing.JTable;
 import javax.swing.UIManager;
 import javax.swing.border.Border;
 
-import com.bensler.flob.clnt.app.Client;
-import com.bensler.flob.gui.table.TableComponent;
-
-public class DefaultCellRenderComponent extends RendererBase 
-implements ListRenderComponent, TableRenderComponent {
+public class DefaultCellRenderComponent extends RendererBase implements ListRenderComponent, TableRenderComponent {
 
   public DefaultCellRenderComponent() {
     super();
@@ -23,17 +19,18 @@ implements ListRenderComponent, TableRenderComponent {
     boolean selected, boolean hasFocus, int row, int column
   ) {
     prepareForTable(table, selected, row, column, hasFocus);
-    setValue(value); 
+    setValue(value);
     return this;
   }
 
   public void prepareForTable(JTable table, boolean selected, int row, int column, boolean focused) {
     Border border = BORDER_NO_FOCUS;
-    
-    focused = Client.getInstance().getFocusedComponentController().hasFocus(table);
+
+    focused = table.hasFocus();
     if (selected) {
       setForeground(table.getSelectionForeground());
-      setBackground(focused ? table.getSelectionBackground() : ((TableComponent)table).getBackgroundSelectionColorUnfocused());
+      // TODO
+      //setBackground(focused ? table.getSelectionBackground() : ((TableComponent)table).getBackgroundSelectionColorUnfocused());
     } else {
       setForeground(table.getForeground());
       setBackground(table.getBackground());
@@ -83,5 +80,5 @@ implements ListRenderComponent, TableRenderComponent {
     }
     setBorder(border);
   }
- 
+
 }

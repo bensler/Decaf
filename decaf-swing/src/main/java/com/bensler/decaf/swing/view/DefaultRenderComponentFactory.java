@@ -3,6 +3,7 @@ package com.bensler.decaf.swing.view;
 import javax.swing.JComponent;
 
 import com.bensler.decaf.swing.Viewable;
+import com.bensler.decaf.swing.tree.DefaultTreeCellRenderComponent;
 
 
 
