@@ -9,22 +9,18 @@ public class NamePropertyGetter extends Object implements PropertyGetter {
   public    final static  Object[]    NO_ARGS   = new Object[0];
 
   protected static Object getProperty(Viewable viewable, String propertyName) {
-    if (Proxy.isProxyClass(viewable.getClass())) {
-      return ((EntityVo)Proxy.getInvocationHandler(viewable)).getValue(propertyName);
-    } else {
-      final Class<?> bizClass = (
-        (viewable instanceof Entity) ? ((Entity)viewable).getBusinessClass() : viewable.getClass()
-      );
+    final Class<?> bizClass = (
+      (viewable instanceof Entity) ? ((Entity)viewable).getBusinessClass() : viewable.getClass()
+    );
 
-      try {
-        return VoController.getInstance().getGetter(
-          bizClass, propertyName
-        ).invoke(viewable, NO_ARGS);
-      } catch (Exception e) {
-        throw new RuntimeException(
-          "trouble accessing getter for \"" + propertyName + "\" on \"" + bizClass.getName() + "\" using reflection ", e
-        );
-      }
+    try {
+      return VoController.getInstance().getGetter(
+        bizClass, propertyName
+      ).invoke(viewable, NO_ARGS);
+    } catch (Exception e) {
+      throw new RuntimeException(
+        "trouble accessing getter for \"" + propertyName + "\" on \"" + bizClass.getName() + "\" using reflection ", e
+      );
     }
   }
 
