@@ -1,7 +1,6 @@
 package com.bensler.decaf.swing.view;
 
-import java.lang.reflect.Proxy;
-
+import com.bensler.decaf.swing.EntityCache;
 import com.bensler.decaf.swing.Viewable;
 
 public class NamePropertyGetter extends Object implements PropertyGetter {
@@ -9,12 +8,10 @@ public class NamePropertyGetter extends Object implements PropertyGetter {
   public    final static  Object[]    NO_ARGS   = new Object[0];
 
   protected static Object getProperty(Viewable viewable, String propertyName) {
-    final Class<?> bizClass = (
-      (viewable instanceof Entity) ? ((Entity)viewable).getBusinessClass() : viewable.getClass()
-    );
+    final Class<?> bizClass = (viewable.getClass());
 
     try {
-      return VoController.getInstance().getGetter(
+      return EntityCache.getInstance().getGetter(
         bizClass, propertyName
       ).invoke(viewable, NO_ARGS);
     } catch (Exception e) {
@@ -36,14 +33,17 @@ public class NamePropertyGetter extends Object implements PropertyGetter {
     propertyName_ = propertyName;
   }
 
+  @Override
   public Object getProperty(Viewable viewable) {
     return getProperty(viewable, propertyName_);
   }
 
+  @Override
   public int compare(Viewable v1, Viewable v2) {
     return comparator_.compare(this, v1, v2);
   }
 
+  @Override
   public boolean isSortable() {
     return (comparator_ != EntityComparator.NOT_SORTABLE);
   }

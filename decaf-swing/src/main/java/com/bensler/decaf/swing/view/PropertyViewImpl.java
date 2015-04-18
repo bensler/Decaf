@@ -17,6 +17,7 @@ public class PropertyViewImpl extends Object implements PropertyView {
 
   public static class ToStringGetter extends StringGetter {
 
+    @Override
     public String getProperty(Viewable viewable) {
       return viewable.toString();
     }
@@ -52,12 +53,12 @@ public class PropertyViewImpl extends Object implements PropertyView {
   }
 
   public PropertyViewImpl(
-    BinResKey<Icon> icon, PropertyGetter getter
+    Icon icon, PropertyGetter getter
   ) {
     this(new SimpleCellRenderer(icon), getter);
   }
 
-  public PropertyViewImpl(BinResKey<Icon> icon, String propertyName) {
+  public PropertyViewImpl(Icon icon, String propertyName) {
     this(new SimpleCellRenderer(icon), new NamePropertyGetter(propertyName));
   }
 
@@ -95,6 +96,7 @@ public class PropertyViewImpl extends Object implements PropertyView {
     this(new SimpleCellRenderer(), (PropertyGetter)null);
   }
 
+  @Override
   public Component getTreeCellRendererComponent(
     JTree tree, Object value, boolean selected,
     boolean expanded, boolean leaf, int row, boolean hasFocus
@@ -109,6 +111,7 @@ public class PropertyViewImpl extends Object implements PropertyView {
     return label;
   }
 
+  @Override
   public Component getCellRendererComponent(
     JTable table, Viewable viewable, Object cellValue, boolean selected,
     boolean hasFocus, int row, int column
@@ -123,6 +126,7 @@ public class PropertyViewImpl extends Object implements PropertyView {
     return label;
   }
 
+  @Override
   public Component getListCellRendererComponent(
     JList list, Object value, int index,
     boolean selected, boolean hasFocus
@@ -137,38 +141,46 @@ public class PropertyViewImpl extends Object implements PropertyView {
     return listComponent.getComponent();
   }
 
+  @Override
   public JLabel renderLabel(JLabel label, Viewable viewable) {
     nullPolicy_.render(viewable, label, getRenderer(), getter_);
     compFactory_.afterRendering(Target.LABEL, label, viewable);
     return label;
   }
 
+  @Override
   public Object getProperty(Viewable viewable) {
     return getter_.getProperty(viewable);
   }
 
+  @Override
   public String getPropertyString(Viewable viewable) {
     final Object propertyValue = getProperty(viewable);
 
     return nullPolicy_.getPropertyString(propertyValue);
   }
 
+  @Override
   public int compare(Viewable v1, Viewable v2) {
     return getter_.compare(v1, v2);
   }
 
+  @Override
   public CellRenderer getRenderer() {
     return renderer_;
   }
 
+  @Override
   public boolean isSortable() {
     return getter_.isSortable();
   }
 
+  @Override
   public RenderComponentFactory getRenderComponentFactory() {
     return compFactory_;
   }
 
+  @Override
   public PropertyGetter getGetter() {
     return getter_;
   }
