@@ -16,7 +16,6 @@ public class OverlayIcon extends Object implements Icon {
   private   final         LinkedHashMap<Icon, Alignment>   iconAlignmentMap_;
 
   private                 int             width_;
-
   private                 int             height_;
 
   public OverlayIcon() {
@@ -34,10 +33,14 @@ public class OverlayIcon extends Object implements Icon {
       iconAlignmentMap_.remove(icon);
     }
     iconAlignmentMap_.put(icon, alignment);
+    width_ = -1;
+    height_ = -1;
   }
 
   public void clear() {
     iconAlignmentMap_.clear();
+    width_ = -1;
+    height_ = -1;
   }
 
   @Override
@@ -47,8 +50,8 @@ public class OverlayIcon extends Object implements Icon {
 
       icon.paintIcon(
         c, g,
-        alignment.alignHoriz(x, getIconWidth(), icon.getIconWidth()),
-        alignment.alignVert(y, getIconHeight(), icon.getIconHeight())
+        (x + alignment.alignHoriz(getIconWidth(), icon.getIconWidth())),
+        (y + alignment.alignVert(getIconHeight(), icon.getIconHeight()))
       );
     }
   }
@@ -77,23 +80,18 @@ public class OverlayIcon extends Object implements Icon {
 
   private static enum Orientation {
 
-    LO, C, HI;
+    LO(0),
+    C (1),
+    HI(2);
 
-    public int align(
-      int whole, int part
-    ) {
-      final int diff  = Math.max(0, (whole - part));
+    private final int x_;
 
-      if (this == C) {
-        return diff / 2;
-      } else {
-        if (this == LO) {
-          return 0;
-        } else {
-          // (this == HI) {
-          return diff;
-        }
-      }
+    private Orientation(int x) {
+      x_ = x;
+    }
+
+    public int align(int whole, int part) {
+      return Math.round(x_ * ((whole - part) / 2.0f));
     }
 
   }
@@ -111,25 +109,20 @@ public class OverlayIcon extends Object implements Icon {
 
     C (Orientation.C,  Orientation.C);
 
-    private   final         Orientation   horiz_;
-
-    private   final         Orientation   vert_;
+    private final Orientation horiz_;
+    private final Orientation vert_;
 
     private Alignment(Orientation horiz, Orientation vert) {
       horiz_ = horiz;
       vert_ = vert;
     }
 
-    public int alignHoriz(
-      int base, int wholeWidth, int partWidth
-    ) {
-      return (base + horiz_.align(wholeWidth, partWidth));
+    public int alignHoriz(int wholeWidth, int partWidth) {
+      return horiz_.align(wholeWidth, partWidth);
     }
 
-    public int alignVert(
-      int base, int wholeHeight, int partHeight
-    ) {
-      return (base + vert_.align(wholeHeight, partHeight));
+    public int alignVert(int wholeHeight, int partHeight) {
+      return vert_.align(wholeHeight, partHeight);
     }
 
   }
