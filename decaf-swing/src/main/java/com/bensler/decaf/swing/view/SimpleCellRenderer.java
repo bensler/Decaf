@@ -7,25 +7,25 @@ import com.bensler.decaf.swing.Viewable;
 
 public class SimpleCellRenderer extends Object implements CellRenderer {
 
-  private   final         BinResKey<Icon> icon_;
+  private   final         Icon      icon_;
 
-  private   final         boolean         renderIconEvenWithEmptyText_;
+  private   final         boolean   renderIconEvenWithEmptyText_;
 
   public SimpleCellRenderer() {
     this(null, false);
   }
 
-  public SimpleCellRenderer(BinResKey<Icon> iconKey) {
-    this(iconKey, false);
+  public SimpleCellRenderer(Icon icon) {
+    this(icon, false);
   }
 
   public SimpleCellRenderer(boolean renderIconEvenWithEmptyText) {
     this(null, renderIconEvenWithEmptyText);
   }
 
-  public SimpleCellRenderer(BinResKey<Icon> iconKey, boolean renderIconEvenWithEmptyText) {
+  public SimpleCellRenderer(Icon icon, boolean renderIconEvenWithEmptyText) {
     super();
-    icon_ = iconKey;
+    icon_ = icon;
     renderIconEvenWithEmptyText_ = renderIconEvenWithEmptyText;
   }
 
@@ -47,9 +47,10 @@ public class SimpleCellRenderer extends Object implements CellRenderer {
     return cellValue.toString();
   }
 
+  @Override
   public void render(Viewable value, Object cellValue, JLabel comp) {
     if (setText(comp, cellValue) || renderIconEvenWithEmptyText_) {
-      comp.setIcon(getIcon(getIcon(value, cellValue)));
+      comp.setIcon(getIcon(value, cellValue));
     } else {
       comp.setIcon(null);
     }
@@ -57,19 +58,11 @@ public class SimpleCellRenderer extends Object implements CellRenderer {
   }
 
   public Icon getIcon() {
-    return getIcon(icon_);
-  }
-
-  protected Icon getIcon(BinResKey<Icon> iconKey) {
-    return ((iconKey == null) ? null : Client.getRes().getRessource(iconKey));
-  }
-
-  public BinResKey<Icon> getIconKey() {
     return icon_;
   }
 
-  public BinResKey<Icon> getIcon(Viewable value, Object cellValue) {
-    return icon_;
+  public Icon getIcon(Viewable value, Object cellValue) {
+    return getIcon();
   }
 
 }
