@@ -1,30 +1,37 @@
 package com.bensler.decaf.swing.tree;
 
+import java.awt.Dialog.ModalityType;
+
+import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
+import org.junit.Test;
+
 import com.bensler.decaf.swing.view.PropertyViewImpl;
 import com.bensler.decaf.util.tree.Hierarchy;
-import com.jgoodies.plaf.plastic.Plastic3DLookAndFeel;
-import com.jgoodies.plaf.plastic.theme.DesertYellow;
+import com.jgoodies.looks.plastic.Plastic3DLookAndFeel;
+import com.jgoodies.looks.plastic.theme.DesertYellow;
 
-public class EntityTreeTest extends JFrame {
+public class EntityTreeTest {
 
-  private final EntityTree tree_;
-
-  EntityTreeTest() {
-    setDefaultCloseOperation(EXIT_ON_CLOSE);
-    tree_ = new EntityTree(new PropertyViewImpl("name"));
-    tree_.setData(createData());
-    setContentPane(tree_.getComponent());
-    setSize(500, 800);
-  }
-
-  public static void main(String[] args) throws UnsupportedLookAndFeelException {
+  public EntityTreeTest() throws UnsupportedLookAndFeelException {
     Plastic3DLookAndFeel.setCurrentTheme(new DesertYellow());
     UIManager.setLookAndFeel(new Plastic3DLookAndFeel());
-    new EntityTreeTest().setVisible(true);
+  }
+
+  @Test
+  public void interactive() {
+    final JDialog dialog = new JDialog(null, "Decaf Swing Test", ModalityType.APPLICATION_MODAL);
+    final EntityTree tree;
+
+    dialog.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+    tree = new EntityTree(new PropertyViewImpl("name"));
+    tree.setData(createData());
+    dialog.setContentPane(tree.getComponent());
+    dialog.setSize(500, 800);
+    dialog.setVisible(true);
   }
 
   private Hierarchy createData() {
