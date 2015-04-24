@@ -71,7 +71,7 @@ public class Hierarchy extends Object implements Serializable {
 
     /**
      * used by TreeModel *
-     * 
+     *
      * Adds a new member to this Hierarchy. If node is already a part of this hierarchy, it will be removed silently
      * before adding again. If this hierarchy has a synthetic root the new node may be the new parent of formerly
      * unbound nodes. They will be no longer children of synthetic root. If synthetic root loses all of its children the
@@ -519,7 +519,7 @@ public class Hierarchy extends Object implements Serializable {
      * @return  all leaf nodes of this hierarchy (nodes having no child nodes in <b>this</b> hierarchy).
      */
     public Set<? extends Hierarchical> getLeafNodes() {
-        final Set<Hierarchical> leafes = new HashSet<Hierarchical>();
+        final Set<Hierarchical> leafs = new HashSet<Hierarchical>();
 
         if (isEmpty()) {
             return Collections.emptySet();
@@ -527,11 +527,11 @@ public class Hierarchy extends Object implements Serializable {
 
         for (Entry<Hierarchical, Set<Hierarchical>> entry : children_.entrySet()) {
             if (entry.getValue() == null) {
-                leafes.add(entry.getKey());
+                leafs.add(entry.getKey());
             }
         }
 
-        return leafes;
+        return leafs;
     }
 
     /**
