@@ -18,37 +18,37 @@ import com.bensler.decaf.util.NamedImpl;
  * A Hierarchy forms a tree out of a collection of Hierarchicals. A synthetic root is used if there are more than one
  * nodes with an unknown or null parent ref. This is to make sure that there is always exactly one root.
  */
-public class Hierarchy extends Object implements Serializable {
+public class Hierarchy<E extends Hierarchical> extends Object implements Serializable {
 
     /**
      * this node is used as root if the members does not form a hierarchy (if there would be more than one root).
      */
-    private static final Hierarchical syntheticRoot_ = new Root();
+//    private static final Hierarchical syntheticRoot_ = new Root();
 
     /**
      * Keys are all members of this hierarchy, values are the child nodes. null values are used for leaf nodes.
      */
-    private final Map<Hierarchical, Set<Hierarchical>> children_;
+    private final Map<E, Set<E>> children_;
 
     /**
      * root node of this hierarchy.
      */
-    private Hierarchical root_;
+    private E root_;
 
     /**
      * used by TreeModel *
      * Creates a new Hierarchy using all nodes of the given hierarchy.
      */
-    public Hierarchy(final Hierarchy hierarchy) {
+    public Hierarchy(final Hierarchy<E> hierarchy) {
         this();
 
-        final Set<? extends Hierarchical> members = hierarchy.getMembers();
+        final Set<? extends E> members = hierarchy.getMembers();
 
         members.remove(hierarchy.getSyntheticRoot());
         addAll(members);
         if (hierarchy.hasSyntheticRoot() && (!hasSyntheticRoot())) {
-            root_ = syntheticRoot_;
-            addChild(root_, syntheticRoot_);
+            root_ = null;
+            addChild(root_, null);
         }
     }
 
@@ -56,15 +56,15 @@ public class Hierarchy extends Object implements Serializable {
      * Creates a new empty hierarchy.
      */
     public Hierarchy() {
-        children_ = new HashMap<Hierarchical, Set<Hierarchical>>();
-        root_ = syntheticRoot_;
+        children_ = new HashMap<E, Set<E>>();
+        root_ = null;
         children_.put(root_, null);
     }
 
     /**
      * Creates a new hierarchy using the given members.
      */
-    public Hierarchy(final Collection<? extends Hierarchical> members) {
+    public Hierarchy(final Collection<? extends E> members) {
         this();
         addAll(members);
     }
@@ -77,15 +77,15 @@ public class Hierarchy extends Object implements Serializable {
      * unbound nodes. They will be no longer children of synthetic root. If synthetic root loses all of its children the
      * new node is the new root. If synthetic root keeps one child that will become the new root.
      */
-    public void add(final Hierarchical newNode) {
-        final Hierarchical oldNode = resolve(newNode);
-        final Hierarchical parent;
+    public void add(final E newNode) {
+        final E oldNode;
+        final E parent;
 
         if (newNode == null) {
             throw new IllegalArgumentException("Cannot add null to a Hierarchy.");
         }
 
-        if (oldNode != null) {
+        if ((oldNode = resolve(newNode)) != null) {
 
             // node is allready in this hierarchy
             final Hierarchical oldParent = resolveParent(oldNode);
@@ -102,7 +102,7 @@ public class Hierarchy extends Object implements Serializable {
         }
 
         if (isEmpty()) {
-            children_.remove(syntheticRoot_);
+            children_.remove(null);
             children_.put(newNode, null);
             root_ = newNode;
         } else {
@@ -111,11 +111,11 @@ public class Hierarchy extends Object implements Serializable {
             if (parent != null) {
                 addChild(newNode, parent);
                 if (hasSyntheticRoot()) {
-                    final Set<Hierarchical> rootChildren = tryMoveSynthRootChildren(newNode);
+                    final Set<E> rootChildren = tryMoveSynthRootChildren(newNode);
 
                     if (rootChildren.size() == 1) {
                         root_ = rootChildren.iterator().next();
-                        children_.remove(syntheticRoot_);
+                        children_.remove(null);
                     }
                 }
             } else {
@@ -126,17 +126,17 @@ public class Hierarchy extends Object implements Serializable {
                         addChild(root_, newNode);
                         root_ = newNode;
                     } else {
-                        addChild(newNode, syntheticRoot_);
-                        addChild(root_, syntheticRoot_);
-                        root_ = syntheticRoot_;
+                        addChild(newNode, null);
+                        addChild(root_, null);
+                        root_ = null;
                     }
                 } else {
 
                     // synthetic root
-                    final Set<Hierarchical> rootChildren = tryMoveSynthRootChildren(newNode);
+                    final Set<E> rootChildren = tryMoveSynthRootChildren(newNode);
 
                     if (rootChildren.isEmpty()) {
-                        children_.remove(syntheticRoot_);
+                        children_.remove(null);
                         root_ = newNode;
                     } else {
                         addChild(newNode, root_);
@@ -151,11 +151,11 @@ public class Hierarchy extends Object implements Serializable {
      *
      * @return  all (synth) roots children unable to move to the (im)possible new parent.
      */
-    private Set<Hierarchical> tryMoveSynthRootChildren(final Hierarchical possibleParent) {
-        final Set<Hierarchical> rootChildren = getChildren_(root_);
+    private Set<E> tryMoveSynthRootChildren(final E possibleParent) {
+        final Set<E> rootChildren = getChildren_(root_);
 
-        for (Hierarchical node : getChildren(root_)) {
-            if (resolveParent(node).equals(possibleParent)) {
+        for (E node : getChildren(root_)) {
+            if (possibleParent.equals(resolveParent(node))) {
                 addChild(node, possibleParent);
                 rootChildren.remove(node);
             }
@@ -167,17 +167,17 @@ public class Hierarchy extends Object implements Serializable {
     /**
      * Adds all collection member to this hierarchy.
      */
-    public void addAll(final Collection<? extends Hierarchical> nodes) {
-        for (Hierarchical newNode : nodes) {
+    public void addAll(final Collection<? extends E> nodes) {
+        for (E newNode : nodes) {
             add(newNode);
         }
     }
 
-    private void addChild(final Hierarchical child, final Hierarchical parent) {
-        Set<Hierarchical> children = children_.get(parent);
+    private void addChild(final E child, final E parent) {
+        Set<E> children = children_.get(parent);
 
         if (children == null) {
-            children = new HashSet<Hierarchical>(2);
+            children = new HashSet<E>(2);
             children_.put(parent, children);
         } else {
             children.remove(child);
@@ -185,19 +185,19 @@ public class Hierarchy extends Object implements Serializable {
         children.add(child);
     }
 
-    private Hierarchical resolveParent(final Hierarchical node) {
-        final Hierarchical parent = resolve(node.getParent());
+    private E resolveParent(final E node) {
+        final E parent = resolve(node.getParent());
 
-        return ((node == syntheticRoot_) ? null : (((parent == null) && hasSyntheticRoot()) ? syntheticRoot_ : parent));
+        return ((node == null) ? null : (((parent == null) && hasSyntheticRoot()) ? null : parent));
     }
 
     /** used by TreeModel */
-    public Hierarchical resolve(final Object ref) {
+    public E resolve(final Object ref) {
         if (ref != null) {
             final int refHash = ref.hashCode();
 
-            for (Hierarchical node : children_.keySet()) {
-                if ((refHash == node.hashCode()) && node.equals(ref)) {
+            for (E node : children_.keySet()) {
+                if ((node == null) || ((refHash == node.hashCode()) && node.equals(ref))) {
                     return node;
                 }
             }
@@ -218,7 +218,7 @@ public class Hierarchy extends Object implements Serializable {
      * @return  true if this hierarchies only member is its own synthetic root.
      */
     public boolean isEmpty() {
-        return ((children_.size() == 1) && children_.containsKey(syntheticRoot_));
+        return ((children_.size() == 1) && children_.containsKey(null));
     }
 
     /**
@@ -231,10 +231,8 @@ public class Hierarchy extends Object implements Serializable {
     /**
      * @return  all members of this Hierarchy in undefined order
      */
-    @SuppressWarnings("unchecked")
-    public Set<? extends Hierarchical> getMembers() {
-        Set<? extends Hierarchical> result = (isEmpty() ? (Set<Hierarchical>) Collections.EMPTY_SET
-                                                        : new HashSet<Hierarchical>(children_.keySet()));
+    public Set<E> getMembers() {
+        final Set<E> result = (isEmpty() ? (Set<E>) Collections.<E>emptySet() : new HashSet<E>(children_.keySet()));
 
         if (hasSyntheticRoot()) {
             result.remove(getRoot());
@@ -244,10 +242,10 @@ public class Hierarchy extends Object implements Serializable {
     }
 
     /** used by TreeModel */
-    public void remove(final Hierarchical member, final boolean recursive) {
+    public void remove(final E member, final boolean recursive) {
         final boolean synthRoot = hasSyntheticRoot();
 
-        if (synthRoot && (member == syntheticRoot_)) {
+        if (synthRoot && (member == null)) {
             throw new IllegalArgumentException("Want not remove synthetic root.");
         }
 
@@ -257,20 +255,20 @@ public class Hierarchy extends Object implements Serializable {
 
             // handle children
             if (recursive) {
-                for (Hierarchical child : getChildren(member)) {
+                for (E child : getChildren(member)) {
                     remove(child, recursive);
                 }
             } else {
-                final Set<? extends Hierarchical> children = getChildren(member);
+                final Set<? extends E> children = getChildren(member);
 
                 if (!children.isEmpty()) {
-                    for (Hierarchical child : children) {
-                        addChild(child, syntheticRoot_);
+                    for (E child : children) {
+                        addChild(child, null);
                     }
                     if (!synthRoot) {
-                        addChild(root_, syntheticRoot_);
+                        addChild(root_, null);
                     }
-                    root_ = syntheticRoot_;
+                    root_ = null;
                 }
             }
 
@@ -278,13 +276,13 @@ public class Hierarchy extends Object implements Serializable {
 
             // handle parent
             if (removingRoot) {
-                root_ = syntheticRoot_;
+                root_ = null;
                 if (!hadChildren) {
-                    children_.put(syntheticRoot_, null);
+                    children_.put(null, null);
                 }
             } else {
-                final Hierarchical parent = resolveParent(member);
-                final Set<Hierarchical> siblings = getChildren_(parent);
+                final E parent = resolveParent(member);
+                final Set<E> siblings = getChildren_(parent);
 
                 siblings.remove(member);
                 if (siblings.isEmpty()) {
@@ -296,15 +294,15 @@ public class Hierarchy extends Object implements Serializable {
 
     /** used by TreeModel */
     @SuppressWarnings("unchecked")
-    public Set<? extends Hierarchical> getChildren(final Hierarchical member) {
-        final Set<Hierarchical> children = children_.get(member);
+    public Set<? extends E> getChildren(final Hierarchical member) {
+        final Set<E> children = children_.get(member);
 
-        return ((children != null) ? new HashSet<Hierarchical>(children) : Collections.EMPTY_SET);
+        return ((children != null) ? new HashSet<E>(children) : Collections.EMPTY_SET);
     }
 
     @SuppressWarnings("unchecked")
-    private Set<Hierarchical> getChildren_(final Hierarchical member) {
-        final Set<Hierarchical> children = children_.get(member);
+    private Set<E> getChildren_(final Hierarchical member) {
+        final Set<E> children = children_.get(member);
 
         return ((children != null) ? children : Collections.EMPTY_SET);
     }
@@ -322,13 +320,13 @@ public class Hierarchy extends Object implements Serializable {
      */
     public void clear() {
         children_.clear();
-        root_ = syntheticRoot_;
+        root_ = null;
         children_.put(root_, null);
     }
 
     /** used by TreeModel */
     public boolean hasSyntheticRoot() {
-        return (root_ == syntheticRoot_);
+        return (root_ == null);
     }
 
     public static final class Root extends NamedImpl implements Hierarchical {
@@ -345,8 +343,8 @@ public class Hierarchy extends Object implements Serializable {
     }
 
     /** used by TreeModel */
-    public List<Hierarchical> getPath(Hierarchical node) {
-        final List<Hierarchical> list = new ArrayList<Hierarchical>(4);
+    public List<E> getPath(E node) {
+        final List<E> list = new ArrayList<E>(4);
 
         while (node != null) {
             list.add(0, node);
@@ -357,8 +355,8 @@ public class Hierarchy extends Object implements Serializable {
     }
 
     /** used by TreeModel */
-    public Hierarchical getSyntheticRoot() {
-        return syntheticRoot_;
+    public E getSyntheticRoot() {
+        return null;
     }
 
     public static class Collector extends Object implements Visitor {
@@ -469,7 +467,7 @@ public class Hierarchy extends Object implements Serializable {
         return target;
     }
 
-    public boolean isDescendantOf(final Hierarchical parent, final Hierarchical child) {
+    public boolean isDescendantOf(final E parent, final E child) {
         return ((!child.equals(parent)) && getPath(child).contains(parent));
     }
 
@@ -507,9 +505,9 @@ public class Hierarchy extends Object implements Serializable {
     /**
      * @return  a sub tree of a given node.
      */
-    public Hierarchy getSubHierarchy(final Hierarchical subRoot) {
+    public Hierarchy<E> getSubHierarchy(final E subRoot) {
         if (!contains(subRoot)) {
-            return new Hierarchy();
+            return new Hierarchy<E>();
         } else {
             return new Hierarchy(((Hierarchy.Collector) visitDown(new Hierarchy.Collector(), subRoot)).getList());
         }
@@ -518,14 +516,14 @@ public class Hierarchy extends Object implements Serializable {
     /**
      * @return  all leaf nodes of this hierarchy (nodes having no child nodes in <b>this</b> hierarchy).
      */
-    public Set<? extends Hierarchical> getLeafNodes() {
-        final Set<Hierarchical> leafs = new HashSet<Hierarchical>();
+    public Set<? extends E> getLeafNodes() {
+        final Set<E> leafs = new HashSet<E>();
 
         if (isEmpty()) {
             return Collections.emptySet();
         }
 
-        for (Entry<Hierarchical, Set<Hierarchical>> entry : children_.entrySet()) {
+        for (Entry<E, Set<E>> entry : children_.entrySet()) {
             if (entry.getValue() == null) {
                 leafs.add(entry.getKey());
             }
