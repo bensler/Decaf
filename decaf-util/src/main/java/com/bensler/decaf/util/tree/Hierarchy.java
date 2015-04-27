@@ -197,7 +197,7 @@ public class Hierarchy<E extends Hierarchical> extends Object implements Seriali
             final int refHash = ref.hashCode();
 
             for (E node : children_.keySet()) {
-                if ((node == null) || ((refHash == node.hashCode()) && node.equals(ref))) {
+                if ((node != null) && (refHash == node.hashCode()) && node.equals(ref)) {
                     return node;
                 }
             }
