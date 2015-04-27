@@ -24,6 +24,7 @@ public class TreeModel extends DefaultTreeModel {
   /** default-filter, which accepts all nodes.
    */
   public    final static TreeFilter ACCEPT_ALL = new TreeFilter() {
+    @Override
     public boolean accept(Viewable node) { return true; };
   };
 
@@ -70,6 +71,7 @@ public class TreeModel extends DefaultTreeModel {
 
   /** @see javax.swing.tree.TreeModel#getRoot()
    */
+  @Override
   public Hierarchical getRoot() {
     final Hierarchical dataRoot = data_.getRoot();
 
@@ -78,6 +80,7 @@ public class TreeModel extends DefaultTreeModel {
 
   /** @see javax.swing.tree.TreeModel#getChild(java.lang.Object, int)
    */
+  @Override
   public Object getChild(Object parent, int index) {
     return getChildren((Hierarchical)parent).get(index);
   }
@@ -85,58 +88,47 @@ public class TreeModel extends DefaultTreeModel {
   @SuppressWarnings("unchecked")
   protected List<Hierarchical> getChildren(Hierarchical parent) {
     if (!parentChildArrayMap_.containsKey(parent)) {
-      if ((parent == null) || (!data_.contains(parent))) {
-        return Collections.emptyList();
-      }
-      final Set<? extends Hierarchical> sourceChildren = getChildrenFromSource(parent);
+      final Set<? extends Hierarchical> sourceChildren = data_.getChildren((parent == invisibleRoot) ? null : parent);
       final List<Hierarchical>          list           = new ArrayList<Hierarchical>();
 
-      if (sourceChildren == null) {
-        return Collections.emptyList();
-      }
-      filter(sourceChildren, list);
-      if (!list.isEmpty()) {
-        Collections.sort((List)list, view_);
-      }
-      parentChildArrayMap_.put(
-        parent, list
-      );
+      Collections.sort((List)filter(sourceChildren, list), view_);
+      parentChildArrayMap_.put(parent, list);
     }
     return parentChildArrayMap_.get(parent);
   }
 
-  protected Set<? extends Hierarchical> getChildrenFromSource(Hierarchical parent) {
-    return data_.getChildren(parent);
-  }
-
-
-  protected void filter(Set<? extends Hierarchical> source, List<Hierarchical> target) {
+  protected List<Hierarchical> filter(Set<? extends Hierarchical> source, List<Hierarchical> target) {
     for (Hierarchical child : source) {
       if (filter_.accept((Viewable)child)) {
         target.add(child);
       }
     }
+    return target;
   }
 
   /** @see javax.swing.tree.TreeModel#getChildCount(java.lang.Object)
    */
+  @Override
   public int getChildCount(Object parent) {
-    return getChildren((Hierarchical)parent).size();
+    return data_.getChildCount((parent == invisibleRoot) ? null : (Hierarchical)parent);
   }
 
   /** @see javax.swing.tree.TreeModel#isLeaf(java.lang.Object)
    */
+  @Override
   public boolean isLeaf(Object node) {
     return (getChildCount(node) < 1);
   }
 
   /** @see javax.swing.tree.TreeModel#valueForPathChanged(javax.swing.tree.TreePath, java.lang.Object)
    */
+  @Override
   public void valueForPathChanged(TreePath path, Object newValue) {}
 
 
   /** @see javax.swing.tree.TreeModel#getIndexOfChild(java.lang.Object, java.lang.Object)
    */
+  @Override
   public int getIndexOfChild(Object parent, Object child) {
     return getChildren((Hierarchical)parent).indexOf(child);
   }

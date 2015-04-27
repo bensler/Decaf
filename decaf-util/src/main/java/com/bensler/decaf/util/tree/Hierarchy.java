@@ -292,11 +292,21 @@ public class Hierarchy<E extends Hierarchical> extends Object implements Seriali
     }
 
     /** used by TreeModel */
-    @SuppressWarnings("unchecked")
     public Set<? extends E> getChildren(final Hierarchical member) {
         final Set<E> children = children_.get(member);
 
-        return ((children != null) ? new HashSet<E>(children) : Collections.EMPTY_SET);
+        return ((children != null) ? new HashSet<E>(children) : Collections.<E>emptySet());
+    }
+
+    /** used by TreeModel */
+    public int getChildCount(final E parent) {
+      if (children_.containsKey(parent)) {
+        final Set<E> children = children_.get(parent);
+
+        return ((children == null) ? 0 : children.size());
+      } else {
+        throw new IllegalArgumentException(parent + " is not member of this Hierarchy");
+      }
     }
 
     @SuppressWarnings("unchecked")
