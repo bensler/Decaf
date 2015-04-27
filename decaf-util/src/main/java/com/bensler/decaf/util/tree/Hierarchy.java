@@ -12,7 +12,6 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import com.bensler.decaf.util.CanceledException;
-import com.bensler.decaf.util.NamedImpl;
 
 /**
  * A Hierarchy forms a tree out of a collection of Hierarchicals. A synthetic root is used if there are more than one
@@ -44,7 +43,7 @@ public class Hierarchy<E extends Hierarchical> extends Object implements Seriali
 
         final Set<? extends E> members = hierarchy.getMembers();
 
-        members.remove(hierarchy.getSyntheticRoot());
+        members.remove(null);
         addAll(members);
         if (hierarchy.hasSyntheticRoot() && (!hasSyntheticRoot())) {
             root_ = null;
@@ -329,28 +328,16 @@ public class Hierarchy<E extends Hierarchical> extends Object implements Seriali
         return (root_ == null);
     }
 
-    public static final class Root extends NamedImpl implements Hierarchical {
-
-        public Root() {
-            super("SynthRoot");
-        }
-
-        @Override
-        public Hierarchical getParent() {
-            return null;
-        }
-
-    }
-
     /** used by TreeModel */
     public List<E> getPath(E node) {
         final List<E> list = new ArrayList<E>(4);
 
-        while (node != null) {
+        if (children_.keySet().contains(node)) {
+          while (node != null) {
             list.add(0, node);
             node = resolveParent(node);
+          }
         }
-
         return list;
     }
 
