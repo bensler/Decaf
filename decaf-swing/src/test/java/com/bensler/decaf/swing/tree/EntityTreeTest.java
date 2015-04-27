@@ -56,18 +56,20 @@ public class EntityTreeTest {
     dialog.setVisible(true);
   }
 
-  private Hierarchy createData() {
-    final Hierarchy tree = new Hierarchy();
+  private Hierarchy<Folder> createData() {
+    final Hierarchy<Folder> tree = new Hierarchy<>();
 
     final Folder root = new Folder(null, "/");
     final Folder home = new Folder(root, "home");
     final Folder bobsHome = new Folder(home, "bob");
     final Folder alicesHome = new Folder(home, "alice");
+    final Folder winRoot = new Folder(null, "C:");
 
     tree.add(alicesHome);
     tree.add(bobsHome);
     tree.add(home);
     tree.add(root);
+    tree.add(winRoot);
     return tree;
   }
 

@@ -3,7 +3,7 @@ package com.bensler.decaf.swing.view;
 import javax.swing.JLabel;
 
 import com.bensler.decaf.swing.Viewable;
-import com.bensler.decaf.util.tree.Hierarchy;
+import com.bensler.decaf.swing.tree.TreeModel;
 
 public class DefaultNullPolicy extends Object implements NullPolicy {
 
@@ -15,7 +15,7 @@ public class DefaultNullPolicy extends Object implements NullPolicy {
     if (
       (value == null)
       || (!(value instanceof Viewable))
-      || (value instanceof Hierarchy.Root)
+      || (value instanceof TreeModel.Root)
     ) {
       NULL_RENDERER.render(null, " ", label);
       return;
