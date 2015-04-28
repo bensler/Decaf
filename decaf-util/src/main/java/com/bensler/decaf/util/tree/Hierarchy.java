@@ -17,27 +17,27 @@ import com.bensler.decaf.util.CanceledException;
  * A Hierarchy forms a tree out of a collection of Hierarchicals. A synthetic root is used if there are more than one
  * nodes with an unknown or null parent ref. This is to make sure that there is always exactly one root.
  */
-public class Hierarchy<E extends Hierarchical> extends Object implements Serializable {
+public class Hierarchy<H extends Hierarchical> extends Object implements Serializable {
 
     /**
      * Keys are all members of this hierarchy, values are the child nodes. <code>null</code> values are leaf nodes,
      * <code>null</code> key is used as super root if there is no single root of all members.
      */
-    private final Map<E, Set<E>> children_;
+    private final Map<H, Set<H>> children_;
 
     /**
      * root node of this hierarchy.
      */
-    private E root_;
+    private H root_;
 
     /**
      * used by TreeModel *
      * Creates a new Hierarchy using all nodes of the given hierarchy.
      */
-    public Hierarchy(final Hierarchy<E> hierarchy) {
+    public Hierarchy(final Hierarchy<H> hierarchy) {
         this();
 
-        final Set<? extends E> members = hierarchy.getMembers();
+        final Set<? extends H> members = hierarchy.getMembers();
 
         members.remove(null);
         addAll(members);
@@ -51,7 +51,7 @@ public class Hierarchy<E extends Hierarchical> extends Object implements Seriali
      * Creates a new empty hierarchy.
      */
     public Hierarchy() {
-        children_ = new HashMap<E, Set<E>>();
+        children_ = new HashMap<H, Set<H>>();
         root_ = null;
         children_.put(root_, null);
     }
@@ -59,7 +59,7 @@ public class Hierarchy<E extends Hierarchical> extends Object implements Seriali
     /**
      * Creates a new hierarchy using the given members.
      */
-    public Hierarchy(final Collection<? extends E> members) {
+    public Hierarchy(final Collection<? extends H> members) {
         this();
         addAll(members);
     }
@@ -72,9 +72,9 @@ public class Hierarchy<E extends Hierarchical> extends Object implements Seriali
      * unbound nodes. They will be no longer children of synthetic root. If synthetic root loses all of its children the
      * new node is the new root. If synthetic root keeps one child that will become the new root.
      */
-    public void add(final E newNode) {
-        final E oldNode;
-        final E parent;
+    public void add(final H newNode) {
+        final H oldNode;
+        final H parent;
 
         if (newNode == null) {
             throw new IllegalArgumentException("Cannot add null to a Hierarchy.");
@@ -106,7 +106,7 @@ public class Hierarchy<E extends Hierarchical> extends Object implements Seriali
             if (parent != null) {
                 addChild(newNode, parent);
                 if (hasSyntheticRoot()) {
-                    final Set<E> rootChildren = tryMoveSynthRootChildren(newNode);
+                    final Set<H> rootChildren = tryMoveSynthRootChildren(newNode);
 
                     if (rootChildren.size() == 1) {
                         root_ = rootChildren.iterator().next();
@@ -128,7 +128,7 @@ public class Hierarchy<E extends Hierarchical> extends Object implements Seriali
                 } else {
 
                     // synthetic root
-                    final Set<E> rootChildren = tryMoveSynthRootChildren(newNode);
+                    final Set<H> rootChildren = tryMoveSynthRootChildren(newNode);
 
                     if (rootChildren.isEmpty()) {
                         children_.remove(null);
@@ -146,10 +146,10 @@ public class Hierarchy<E extends Hierarchical> extends Object implements Seriali
      *
      * @return  all (synth) roots children unable to move to the (im)possible new parent.
      */
-    private Set<E> tryMoveSynthRootChildren(final E possibleParent) {
-        final Set<E> rootChildren = getChildren_(root_);
+    private Set<H> tryMoveSynthRootChildren(final H possibleParent) {
+        final Set<H> rootChildren = getChildren_(root_);
 
-        for (E node : getChildren(root_)) {
+        for (H node : getChildren(root_)) {
             if (possibleParent.equals(resolveParent(node))) {
                 addChild(node, possibleParent);
                 rootChildren.remove(node);
@@ -162,17 +162,17 @@ public class Hierarchy<E extends Hierarchical> extends Object implements Seriali
     /**
      * Adds all collection member to this hierarchy.
      */
-    public void addAll(final Collection<? extends E> nodes) {
-        for (E newNode : nodes) {
+    public void addAll(final Collection<? extends H> nodes) {
+        for (H newNode : nodes) {
             add(newNode);
         }
     }
 
-    private void addChild(final E child, final E parent) {
-        Set<E> children = children_.get(parent);
+    private void addChild(final H child, final H parent) {
+        Set<H> children = children_.get(parent);
 
         if (children == null) {
-            children = new HashSet<E>(2);
+            children = new HashSet<H>(2);
             children_.put(parent, children);
         } else {
             children.remove(child);
@@ -180,18 +180,18 @@ public class Hierarchy<E extends Hierarchical> extends Object implements Seriali
         children.add(child);
     }
 
-    private E resolveParent(final E node) {
-        final E parent = resolve(node.getParent());
+    private H resolveParent(final H node) {
+        final H parent = resolve(node.getParent());
 
         return ((node == null) ? null : (((parent == null) && hasSyntheticRoot()) ? null : parent));
     }
 
     /** used by TreeModel */
-    public E resolve(final Object ref) {
+    public H resolve(final Object ref) {
         if (ref != null) {
             final int refHash = ref.hashCode();
 
-            for (E node : children_.keySet()) {
+            for (H node : children_.keySet()) {
                 if ((node != null) && (refHash == node.hashCode()) && node.equals(ref)) {
                     return node;
                 }
@@ -204,7 +204,7 @@ public class Hierarchy<E extends Hierarchical> extends Object implements Seriali
      * used by TreeModel *
      * @return the root node of this Hierarchy or <code>null</code> if there is no single root of all members..
      */
-    public E getRoot() {
+    public H getRoot() {
         return root_;
     }
 
@@ -226,8 +226,8 @@ public class Hierarchy<E extends Hierarchical> extends Object implements Seriali
     /**
      * @return  all members of this Hierarchy in undefined order
      */
-    public Set<E> getMembers() {
-        final Set<E> result = (isEmpty() ? (Set<E>) Collections.<E>emptySet() : new HashSet<E>(children_.keySet()));
+    public Set<H> getMembers() {
+        final Set<H> result = (isEmpty() ? (Set<H>) Collections.<H>emptySet() : new HashSet<H>(children_.keySet()));
 
         if (hasSyntheticRoot()) {
             result.remove(getRoot());
@@ -237,7 +237,7 @@ public class Hierarchy<E extends Hierarchical> extends Object implements Seriali
     }
 
     /** used by TreeModel */
-    public void remove(final E member, final boolean recursive) {
+    public void remove(final H member, final boolean recursive) {
         final boolean synthRoot = hasSyntheticRoot();
 
         if (synthRoot && (member == null)) {
@@ -250,14 +250,14 @@ public class Hierarchy<E extends Hierarchical> extends Object implements Seriali
 
             // handle children
             if (recursive) {
-                for (E child : getChildren(member)) {
+                for (H child : getChildren(member)) {
                     remove(child, recursive);
                 }
             } else {
-                final Set<? extends E> children = getChildren(member);
+                final Set<? extends H> children = getChildren(member);
 
                 if (!children.isEmpty()) {
-                    for (E child : children) {
+                    for (H child : children) {
                         addChild(child, null);
                     }
                     if (!synthRoot) {
@@ -276,8 +276,8 @@ public class Hierarchy<E extends Hierarchical> extends Object implements Seriali
                     children_.put(null, null);
                 }
             } else {
-                final E parent = resolveParent(member);
-                final Set<E> siblings = getChildren_(parent);
+                final H parent = resolveParent(member);
+                final Set<H> siblings = getChildren_(parent);
 
                 siblings.remove(member);
                 if (siblings.isEmpty()) {
@@ -288,16 +288,16 @@ public class Hierarchy<E extends Hierarchical> extends Object implements Seriali
     }
 
     /** used by TreeModel */
-    public Set<? extends E> getChildren(final E member) {
-        final Set<E> children = children_.get(member);
+    public Set<H> getChildren(final H member) {
+        final Set<H> children = children_.get(member);
 
-        return ((children != null) ? new HashSet<E>(children) : Collections.<E>emptySet());
+        return ((children != null) ? new HashSet<H>(children) : Collections.<H>emptySet());
     }
 
     /** used by TreeModel */
-    public int getChildCount(final E parent) {
+    public int getChildCount(final H parent) {
       if (children_.containsKey(parent)) {
-        final Set<E> children = children_.get(parent);
+        final Set<H> children = children_.get(parent);
 
         return ((children == null) ? 0 : children.size());
       } else {
@@ -306,8 +306,8 @@ public class Hierarchy<E extends Hierarchical> extends Object implements Seriali
     }
 
     @SuppressWarnings("unchecked")
-    private Set<E> getChildren_(final E member) {
-        final Set<E> children = children_.get(member);
+    private Set<H> getChildren_(final H member) {
+        final Set<H> children = children_.get(member);
 
         return ((children != null) ? children : Collections.EMPTY_SET);
     }
@@ -316,7 +316,7 @@ public class Hierarchy<E extends Hierarchical> extends Object implements Seriali
      * used by TreeModel *
      * Checks if a node is a member of this hierarchy.
      */
-    public boolean contains(final E node) {
+    public boolean contains(final H node) {
         return children_.containsKey(node);
     }
 
@@ -335,8 +335,8 @@ public class Hierarchy<E extends Hierarchical> extends Object implements Seriali
     }
 
     /** used by TreeModel */
-    public List<E> getPath(E node) {
-        final List<E> list = new ArrayList<E>(4);
+    public List<H> getPath(H node) {
+        final List<H> list = new ArrayList<H>(4);
 
         if (children_.keySet().contains(node)) {
           while (node != null) {
@@ -383,7 +383,7 @@ public class Hierarchy<E extends Hierarchical> extends Object implements Seriali
     /**
      * Visits the whole forest beginning with the root nodes.
      */
-    public <V extends Visitor<E>> V visitAll(final V visitor) {
+    public <V extends Visitor<H>> V visitAll(final V visitor) {
         visitDown(visitor, getRoot());
         return visitor;
     }
@@ -391,8 +391,8 @@ public class Hierarchy<E extends Hierarchical> extends Object implements Seriali
     /**
      * visits the subtree having member as root.
      */
-    public <V extends Visitor<E>> V visitUp(final V visitor, final E startNode) {
-        final E member = resolve(startNode);
+    public <V extends Visitor<H>> V visitUp(final V visitor, final H startNode) {
+        final H member = resolve(startNode);
 
         if (member != null) {
             try {
@@ -408,8 +408,8 @@ public class Hierarchy<E extends Hierarchical> extends Object implements Seriali
     /**
      * visits the subtree having member as root.
      */
-    public  <V extends Visitor<E>> V visitDown(final V visitor, final E startNode) {
-        final E member = resolve(startNode);
+    public  <V extends Visitor<H>> V visitDown(final V visitor, final H startNode) {
+        final H member = resolve(startNode);
 
         if (member != null) {
             try {
@@ -423,7 +423,7 @@ public class Hierarchy<E extends Hierarchical> extends Object implements Seriali
         }
     }
 
-    private void visitUp_(final Visitor<E> visitor, final E member) throws CanceledException {
+    private void visitUp_(final Visitor<H> visitor, final H member) throws CanceledException {
         if (member != null) {
             visitor.visit(member);
             if (member.getParent() != null) {
@@ -432,15 +432,15 @@ public class Hierarchy<E extends Hierarchical> extends Object implements Seriali
         }
     }
 
-    private void visitDown_(final Visitor<E> visitor, final E member) throws CanceledException {
+    private void visitDown_(final Visitor<H> visitor, final H member) throws CanceledException {
         visitor.visit(member);
-        for (E child : getChildren_(member)) {
+        for (H child : getChildren_(member)) {
             visitDown_(visitor, child);
         }
     }
 
-    public List<E> getPath(final E hierarchical, final List<E> target) {
-        final E parent = resolve(hierarchical.getParent());
+    public List<H> getPath(final H hierarchical, final List<H> target) {
+        final H parent = resolve(hierarchical.getParent());
 
         target.add(0, hierarchical);
         if (parent == null) {
@@ -454,7 +454,7 @@ public class Hierarchy<E extends Hierarchical> extends Object implements Seriali
         return target;
     }
 
-    public boolean isDescendantOf(final E parent, final E child) {
+    public boolean isDescendantOf(final H parent, final H child) {
         return ((!child.equals(parent)) && getPath(child).contains(parent));
     }
 
@@ -492,25 +492,25 @@ public class Hierarchy<E extends Hierarchical> extends Object implements Seriali
     /**
      * @return  a sub tree of a given node.
      */
-    public Hierarchy<E> getSubHierarchy(final E subRoot) {
+    public Hierarchy<H> getSubHierarchy(final H subRoot) {
         if (!contains(subRoot)) {
             return new Hierarchy<>();
         } else {
-            return new Hierarchy<>(visitDown(new Collector<E>(), subRoot).getList());
+            return new Hierarchy<>(visitDown(new Collector<H>(), subRoot).getList());
         }
     }
 
     /**
      * @return  all leaf nodes of this hierarchy (nodes having no child nodes in <b>this</b> hierarchy).
      */
-    public Set<E> getLeafNodes() {
+    public Set<H> getLeafNodes() {
 
         if (isEmpty()) {
             return Collections.emptySet();
         } else {
-          final Set<E> leafs = new HashSet<E>();
+          final Set<H> leafs = new HashSet<H>();
 
-          for (Entry<E, Set<E>> entry : children_.entrySet()) {
+          for (Entry<H, Set<H>> entry : children_.entrySet()) {
               if (entry.getValue() == null) {
                   leafs.add(entry.getKey());
               }
@@ -522,11 +522,11 @@ public class Hierarchy<E extends Hierarchical> extends Object implements Seriali
     /**
      * @return  all members of this hierarchy in depth first order.
      */
-    public List<E> getMembersList() {
-        return visitAll(new Collector<E>()).getList();
+    public List<H> getMembersList() {
+        return visitAll(new Collector<H>()).getList();
     }
 
-    public boolean isLeaf(final E node) {
+    public boolean isLeaf(final H node) {
         return ((!isEmpty()) && children_.containsKey(node) && (children_.get(node) == null));
     }
 
