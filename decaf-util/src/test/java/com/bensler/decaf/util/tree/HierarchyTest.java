@@ -10,7 +10,7 @@ public class HierarchyTest {
 
     @Test
     public void testIsEmpty() {
-        final Hierarchy tree = new Hierarchy();
+        final Hierarchy<Folder> tree = new Hierarchy<Folder>();
 
         final Folder root = new Folder(null, "/");
         final Folder home = new Folder(root, "home");

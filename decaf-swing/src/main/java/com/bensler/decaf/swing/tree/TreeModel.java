@@ -13,6 +13,7 @@ import javax.swing.tree.TreePath;
 
 import com.bensler.decaf.swing.Viewable;
 import com.bensler.decaf.swing.view.PropertyView;
+import com.bensler.decaf.util.NamedImpl;
 import com.bensler.decaf.util.tree.Hierarchical;
 import com.bensler.decaf.util.tree.Hierarchy;
 
@@ -23,23 +24,39 @@ public class TreeModel extends DefaultTreeModel {
   /** default-filter, which accepts all nodes.
    */
   public    final static TreeFilter ACCEPT_ALL = new TreeFilter() {
+    @Override
     public boolean accept(Viewable node) { return true; };
   };
-  
-  /** Provides a method called when a TreeModel stops or starts using a synthetic 
-   * root. A EntityTree should listen on these events to switch its tree components 
+
+  /** Provides a method called when a TreeModel stops or starts using a synthetic
+   * root. A EntityTree should listen on these events to switch its tree components
    * root visible flag. */
   public interface RootChangeListener extends EventListener {
-    
+
     /** Called when a TreeModel stops or starts using a synthetic root. */
     public void rootChanged(TreeModel source);
-    
+
   }
-  
+
+  public static final class Root extends NamedImpl implements Hierarchical, Viewable {
+
+      public Root() {
+          super("SynthRoot");
+      }
+
+      @Override
+      public Hierarchical getParent() {
+          return null;
+      }
+
+  }
+
+  public static final Hierarchical invisibleRoot = new Root();
+
   protected final         Map<Hierarchical, List<Hierarchical>> parentChildArrayMap_;
 
   private                 PropertyView                          view_;
-  
+
   protected               Hierarchy                             data_;
 
   private                 TreeFilter                            filter_;
@@ -51,15 +68,19 @@ public class TreeModel extends DefaultTreeModel {
     filter_ = ACCEPT_ALL;
     view_ = view;
   }
-  
+
   /** @see javax.swing.tree.TreeModel#getRoot()
    */
+  @Override
   public Hierarchical getRoot() {
-    return data_.getRoot();
+    final Hierarchical dataRoot = data_.getRoot();
+
+    return ((dataRoot == null) ? invisibleRoot : dataRoot);
   }
-  
+
   /** @see javax.swing.tree.TreeModel#getChild(java.lang.Object, int)
    */
+  @Override
   public Object getChild(Object parent, int index) {
     return getChildren((Hierarchical)parent).get(index);
   }
@@ -67,70 +88,59 @@ public class TreeModel extends DefaultTreeModel {
   @SuppressWarnings("unchecked")
   protected List<Hierarchical> getChildren(Hierarchical parent) {
     if (!parentChildArrayMap_.containsKey(parent)) {
-      if ((parent == null) || (!data_.contains(parent))) {
-        return Collections.emptyList();
-      }
-      final Set<? extends Hierarchical> sourceChildren = getChildrenFromSource(parent);
+      final Set<? extends Hierarchical> sourceChildren = data_.getChildren((parent == invisibleRoot) ? null : parent);
       final List<Hierarchical>          list           = new ArrayList<Hierarchical>();
-      
-      if (sourceChildren == null) {
-        return Collections.emptyList();
-      }
-      filter(sourceChildren, list);
-      if (!list.isEmpty()) {
-        Collections.sort((List)list, view_);
-      }
-      parentChildArrayMap_.put(
-        parent, list
-      );
+
+      Collections.sort((List)filter(sourceChildren, list), view_);
+      parentChildArrayMap_.put(parent, list);
     }
     return parentChildArrayMap_.get(parent);
   }
-  
-  protected Set<? extends Hierarchical> getChildrenFromSource(Hierarchical parent) {
-    return data_.getChildren(parent);
-  }
-  
 
-  protected void filter(Set<? extends Hierarchical> source, List<Hierarchical> target) {
+  protected List<Hierarchical> filter(Set<? extends Hierarchical> source, List<Hierarchical> target) {
     for (Hierarchical child : source) {
       if (filter_.accept((Viewable)child)) {
         target.add(child);
       }
     }
+    return target;
   }
-  
+
   /** @see javax.swing.tree.TreeModel#getChildCount(java.lang.Object)
    */
+  @Override
   public int getChildCount(Object parent) {
-    return getChildren((Hierarchical)parent).size();
+    return data_.getChildCount((parent == invisibleRoot) ? null : (Hierarchical)parent);
   }
 
   /** @see javax.swing.tree.TreeModel#isLeaf(java.lang.Object)
    */
+  @Override
   public boolean isLeaf(Object node) {
     return (getChildCount(node) < 1);
   }
 
   /** @see javax.swing.tree.TreeModel#valueForPathChanged(javax.swing.tree.TreePath, java.lang.Object)
    */
+  @Override
   public void valueForPathChanged(TreePath path, Object newValue) {}
 
 
   /** @see javax.swing.tree.TreeModel#getIndexOfChild(java.lang.Object, java.lang.Object)
    */
+  @Override
   public int getIndexOfChild(Object parent, Object child) {
     return getChildren((Hierarchical)parent).indexOf(child);
   }
 
   void setData(Hierarchy data) {
     final boolean hadSynthRoot  = data_.hasSyntheticRoot();
-    
+
     data_ = new Hierarchy(data);
     fireStructureChanged(getRoot());
     fireRootMayHaveChanged(hadSynthRoot);
   }
-  
+
   public boolean showRoot() {
     return (!data_.hasSyntheticRoot());
   }
@@ -138,13 +148,13 @@ public class TreeModel extends DefaultTreeModel {
   public void addNode(Hierarchical node) {
     final Hierarchical  newParent     = data_.resolve(node.getParent());
     final boolean       synthRoot     = data_.hasSyntheticRoot();
-    
+
     if (data_.contains(node)) {
       int oldIndex  = getChildren(newParent).indexOf(node);
-      
+
       data_.remove(node, false);
       fireTreeNodesRemoved(
-        this, getPath(newParent), 
+        this, getPath(newParent),
         new int[] {oldIndex}, null
       );
     }
@@ -154,23 +164,23 @@ public class TreeModel extends DefaultTreeModel {
       fireStructureChanged(node);
     } else {
       fireTreeNodesInserted(
-        this, getPath(newParent), 
+        this, getPath(newParent),
         new int[] {getChildren(newParent).indexOf(node)}, null
       );
     }
     fireRootMayHaveChanged(synthRoot);
   }
-  
+
   private void fireRootMayHaveChanged(boolean hadSynthRoot) {
     if (hadSynthRoot ^ data_.hasSyntheticRoot()) {
       for (RootChangeListener listener : listenerList.getListeners(RootChangeListener.class)) {
         listener.rootChanged(this);
-      } 
+      }
     }
   }
 
   /** Updates a node in this TreeModel. If the TreeModel does not already contain an equal node it is
-   * simply added. */ 
+   * simply added. */
   public void updateNode(Hierarchical node) {
     if (!contains(node)) {
       addNode(node);
@@ -181,7 +191,7 @@ public class TreeModel extends DefaultTreeModel {
             int            oldIndex      = -1;
       final Hierarchical   parent        = data_.resolve(node.getParent());
             int            newIndex      = -1;
-      
+
       if (oldParent != null) {
         // oldNode is root
         oldIndex = getIndexOfChild(oldParent, node);
@@ -189,7 +199,7 @@ public class TreeModel extends DefaultTreeModel {
       data_.add(node);
       parentChildArrayMap_.remove(parent);
       if (parent != null) {
-        // node will be root 
+        // node will be root
         newIndex = getIndexOfChild(parent, node);
       }
       if ((oldIndex < 0) && (newIndex < 0)) {
@@ -212,59 +222,59 @@ public class TreeModel extends DefaultTreeModel {
       }
     }
   }
- 
+
   public void removeNode(Hierarchical node) {
 		final Hierarchical  hierarchical  = data_.resolve(node);
 		final Hierarchical  parent        = data_.resolve(hierarchical.getParent());
     final int           index;
-    
+
 		if (data_.contains(node)) {
       index = getChildren(parent).indexOf(node);
       data_.remove(node, true);
       parentChildArrayMap_.remove(parent);
       fireTreeNodesRemoved(
-        this, getPath(parent), 
+        this, getPath(parent),
         new int[] {index}, null
       );
     }
   }
-  
+
   public void fireNodeChanged(Hierarchical element) {
     fireTreeNodesChanged(getPath(element));
   }
-  
+
   public void fireTreeNodesChanged(Object[] path) {
     fireTreeNodesChanged(this, path, null, null);
   }
-  
+
   public List<Hierarchical> getPath(Hierarchical node, boolean removeSyntheticRoot) {
     final List<Hierarchical> path = getPath_(node);
-    
+
     if (removeSyntheticRoot) {
-      path.remove(data_.getSyntheticRoot());
+      path.remove(invisibleRoot);
     }
     return path;
   }
-  
+
   private List<Hierarchical> getPath_(Hierarchical node) {
     final List<Hierarchical> list = data_.getPath(node);
 
     if (list.isEmpty()) {
-      list.add(0, data_.getSyntheticRoot());
+      list.add(0, invisibleRoot);
     }
     return list;
   }
-  
+
   public Hierarchical[] getPath(Hierarchical node) {
     final List<Hierarchical> path = getPath_(node);
-    
+
     return path.toArray(new Hierarchical[path.size()]);
   }
-  
+
   public TreePath getTreePath(Hierarchical node) {
     return new TreePath(getPath(data_.resolve(node)));
   }
-  
+
   void fireStructureChanged(Hierarchical node) {
     parentChildArrayMap_.clear();
     fireTreeStructureChanged(this, getPath(node), null, null);
@@ -272,7 +282,7 @@ public class TreeModel extends DefaultTreeModel {
 
   void removeTree(Hierarchical subject) {
     final Hierarchical    parent = data_.resolve(subject.getParent());
-    
+
     data_.remove(subject, true);
     if (parent != null) {
       fireStructureChanged(parent);
@@ -284,7 +294,7 @@ public class TreeModel extends DefaultTreeModel {
   void remove(Hierarchical subject) {
     final Hierarchical    parent      = data_.resolve(subject.getParent());
     final boolean         hadChildren = !data_.getChildren(subject).isEmpty();
-    
+
     data_.remove(subject, false);
     if (parent != null) {
       fireStructureChanged(parent);
@@ -302,7 +312,7 @@ public class TreeModel extends DefaultTreeModel {
     filter_ = ((newFilter == null) ? ACCEPT_ALL : newFilter);
     fireFilterChanged();
   }
-  
+
   public TreeFilter getFilter() {
     return filter_;
   }
@@ -343,5 +353,5 @@ public class TreeModel extends DefaultTreeModel {
   public Set<? extends Hierarchical> getMembers() {
     return data_.getMembers();
   }
- 
+
 }
