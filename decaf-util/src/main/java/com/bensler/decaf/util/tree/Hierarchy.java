@@ -20,12 +20,8 @@ import com.bensler.decaf.util.CanceledException;
 public class Hierarchy<E extends Hierarchical> extends Object implements Serializable {
 
     /**
-     * this node is used as root if the members does not form a hierarchy (if there would be more than one root).
-     */
-//    private static final Hierarchical syntheticRoot_ = new Root();
-
-    /**
-     * Keys are all members of this hierarchy, values are the child nodes. null values are used for leaf nodes.
+     * Keys are all members of this hierarchy, values are the child nodes. <code>null</code> values are leaf nodes,
+     * <code>null</code> key is used as super root if there is no single root of all members.
      */
     private final Map<E, Set<E>> children_;
 
@@ -206,9 +202,9 @@ public class Hierarchy<E extends Hierarchical> extends Object implements Seriali
 
     /**
      * used by TreeModel *
-     * @return  the root node of this Hierarchy.
+     * @return the root node of this Hierarchy or <code>null</code> if there is no single root of all members..
      */
-    public Hierarchical getRoot() {
+    public E getRoot() {
         return root_;
     }
 
@@ -292,7 +288,7 @@ public class Hierarchy<E extends Hierarchical> extends Object implements Seriali
     }
 
     /** used by TreeModel */
-    public Set<? extends E> getChildren(final Hierarchical member) {
+    public Set<? extends E> getChildren(final E member) {
         final Set<E> children = children_.get(member);
 
         return ((children != null) ? new HashSet<E>(children) : Collections.<E>emptySet());
@@ -310,7 +306,7 @@ public class Hierarchy<E extends Hierarchical> extends Object implements Seriali
     }
 
     @SuppressWarnings("unchecked")
-    private Set<E> getChildren_(final Hierarchical member) {
+    private Set<E> getChildren_(final E member) {
         final Set<E> children = children_.get(member);
 
         return ((children != null) ? children : Collections.EMPTY_SET);
@@ -320,7 +316,7 @@ public class Hierarchy<E extends Hierarchical> extends Object implements Seriali
      * used by TreeModel *
      * Checks if a node is a member of this hierarchy.
      */
-    public boolean contains(final Hierarchical node) {
+    public boolean contains(final E node) {
         return children_.containsKey(node);
     }
 
@@ -351,33 +347,28 @@ public class Hierarchy<E extends Hierarchical> extends Object implements Seriali
         return list;
     }
 
-    /** used by TreeModel */
-    public E getSyntheticRoot() {
-        return null;
-    }
+    public static class Collector<E> extends Object implements Visitor<E> {
 
-    public static class Collector extends Object implements Visitor {
-
-        private final List<Hierarchical> collector_;
+        private final List<E> collector_;
 
         public Collector() {
-            collector_ = new ArrayList<Hierarchical>();
+            collector_ = new ArrayList<>();
         }
 
         @Override
-        public void visit(final Hierarchical member) {
+        public void visit(final E member) {
             collector_.add(member);
         }
 
-        public List<? extends Hierarchical> getList() {
+        public List<E> getList() {
             return collector_;
         }
 
     }
 
-    public static interface Visitor {
+    public static interface Visitor<E> {
 
-        void visit(Hierarchical member) throws CanceledException;
+        void visit(E member) throws CanceledException;
 
     }
 
@@ -392,7 +383,7 @@ public class Hierarchy<E extends Hierarchical> extends Object implements Seriali
     /**
      * Visits the whole forest beginning with the root nodes.
      */
-    public Hierarchy.Visitor visitAll(final Hierarchy.Visitor visitor) {
+    public <V extends Visitor<E>> V visitAll(final V visitor) {
         visitDown(visitor, getRoot());
         return visitor;
     }
@@ -400,14 +391,13 @@ public class Hierarchy<E extends Hierarchical> extends Object implements Seriali
     /**
      * visits the subtree having member as root.
      */
-    public Hierarchy.Visitor visitUp(final Hierarchy.Visitor visitor, final Hierarchical startNode) {
-        final Hierarchical member = resolve(startNode);
+    public <V extends Visitor<E>> V visitUp(final V visitor, final E startNode) {
+        final E member = resolve(startNode);
 
         if (member != null) {
             try {
                 visitUp_(visitor, member);
-            } catch (CanceledException ce) { /* flow control */
-            }
+            } catch (CanceledException ce) { /* flow control */ }
 
             return visitor;
         } else {
@@ -418,8 +408,8 @@ public class Hierarchy<E extends Hierarchical> extends Object implements Seriali
     /**
      * visits the subtree having member as root.
      */
-    public Hierarchy.Visitor visitDown(final Hierarchy.Visitor visitor, final Hierarchical startNode) {
-        final Hierarchical member = resolve(startNode);
+    public  <V extends Visitor<E>> V visitDown(final V visitor, final E startNode) {
+        final E member = resolve(startNode);
 
         if (member != null) {
             try {
@@ -433,7 +423,7 @@ public class Hierarchy<E extends Hierarchical> extends Object implements Seriali
         }
     }
 
-    private void visitUp_(final Hierarchy.Visitor visitor, final Hierarchical member) throws CanceledException {
+    private void visitUp_(final Visitor<E> visitor, final E member) throws CanceledException {
         if (member != null) {
             visitor.visit(member);
             if (member.getParent() != null) {
@@ -442,15 +432,15 @@ public class Hierarchy<E extends Hierarchical> extends Object implements Seriali
         }
     }
 
-    private void visitDown_(final Hierarchy.Visitor visitor, final Hierarchical member) throws CanceledException {
+    private void visitDown_(final Visitor<E> visitor, final E member) throws CanceledException {
         visitor.visit(member);
-        for (Hierarchical child : getChildren_(member)) {
+        for (E child : getChildren_(member)) {
             visitDown_(visitor, child);
         }
     }
 
-    public List<Hierarchical> getPath(final Hierarchical hierarchical, final List<Hierarchical> target) {
-        final Hierarchical parent = resolve(hierarchical.getParent());
+    public List<E> getPath(final E hierarchical, final List<E> target) {
+        final E parent = resolve(hierarchical.getParent());
 
         target.add(0, hierarchical);
         if (parent == null) {
@@ -504,39 +494,39 @@ public class Hierarchy<E extends Hierarchical> extends Object implements Seriali
      */
     public Hierarchy<E> getSubHierarchy(final E subRoot) {
         if (!contains(subRoot)) {
-            return new Hierarchy<E>();
+            return new Hierarchy<>();
         } else {
-            return new Hierarchy(((Hierarchy.Collector) visitDown(new Hierarchy.Collector(), subRoot)).getList());
+            return new Hierarchy<>(visitDown(new Collector<E>(), subRoot).getList());
         }
     }
 
     /**
      * @return  all leaf nodes of this hierarchy (nodes having no child nodes in <b>this</b> hierarchy).
      */
-    public Set<? extends E> getLeafNodes() {
-        final Set<E> leafs = new HashSet<E>();
+    public Set<E> getLeafNodes() {
 
         if (isEmpty()) {
             return Collections.emptySet();
-        }
+        } else {
+          final Set<E> leafs = new HashSet<E>();
 
-        for (Entry<E, Set<E>> entry : children_.entrySet()) {
-            if (entry.getValue() == null) {
-                leafs.add(entry.getKey());
-            }
+          for (Entry<E, Set<E>> entry : children_.entrySet()) {
+              if (entry.getValue() == null) {
+                  leafs.add(entry.getKey());
+              }
+          }
+          return leafs;
         }
-
-        return leafs;
     }
 
     /**
      * @return  all members of this hierarchy in depth first order.
      */
-    public List<? extends Hierarchical> getMembersList() {
-        return ((Hierarchy.Collector) visitAll(new Hierarchy.Collector())).getList();
+    public List<E> getMembersList() {
+        return visitAll(new Collector<E>()).getList();
     }
 
-    public boolean isLeaf(final Hierarchical node) {
+    public boolean isLeaf(final E node) {
         return ((!isEmpty()) && children_.containsKey(node) && (children_.get(node) == null));
     }
 
