@@ -1,14 +1,27 @@
 package com.bensler.decaf.swing.tree;
 
+import java.awt.AWTException;
+import java.awt.Component;
 import java.awt.Dialog.ModalityType;
+import java.awt.GraphicsDevice;
+import java.awt.GraphicsEnvironment;
+import java.awt.Point;
+import java.awt.Robot;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
+import javax.imageio.ImageIO;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
@@ -35,11 +48,10 @@ public class EntityTreeTest {
       "3dlu, f:p:g, 3dlu",
       "3dlu, f:p:g, 3dlu, p, 3dlu"
     ));
-    final EntityTree tree;
+    final EntityTree tree = new EntityTree(new PropertyViewImpl("name"));
     final JButton button;
 
     dialog.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-    tree = new EntityTree(new PropertyViewImpl("name"));
     tree.setData(createData());
     panel.add(new JScrollPane(tree.getComponent()), new CellConstraints(2, 2));
     button = new JButton("Close");
@@ -53,7 +65,47 @@ public class EntityTreeTest {
 
     dialog.setContentPane(panel);
     dialog.setSize(500, 800);
+    dialog.setLocation(500,  100);
+    new ScheduledThreadPoolExecutor(1).schedule(new Runnable() {
+      @Override
+      public void run() {
+        SwingUtilities.invokeLater(new Runnable() {
+          @Override
+          public void run() {
+             Point location;
+
+
+            GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+            GraphicsDevice[] defaultScreen = ge.getScreenDevices();
+
+            GraphicsDevice dialogDevice = dialog.getGraphicsConfiguration().getDevice();
+
+            getScreenShot(dialog.getContentPane());
+            location = dialog.getLocationOnScreen();
+            try {
+              new Robot().mouseMove((int)location.getX(), (int)location.getY());
+            } catch (AWTException e) {
+              // TODO Auto-generated catch block
+              e.printStackTrace();
+            }
+          }
+        });
+      }
+    }, 10, TimeUnit.SECONDS);
     dialog.setVisible(true);
+  }
+
+  void getScreenShot(Component component) {
+    try {
+      final BufferedImage image = new BufferedImage(
+        component.getWidth(), component.getHeight(),
+        BufferedImage.TYPE_INT_RGB
+      );
+      component.paint( image.getGraphics() );
+      ImageIO.write(image, "PNG", new File("/home/tbensler/tmp/test.png"));
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    };
   }
 
   private Hierarchy<Folder> createData() {
