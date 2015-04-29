@@ -1,6 +1,7 @@
 package com.bensler.decaf.swing.tree;
 
 import java.awt.AWTException;
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dialog.ModalityType;
 import java.awt.Dimension;
@@ -111,7 +112,7 @@ public class EntityTreeTest {
       component.paint(actual.getGraphics());
       diffImage = diffImage(image, actual);
       if (diffImage != null) {
-        ImageIO.write(diffImage, "PNG", new File("/home/tbensler/tmp/test.png"));
+        ImageIO.write(diffImage, "PNG", new File(System.getProperty("user.dir"), "test.png"));
       }
     } catch (IOException e) {
       throw new RuntimeException(e);
@@ -133,12 +134,15 @@ public class EntityTreeTest {
     boolean diff = false;
 
     for (int x = 0; x < width; x++) {
-      for (int y = 0; y < width; y++) {
+      for (int y = 0; y < height; y++) {
         final int rgb1 = img1.getRGB(x, y);
         final int rgb2 = img2.getRGB(x, y);
 
         if (rgb1 != rgb2) {
+          diffImg.setRGB(x, y, Color.RED.getRGB());
           diff = true;
+        } else {
+          diffImg.setRGB(x, y, Color.WHITE.getRGB());
         }
       }
     }
