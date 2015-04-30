@@ -87,7 +87,6 @@ public class Hierarchy<H extends Hierarchical> extends Object implements Seriali
             final Hierarchical newParent = resolveParent(newNode);
 
             if (((oldParent != null) && oldParent.equals(newParent)) || ((oldParent == null) && (newParent == null))) {
-
                 // at the same position -> only replace the value
                 children_.put(newNode, children_.get(oldNode));
                 return;
@@ -459,52 +458,20 @@ public class Hierarchy<H extends Hierarchical> extends Object implements Seriali
     }
 
     /**
-     * Checks if a Set of nodes is a single path within this hierarchy.
-     *
-     * @param  nodes  List of Referrable objects
-     */
-    public boolean isSinglePath(final Set nodes) {
-        throw new UnsupportedOperationException("to be implemented");
-// List lastPath = null;
-//
-// for (Iterator iter = nodes.iterator(); iter.hasNext();) {
-// final List currentPath = getPath((Entity)iter.next());
-//
-// if (lastPath == null) {
-// lastPath = currentPath;
-// } else {
-// if (lastPath.size() < currentPath.size()) {
-// if (currentPath.containsAll(lastPath)) {
-// lastPath = currentPath;
-// } else {
-// return false;
-// }
-// } else {
-// if (!lastPath.containsAll(currentPath)) {
-// return false;
-// }
-// }
-// }
-// }
-// return true;
-    }
-
-    /**
      * @return  a sub tree of a given node.
      */
     public Hierarchy<H> getSubHierarchy(final H subRoot) {
-        if (!contains(subRoot)) {
-            return new Hierarchy<>();
-        } else {
-            return new Hierarchy<>(visitDown(new Collector<H>(), subRoot).getList());
-        }
+      if (contains(subRoot)) {
+        return new Hierarchy<>(visitDown(new Collector<H>(), subRoot).getList());
+      } else {
+        throw new IllegalArgumentException(subRoot + " is not member of this Hierarchy");
+      }
     }
 
     /**
      * @return  all leaf nodes of this hierarchy (nodes having no child nodes in <b>this</b> hierarchy).
      */
     public Set<H> getLeafNodes() {
-
         if (isEmpty()) {
             return Collections.emptySet();
         } else {

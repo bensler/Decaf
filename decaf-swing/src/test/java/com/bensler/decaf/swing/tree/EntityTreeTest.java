@@ -4,26 +4,18 @@ import java.awt.AWTException;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dialog.ModalityType;
-import java.awt.Dimension;
-import java.awt.Point;
-import java.awt.Robot;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.InputEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.concurrent.ScheduledThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
 
 import javax.imageio.ImageIO;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
@@ -38,9 +30,12 @@ import com.jgoodies.looks.plastic.theme.DesertYellow;
 
 public class EntityTreeTest {
 
-  public EntityTreeTest() throws UnsupportedLookAndFeelException {
+  private final Bender bender_;
+
+  public EntityTreeTest() throws UnsupportedLookAndFeelException, AWTException {
     Plastic3DLookAndFeel.setCurrentTheme(new DesertYellow());
     UIManager.setLookAndFeel(new Plastic3DLookAndFeel());
+    bender_ = new Bender();
   }
 
   @Test
@@ -55,7 +50,7 @@ public class EntityTreeTest {
 
     dialog.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
     tree.setData(createData());
-    panel.add(new JScrollPane(tree.getComponent()), new CellConstraints(2, 2));
+    panel.add(tree.getScrollPane(), new CellConstraints(2, 2));
     button = new JButton("Close");
     button.addActionListener(new ActionListener() {
       @Override
@@ -68,32 +63,10 @@ public class EntityTreeTest {
     dialog.setContentPane(panel);
     dialog.setSize(500, 800);
     dialog.setLocation(500,  100);
+    tree.expandCollapseAll(true);
 
-    new ScheduledThreadPoolExecutor(1).schedule(new Runnable() {
-      @Override
-      public void run() {
-        SwingUtilities.invokeLater(new Runnable() {
-          @Override
-          public void run() {
-            getScreenShot(dialog.getContentPane(), "test_1.png");
-            try {
-              final Point location = button.getLocationOnScreen();
-              final Dimension size = button.getSize();
-              final Robot bender = new Robot();
+    bender_.clickOn(1000, button);
 
-              bender.mouseMove(
-                (int)(location.getX() + (size.getWidth() / 2)),
-                (int)(location.getY() + (size.getHeight() / 2))
-              );
-              bender.mousePress(InputEvent.BUTTON1_DOWN_MASK);
-              bender.mouseRelease(InputEvent.BUTTON1_DOWN_MASK);
-            } catch (AWTException e) {
-              throw new RuntimeException(e);
-            }
-          }
-        });
-      }
-    }, 10, TimeUnit.SECONDS);
     dialog.setVisible(true);
   }
 
