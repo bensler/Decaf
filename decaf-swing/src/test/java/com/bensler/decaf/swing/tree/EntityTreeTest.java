@@ -11,8 +11,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.InputEvent;
 import java.awt.image.BufferedImage;
-import java.awt.image.ColorModel;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -88,8 +88,7 @@ public class EntityTreeTest {
               bender.mousePress(InputEvent.BUTTON1_DOWN_MASK);
               bender.mouseRelease(InputEvent.BUTTON1_DOWN_MASK);
             } catch (AWTException e) {
-              // TODO Auto-generated catch block
-              e.printStackTrace();
+              throw new RuntimeException(e);
             }
           }
         });
@@ -112,7 +111,14 @@ public class EntityTreeTest {
       component.paint(actual.getGraphics());
       diffImage = diffImage(image, actual);
       if (diffImage != null) {
-        ImageIO.write(diffImage, "PNG", new File(System.getProperty("user.dir"), "test.png"));
+        final AnimatedGifEncoder encoder = new AnimatedGifEncoder();
+
+        encoder.setDelay(700);   // ms
+        encoder.start(new FileOutputStream(new File(System.getProperty("user.dir"), "test.gif")));
+        encoder.addFrame(image);
+        encoder.addFrame(diffImage);
+        encoder.addFrame(actual);
+        encoder.finish();
       }
     } catch (IOException e) {
       throw new RuntimeException(e);
@@ -120,8 +126,6 @@ public class EntityTreeTest {
   }
 
   private BufferedImage diffImage(BufferedImage img1, BufferedImage img2) {
-    final ColorModel cm1 = img1.getColorModel();
-    final ColorModel cm2 = img2.getColorModel();
     final int width1 = img1.getWidth();
     final int width2 = img2.getWidth();
     final int height1 = img1.getHeight();
@@ -142,7 +146,7 @@ public class EntityTreeTest {
           diffImg.setRGB(x, y, Color.RED.getRGB());
           diff = true;
         } else {
-          diffImg.setRGB(x, y, Color.WHITE.getRGB());
+          diffImg.setRGB(x, y, rgb1);
         }
       }
     }
