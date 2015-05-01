@@ -13,22 +13,18 @@ import javax.swing.Icon;
  */
 public class OverlayIcon extends Object implements Icon {
 
-  private   final         LinkedHashMap<Icon, Alignment>   iconAlignmentMap_;
+  private   final         LinkedHashMap<Icon, Alignment2D>   iconAlignmentMap_;
+  private   final         Icon                             baseIcon_;
 
   private                 int             width_;
   private                 int             height_;
 
-  public OverlayIcon() {
-    iconAlignmentMap_ = new LinkedHashMap<Icon, Alignment>();
-    width_ = -1;
-    height_ = -1;
+  public OverlayIcon(Icon baseIcon) {
+    iconAlignmentMap_ = new LinkedHashMap<Icon, Alignment2D>();
+    addIcon(baseIcon_ = baseIcon, Alignment2D.C);
   }
 
-  public void addIcon(Icon icon) {
-    addIcon(icon, Alignment.C);
-  }
-
-  public void addIcon(Icon icon, Alignment alignment) {
+  public void addIcon(Icon icon, Alignment2D alignment) {
     if (iconAlignmentMap_.containsKey(icon)) {
       iconAlignmentMap_.remove(icon);
     }
@@ -39,14 +35,13 @@ public class OverlayIcon extends Object implements Icon {
 
   public void clear() {
     iconAlignmentMap_.clear();
-    width_ = -1;
-    height_ = -1;
+    addIcon(baseIcon_, Alignment2D.C);
   }
 
   @Override
   public void paintIcon(Component c, Graphics g, int x, int y) {
     for (Icon icon : iconAlignmentMap_.keySet()) {
-      final Alignment alignment = iconAlignmentMap_.get(icon);
+      final Alignment2D alignment = iconAlignmentMap_.get(icon);
 
       icon.paintIcon(
         c, g,
@@ -78,7 +73,7 @@ public class OverlayIcon extends Object implements Icon {
     return height_;
   }
 
-  private static enum Orientation {
+  private static enum Alignment {
 
     LO(0),
     C (1),
@@ -86,7 +81,7 @@ public class OverlayIcon extends Object implements Icon {
 
     private final int x_;
 
-    private Orientation(int x) {
+    private Alignment(int x) {
       x_ = x;
     }
 
@@ -96,23 +91,23 @@ public class OverlayIcon extends Object implements Icon {
 
   }
 
-  public static enum Alignment {
+  public static enum Alignment2D {
 
-    N (Orientation.C,  Orientation.LO),
-    NE(Orientation.HI, Orientation.LO),
-    E (Orientation.HI, Orientation.C),
-    SE(Orientation.HI, Orientation.HI),
-    S (Orientation.C,  Orientation.HI),
-    SW(Orientation.LO, Orientation.HI),
-    W (Orientation.LO, Orientation.C),
-    NW(Orientation.LO, Orientation.LO),
+    N (Alignment.C,  Alignment.LO),
+    NE(Alignment.HI, Alignment.LO),
+    E (Alignment.HI, Alignment.C),
+    SE(Alignment.HI, Alignment.HI),
+    S (Alignment.C,  Alignment.HI),
+    SW(Alignment.LO, Alignment.HI),
+    W (Alignment.LO, Alignment.C),
+    NW(Alignment.LO, Alignment.LO),
 
-    C (Orientation.C,  Orientation.C);
+    C (Alignment.C,  Alignment.C);
 
-    private final Orientation horiz_;
-    private final Orientation vert_;
+    private final Alignment horiz_;
+    private final Alignment vert_;
 
-    private Alignment(Orientation horiz, Orientation vert) {
+    private Alignment2D(Alignment horiz, Alignment vert) {
       horiz_ = horiz;
       vert_ = vert;
     }
