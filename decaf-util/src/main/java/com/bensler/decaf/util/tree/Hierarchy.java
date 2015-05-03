@@ -371,12 +371,26 @@ public class Hierarchy<H extends Hierarchical> extends Object implements Seriali
 
     }
 
-    /**
-     * @see  java.lang.Object#toString()
-     */
     @Override
     public String toString() {
-        return String.valueOf(getRoot()) + getMembers();
+        return String.valueOf(getRoot()) + children_;
+    }
+
+    @Override
+    public int hashCode() {
+      return children_.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+      if (obj == this) {
+        return true;
+      } else {
+        return (
+          (obj != null) && (obj instanceof Hierarchy)
+          && children_.equals(((Hierarchy<?>) obj).children_)
+        );
+      }
     }
 
     /**
