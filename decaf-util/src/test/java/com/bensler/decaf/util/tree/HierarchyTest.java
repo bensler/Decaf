@@ -1,6 +1,7 @@
 package com.bensler.decaf.util.tree;
 
 import java.util.Arrays;
+
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -32,6 +33,32 @@ public class HierarchyTest {
         Assert.assertTrue("syntheticRoot should be root", tree.hasSyntheticRoot());
         Assert.assertEquals("there should be [/, alice, bob] under synth root", 3, tree.getChildren(tree.getRoot()).size());
         Assert.assertEquals("leaf nodes should be [/, alice, bob]", Sets.newHashSet(root, bobsHome,alicesHome), tree.getLeafNodes());
+    }
+
+    @Test
+    public void equalsAndHashcode() {
+      final Hierarchy<Folder> tree1 = new Hierarchy<Folder>();
+      final Hierarchy<Folder> tree2 = new Hierarchy<Folder>();
+
+      final Folder root = new Folder(null, "/");
+      final Folder home = new Folder(root, "home");
+      final Folder bobsHome = new Folder(home, "bob");
+      final Folder alicesHome = new Folder(home, "alice");
+
+      tree1.add(alicesHome);
+      tree1.add(bobsHome);
+      tree1.add(root);
+      tree1.add(home);
+
+      Assert.assertFalse("tree1 and tree2 should NOT be equal", tree1.equals(tree2));
+      tree2.add(home);
+      Assert.assertFalse("tree1 and tree2 should NOT be equal", tree1.equals(tree2));
+      tree2.add(bobsHome);
+      Assert.assertFalse("tree1 and tree2 should NOT be equal", tree1.equals(tree2));
+      tree2.add(alicesHome);
+      Assert.assertFalse("tree1 and tree2 should NOT be equal", tree1.equals(tree2));
+      tree2.add(root);
+      Assert.assertTrue("tree1 and tree2 should be equal", tree1.equals(tree2) & tree2.equals(tree1));
     }
 
 }
