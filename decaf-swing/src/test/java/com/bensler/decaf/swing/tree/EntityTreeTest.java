@@ -1,17 +1,9 @@
 package com.bensler.decaf.swing.tree;
 
 import java.awt.AWTException;
-import java.awt.Color;
-import java.awt.Component;
 import java.awt.Dialog.ModalityType;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-
-import javax.imageio.ImageIO;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
@@ -65,65 +57,10 @@ public class EntityTreeTest {
     dialog.setLocation(500,  100);
     tree.expandCollapseAll(true);
 
+    bender_.assertEqualsVisually(700, dialog.getContentPane(), "test_2.png");
     bender_.clickOn(1000, button);
 
     dialog.setVisible(true);
-  }
-
-  void getScreenShot(Component component, String expected) {
-    try {
-      final BufferedImage image = ImageIO.read(ImageIO.createImageInputStream(
-        ClassLoader.getSystemResourceAsStream(expected)
-      ));
-      final BufferedImage actual = new BufferedImage(
-        component.getWidth(), component.getHeight(),
-        BufferedImage.TYPE_INT_RGB
-      );
-      final BufferedImage diffImage;
-
-      component.paint(actual.getGraphics());
-      diffImage = diffImage(image, actual);
-      if (diffImage != null) {
-        final AnimatedGifEncoder encoder = new AnimatedGifEncoder();
-
-        encoder.setDelay(700);   // ms
-        encoder.start(new FileOutputStream(new File(System.getProperty("user.dir"), "test.gif")));
-        encoder.addFrame(image);
-        encoder.addFrame(diffImage);
-        encoder.addFrame(actual);
-        encoder.finish();
-      }
-    } catch (IOException e) {
-      throw new RuntimeException(e);
-    };
-  }
-
-  private BufferedImage diffImage(BufferedImage img1, BufferedImage img2) {
-    final int width1 = img1.getWidth();
-    final int width2 = img2.getWidth();
-    final int height1 = img1.getHeight();
-    final int height2 = img2.getHeight();
-    final int width = Math.max(width1, width2);
-    final int height = Math.max(height1, height2);
-    final BufferedImage diffImg = new BufferedImage(
-      width, height, BufferedImage.TYPE_INT_RGB
-    );
-    boolean diff = false;
-
-    for (int x = 0; x < width; x++) {
-      for (int y = 0; y < height; y++) {
-        final int rgb1 = img1.getRGB(x, y);
-        final int rgb2 = img2.getRGB(x, y);
-
-        if (rgb1 != rgb2) {
-          diffImg.setRGB(x, y, Color.RED.getRGB());
-          diff = true;
-        } else {
-          diffImg.setRGB(x, y, rgb1);
-        }
-      }
-    }
-    return (diff ? diffImg : null);
   }
 
   private Hierarchy<Folder> createData() {
