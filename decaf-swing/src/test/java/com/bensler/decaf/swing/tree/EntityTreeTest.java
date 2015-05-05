@@ -4,6 +4,7 @@ import java.awt.AWTException;
 import java.awt.Dialog.ModalityType;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
@@ -32,7 +33,7 @@ public class EntityTreeTest {
 
   @Test
   public void interactive() throws Exception {
-    final JDialog dialog = new JDialog(null, "Decaf Swing Test", ModalityType.APPLICATION_MODAL);
+    final JDialog dialog = new JDialog(null, "Decaf Swing Test", ModalityType.MODELESS);
     final JPanel panel = new JPanel(new FormLayout(
       "3dlu, f:p:g, 3dlu",
       "3dlu, f:p:g, 3dlu, p, 3dlu"
@@ -61,6 +62,8 @@ public class EntityTreeTest {
     bender_.clickOn(1000, button);
 
     dialog.setVisible(true);
+
+    bender_.waitForAllTasksCompleted();
   }
 
   private Hierarchy<Folder> createData() {

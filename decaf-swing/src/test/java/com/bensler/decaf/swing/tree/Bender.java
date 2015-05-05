@@ -11,30 +11,46 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.ReentrantLock;
 
 import javax.imageio.ImageIO;
 import javax.swing.SwingUtilities;
 
+import org.junit.ComparisonFailure;
+
 /** A {@link Robot}. */
 public class Bender extends Object {
+
+  private final ReentrantLock lock_;
+  private final Condition allTasksDone_;
+  private final List<ComparisonFailure> failures_;
+  private int taskCount_;
 
   private final ScheduledThreadPoolExecutor scheduler_;
   private final Robot robot_;
 
   public Bender() throws AWTException {
+    lock_ = new ReentrantLock();
+    allTasksDone_ = lock_.newCondition();
+    failures_ = new ArrayList<>();
+    taskCount_ = 0;
     scheduler_ = new ScheduledThreadPoolExecutor(1);
     robot_ = new Robot();
   }
 
-  public void runDelayedInEventDispatcher(int milliseconds, final Runnable runnable) {
+  private void runDelayedInEventDispatcher(int milliseconds, final Runnable runnable) {
     scheduler_.schedule(new Runnable() {
       @Override
       public void run() {
-        SwingUtilities.invokeLater(runnable);
+        SwingUtilities.invokeLater(new RunnableWrapper(runnable));
       }
     }, milliseconds, TimeUnit.MILLISECONDS);
+    taskCount_++;
   }
 
   public void clickOn(int milliseconds, final Component component) {
@@ -43,6 +59,42 @@ public class Bender extends Object {
 
   public void assertEqualsVisually(int milliseconds, final Component component, final String imgResourceName) {
     runDelayedInEventDispatcher(milliseconds, new Snapshooter(component, imgResourceName));
+  }
+
+  public void waitForAllTasksCompleted() {
+    lock_.lock();
+    try {
+      allTasksDone_.awaitUninterruptibly();
+      if (!failures_.isEmpty()) {
+        throw failures_.get(0);
+      }
+    } finally {
+      lock_.unlock();
+    }
+  }
+
+  final class RunnableWrapper implements Runnable {
+
+    private final Runnable delegate_;
+
+    RunnableWrapper(Runnable delegate) {
+      delegate_ = delegate;
+    }
+
+    @Override
+    public void run() {
+      lock_.lock();
+      try {
+        delegate_.run();
+      } finally {
+        taskCount_--;
+        if (taskCount_ <= 0) {
+          allTasksDone_.signalAll();
+        }
+        lock_.unlock();
+      }
+    }
+
   }
 
   final class Clicker implements Runnable {
@@ -70,76 +122,76 @@ public class Bender extends Object {
 
   final class Snapshooter implements Runnable {
 
-    private final Component target_;
-    private final String imgResourceName_;
+    private final Component component_;
+    private final String expectedImgName_;
 
-    public Snapshooter(Component clickTarget, String imgResourceName) {
-      target_ = clickTarget;
-      imgResourceName_ = imgResourceName;
+    public Snapshooter(Component target, String expectedImgName) {
+      component_ = target;
+      expectedImgName_ = expectedImgName;
     }
 
     @Override
     public void run() {
-      getScreenShot(target_, imgResourceName_);
+      try {
+        final BufferedImage image = ImageIO.read(ImageIO.createImageInputStream(
+          ClassLoader.getSystemResourceAsStream(expectedImgName_)
+        ));
+        final BufferedImage actual = new BufferedImage(
+          component_.getWidth(), component_.getHeight(),
+          BufferedImage.TYPE_INT_RGB
+        );
+        final BufferedImage diffImage;
+
+        component_.paint(actual.getGraphics());
+        diffImage = diffImage(image, actual);
+        if (diffImage != null) {
+          final AnimatedGifEncoder encoder = new AnimatedGifEncoder();
+          final String failedDiff = "failed." + expectedImgName_ + ".gif";
+
+          encoder.setDelay(700);   // ms
+          encoder.start(new FileOutputStream(new File(System.getProperty("user.dir"), failedDiff)));
+          encoder.addFrame(image);
+          encoder.addFrame(diffImage);
+          encoder.addFrame(actual);
+          encoder.finish();
+          failures_.add(new ComparisonFailure(
+            "screenshot is different from expected appearance", expectedImgName_, failedDiff)
+          );
+        }
+      } catch (IOException e) {
+        throw new RuntimeException(e);
+      };
     }
 
-  }
+    private BufferedImage diffImage(BufferedImage img1, BufferedImage img2) {
+      final int width1 = img1.getWidth();
+      final int width2 = img2.getWidth();
+      final int height1 = img1.getHeight();
+      final int height2 = img2.getHeight();
+      final int width = Math.max(width1, width2);
+      final int height = Math.max(height1, height2);
+      final BufferedImage diffImg = new BufferedImage(
+          width, height, BufferedImage.TYPE_INT_ARGB
+          );
+      final Color warningColor = new Color(255, 128, 128, 255);
+      boolean diff = false;
 
-  void getScreenShot(Component component, String expected) {
-    try {
-      final BufferedImage image = ImageIO.read(ImageIO.createImageInputStream(
-        ClassLoader.getSystemResourceAsStream(expected)
-      ));
-      final BufferedImage actual = new BufferedImage(
-        component.getWidth(), component.getHeight(),
-        BufferedImage.TYPE_INT_RGB
-      );
-      final BufferedImage diffImage;
+      for (int x = 0; x < width; x++) {
+        for (int y = 0; y < height; y++) {
+          final int rgb1 = img1.getRGB(x, y);
+          final int rgb2 = img2.getRGB(x, y);
 
-      component.paint(actual.getGraphics());
-      diffImage = diffImage(image, actual);
-      if (diffImage != null) {
-        final AnimatedGifEncoder encoder = new AnimatedGifEncoder();
-
-        encoder.setDelay(700);   // ms
-        encoder.start(new FileOutputStream(new File(System.getProperty("user.dir"), "test.gif")));
-        encoder.addFrame(image);
-        encoder.addFrame(diffImage);
-        encoder.addFrame(actual);
-        encoder.finish();
-      }
-    } catch (IOException e) {
-      throw new RuntimeException(e);
-    };
-  }
-
-  private BufferedImage diffImage(BufferedImage img1, BufferedImage img2) {
-    final int width1 = img1.getWidth();
-    final int width2 = img2.getWidth();
-    final int height1 = img1.getHeight();
-    final int height2 = img2.getHeight();
-    final int width = Math.max(width1, width2);
-    final int height = Math.max(height1, height2);
-    final BufferedImage diffImg = new BufferedImage(
-      width, height, BufferedImage.TYPE_INT_ARGB
-    );
-    final Color warningColor = new Color(255, 128, 128, 255);
-    boolean diff = false;
-
-    for (int x = 0; x < width; x++) {
-      for (int y = 0; y < height; y++) {
-        final int rgb1 = img1.getRGB(x, y);
-        final int rgb2 = img2.getRGB(x, y);
-
-        if (rgb1 != rgb2) {
-          diffImg.setRGB(x, y, warningColor.getRGB());
-          diff = true;
-        } else {
-          diffImg.setRGB(x, y, rgb1);
+          if (rgb1 != rgb2) {
+            diffImg.setRGB(x, y, warningColor.getRGB());
+            diff = true;
+          } else {
+            diffImg.setRGB(x, y, rgb1);
+          }
         }
       }
+      return (diff ? diffImg : null);
     }
-    return (diff ? diffImg : null);
+
   }
 
 }
