@@ -11,6 +11,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
@@ -21,11 +22,13 @@ import java.util.concurrent.locks.ReentrantLock;
 import javax.imageio.ImageIO;
 import javax.swing.SwingUtilities;
 
+import org.junit.Assert;
 import org.junit.ComparisonFailure;
 
 /** A {@link Robot}. */
 public class Bender extends Object {
 
+  private final File reportsDir_;
   private final ReentrantLock lock_;
   private final Condition allTasksDone_;
   private final List<ComparisonFailure> failures_;
@@ -34,7 +37,9 @@ public class Bender extends Object {
   private final ScheduledThreadPoolExecutor scheduler_;
   private final Robot robot_;
 
-  public Bender() throws AWTException {
+  public Bender(String reportsDirRelativePath) throws AWTException {
+    reportsDir_ = new File(System.getProperty("user.dir"), reportsDirRelativePath);
+    reportsDir_.mkdirs();
     lock_ = new ReentrantLock();
     allTasksDone_ = lock_.newCondition();
     failures_ = new ArrayList<>();
@@ -133,29 +138,32 @@ public class Bender extends Object {
     @Override
     public void run() {
       try {
-        final BufferedImage image = ImageIO.read(ImageIO.createImageInputStream(
-          ClassLoader.getSystemResourceAsStream(expectedImgName_)
-        ));
+        final InputStream is = ClassLoader.getSystemResourceAsStream(expectedImgName_);
+        final BufferedImage image;
         final BufferedImage actual = new BufferedImage(
           component_.getWidth(), component_.getHeight(),
           BufferedImage.TYPE_INT_RGB
         );
         final BufferedImage diffImage;
 
+        Assert.assertNotNull("missing resource " + expectedImgName_, is);
+        image = ImageIO.read(ImageIO.createImageInputStream(is));
         component_.paint(actual.getGraphics());
         diffImage = diffImage(image, actual);
         if (diffImage != null) {
           final AnimatedGifEncoder encoder = new AnimatedGifEncoder();
-          final String failedDiff = "failed." + expectedImgName_ + ".gif";
+          final String failedGifName = expectedImgName_ + ".failed.gif";
+          final String actualFileName = expectedImgName_ + ".actual.png";
 
           encoder.setDelay(700);   // ms
-          encoder.start(new FileOutputStream(new File(System.getProperty("user.dir"), failedDiff)));
+          encoder.start(new FileOutputStream(new File(reportsDir_, failedGifName)));
           encoder.addFrame(image);
           encoder.addFrame(diffImage);
           encoder.addFrame(actual);
           encoder.finish();
+          ImageIO.write(actual, "png", new File(reportsDir_, actualFileName));
           failures_.add(new ComparisonFailure(
-            "screenshot is different from expected appearance", expectedImgName_, failedDiff)
+            "screenshot is different from expected appearance", expectedImgName_, failedGifName)
           );
         }
       } catch (IOException e) {

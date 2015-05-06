@@ -4,7 +4,6 @@ import java.awt.AWTException;
 import java.awt.Dialog.ModalityType;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
@@ -28,7 +27,7 @@ public class EntityTreeTest {
   public EntityTreeTest() throws UnsupportedLookAndFeelException, AWTException {
     Plastic3DLookAndFeel.setCurrentTheme(new DesertYellow());
     UIManager.setLookAndFeel(new Plastic3DLookAndFeel());
-    bender_ = new Bender();
+    bender_ = new Bender("target/surefire-reports");
   }
 
   @Test
@@ -58,7 +57,9 @@ public class EntityTreeTest {
     dialog.setLocation(500,  100);
     tree.expandCollapseAll(true);
 
-    bender_.assertEqualsVisually(700, dialog.getContentPane(), "test_2.png");
+//    InputStream resourceAsStream = getClass().getResourceAsStream("EntityTreeTest.interactive.png");
+//    Thread.currentThread().getStackTrace()[2].getMethodName();
+    bender_.assertEqualsVisually(700, dialog.getContentPane(), "com/bensler/decaf/swing/tree/EntityTreeTest.interactive.png");
     bender_.clickOn(1000, button);
 
     dialog.setVisible(true);
