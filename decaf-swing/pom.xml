@@ -24,6 +24,12 @@
       <scope>test</scope>
     </dependency>
     <dependency>
+      <groupId>com.bensler</groupId>
+      <artifactId>decaf-testutil</artifactId>
+      <version>0.1</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
       <groupId>com.jgoodies</groupId>
       <artifactId>jgoodies-looks</artifactId>
       <version>2.8.0</version>

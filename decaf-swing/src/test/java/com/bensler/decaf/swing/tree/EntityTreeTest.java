@@ -4,6 +4,7 @@ import java.awt.AWTException;
 import java.awt.Dialog.ModalityType;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
@@ -14,6 +15,8 @@ import javax.swing.UnsupportedLookAndFeelException;
 import org.junit.Test;
 
 import com.bensler.decaf.swing.view.PropertyViewImpl;
+import com.bensler.decaf.testutil.Bender;
+import com.bensler.decaf.testutil.TestImageSample;
 import com.bensler.decaf.util.tree.Hierarchy;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
@@ -57,9 +60,7 @@ public class EntityTreeTest {
     dialog.setLocation(500,  100);
     tree.expandCollapseAll(true);
 
-//    InputStream resourceAsStream = getClass().getResourceAsStream("EntityTreeTest.interactive.png");
-//    Thread.currentThread().getStackTrace()[2].getMethodName();
-    bender_.assertEqualsVisually(700, dialog.getContentPane(), "com/bensler/decaf/swing/tree/EntityTreeTest.interactive.png");
+    bender_.assertEqualsVisually(700, dialog.getContentPane(), new TestImageSample());
     bender_.clickOn(1000, button);
 
     dialog.setVisible(true);

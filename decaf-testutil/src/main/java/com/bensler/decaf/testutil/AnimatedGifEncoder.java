@@ -1,4 +1,4 @@
-package com.bensler.decaf.swing.tree;
+package com.bensler.decaf.testutil;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
