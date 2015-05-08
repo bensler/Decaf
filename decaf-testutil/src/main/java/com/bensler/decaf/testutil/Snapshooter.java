@@ -71,14 +71,16 @@ class Snapshooter implements Runnable {
 
     for (int x = 0; x < width; x++) {
       for (int y = 0; y < height; y++) {
-        final int rgb1 = img1.getRGB(x, y);
-        final int rgb2 = img2.getRGB(x, y);
-
-        if (rgb1 != rgb2) {
+        final int rgb1;
+        
+        if (
+          ((x < width1) && (x < width2) && (y < height1) && (y < height2))
+          && ((rgb1 = img1.getRGB(x, y)) == img2.getRGB(x, y))
+        ) {
+          diffImg.setRGB(x, y, rgb1);
+        } else {
           diffImg.setRGB(x, y, warningColor.getRGB());
           diff = true;
-        } else {
-          diffImg.setRGB(x, y, rgb1);
         }
       }
     }
