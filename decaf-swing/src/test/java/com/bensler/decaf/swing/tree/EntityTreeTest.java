@@ -60,8 +60,8 @@ public class EntityTreeTest {
     dialog.setLocation(500,  100);
     tree.expandCollapseAll(true);
 
-    bender_.assertEqualsVisually(700, dialog.getContentPane(), new TestImageSample());
-    bender_.clickOn(1000, button);
+    bender_.assertEqualsVisually(dialog.getContentPane(), new TestImageSample());
+    bender_.clickOn(button);
 
     dialog.setVisible(true);
 

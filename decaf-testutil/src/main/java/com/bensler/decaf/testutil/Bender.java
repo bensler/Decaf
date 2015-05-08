@@ -21,6 +21,8 @@ import org.junit.ComparisonFailure;
 /** A {@link Robot}. */
 public class Bender extends Object {
 
+  public final static int DELAY = 300;
+
   private final File reportsDir_;
   private final ReentrantLock lock_;
   private final Condition allTasksDone_;
@@ -29,6 +31,8 @@ public class Bender extends Object {
 
   private final ScheduledThreadPoolExecutor scheduler_;
   private final Robot robot_;
+
+  private int currentDelay_;
 
   public Bender(String reportsDirRelativePath) throws AWTException {
     reportsDir_ = new File(System.getProperty("user.dir"), reportsDirRelativePath);
@@ -39,15 +43,16 @@ public class Bender extends Object {
     taskCount_ = 0;
     scheduler_ = new ScheduledThreadPoolExecutor(1);
     robot_ = new Robot();
+    currentDelay_ = 0;
   }
 
-  private void runDelayedInEventDispatcher(int milliseconds, final Runnable runnable) {
+  private void runDelayedInEventDispatcher(final Runnable runnable) {
     scheduler_.schedule(new Runnable() {
       @Override
       public void run() {
         SwingUtilities.invokeLater(new RunnableWrapper(runnable));
       }
-    }, milliseconds, TimeUnit.MILLISECONDS);
+    }, (currentDelay_ += DELAY), TimeUnit.MILLISECONDS);
     taskCount_++;
   }
 
@@ -59,12 +64,12 @@ public class Bender extends Object {
     failures_.add(failure);
   }
 
-  public void clickOn(int milliseconds, final Component component) {
-    runDelayedInEventDispatcher(milliseconds, new Clicker(component));
+  public void clickOn(final Component component) {
+    runDelayedInEventDispatcher(new Clicker(component));
   }
 
-  public void assertEqualsVisually(int milliseconds, final Component component, final TestImageSample sample) {
-    runDelayedInEventDispatcher(milliseconds, new Snapshooter(this, component, sample));
+  public void assertEqualsVisually(final Component component, final TestImageSample sample) {
+    runDelayedInEventDispatcher(new Snapshooter(this, component, sample));
   }
 
   public void waitForAllTasksCompleted() {
