@@ -885,10 +885,7 @@ class NeuQuant {
    * -----------------------------------------------------------------------------------
    */
   public void unbiasnet() {
-
-    int i, j;
-
-    for (i = 0; i < netsize; i++) {
+    for (int i = 0; i < netsize; i++) {
       network[i][0] >>= netbiasshift;
       network[i][1] >>= netbiasshift;
       network[i][2] >>= netbiasshift;
@@ -902,7 +899,6 @@ class NeuQuant {
    * ---------------------------------------------------------------------------------
    */
   protected void alterneigh(int rad, int i, int b, int g, int r) {
-
     int j, k, lo, hi, a, m;
     int[] p;
 
