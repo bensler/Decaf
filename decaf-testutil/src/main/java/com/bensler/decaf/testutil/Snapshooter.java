@@ -44,6 +44,7 @@ class Snapshooter implements Runnable {
 
         encoder.setDelay(700);   // ms
         encoder.start(new FileOutputStream(new File(parent_.getReportsDir(), failedGifName)));
+        encoder.setSize(diffImage.getWidth(), diffImage.getHeight());
         encoder.addFrame(image);
         encoder.addFrame(diffImage);
         encoder.addFrame(actual);
