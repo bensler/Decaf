@@ -219,7 +219,7 @@ public class Hierarchy<H extends Hierarchical> extends Object implements Seriali
      * @return  the member count of this hierarchy.
      */
     public int getSize() {
-        return (isEmpty() ? 0 : children_.size());
+        return (isEmpty() ? 0 : (children_.size() - (hasSyntheticRoot() ? 1 : 0)));
     }
 
     /**
@@ -304,11 +304,10 @@ public class Hierarchy<H extends Hierarchical> extends Object implements Seriali
       }
     }
 
-    @SuppressWarnings("unchecked")
     private Set<H> getChildren_(final H member) {
         final Set<H> children = children_.get(member);
 
-        return ((children != null) ? children : Collections.EMPTY_SET);
+        return ((children != null) ? children : Collections.<H>emptySet());
     }
 
     /**
@@ -498,13 +497,6 @@ public class Hierarchy<H extends Hierarchical> extends Object implements Seriali
           }
           return leafs;
         }
-    }
-
-    /**
-     * @return  all members of this hierarchy in depth first order.
-     */
-    public List<H> getMembersList() {
-        return visitAll(new Collector<H>()).getList();
     }
 
     public boolean isLeaf(final H node) {
