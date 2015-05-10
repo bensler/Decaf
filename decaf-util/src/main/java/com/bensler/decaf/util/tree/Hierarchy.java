@@ -343,31 +343,6 @@ public class Hierarchy<H extends Hierarchical> extends Object implements Seriali
         return list;
     }
 
-    public static class Collector<E> extends Object implements Visitor<E> {
-
-        private final List<E> collector_;
-
-        public Collector() {
-            collector_ = new ArrayList<>();
-        }
-
-        @Override
-        public void visit(final E member) {
-            collector_.add(member);
-        }
-
-        public List<E> getList() {
-            return collector_;
-        }
-
-    }
-
-    public static interface Visitor<E> {
-
-        void visit(E member) throws CanceledException;
-
-    }
-
     @Override
     public String toString() {
         return String.valueOf(getRoot()) + children_;
