@@ -23,36 +23,35 @@ public class EntityCache extends Object {
 
   public    final static  Object[]                          NO_ARGS   = new Object[0];
 
-  private   final         Map<Class, List<Method>>          getters_;
+  private   final         Map<Class<?>, List<Method>>       getters_;
 
-  private   final         Map<Class, Map<String, Method>>   properties_;
+  private   final         Map<Class<?>, Map<String, Method>> properties_;
 
-  @SuppressWarnings("unchecked")
   public EntityCache() {
     super();
-    getters_ = new HashMap<Class, List<Method>>();
-    properties_ = new HashMap<Class, Map<String, Method>>();
+    getters_ = new HashMap<Class<?>, List<Method>>();
+    properties_ = new HashMap<Class<?>, Map<String, Method>>();
   }
 
-  private List<Method> getGetters(Class bizClass) {
+  private List<Method> getGetters(Class<?> bizClass) {
     if (!getters_.containsKey(bizClass)) {
       getters_.put(bizClass, findGetters(bizClass));
     }
     return getters_.get(bizClass);
   }
 
-  public List<String> getProperties(Class bizClass) {
+  public List<String> getProperties(Class<?> bizClass) {
     return new ArrayList<String>(getProperties_(bizClass).keySet());
   }
 
-  private Map<String, Method> getProperties_(Class bizClass) {
+  private Map<String, Method> getProperties_(Class<?> bizClass) {
     if (!properties_.containsKey(bizClass)) {
       properties_.put(bizClass, findProperties(bizClass));
     }
     return properties_.get(bizClass);
   }
 
-  private List<Method> findGetters(Class bizClass) {
+  private List<Method> findGetters(Class<?> bizClass) {
     final List<Method>  methods     = new ArrayList<Method>();
     final List<Method>  allMethods  = new ArrayList<Method>(Arrays.asList(bizClass.getMethods()));
 
@@ -66,7 +65,7 @@ public class EntityCache extends Object {
     return methods;
   }
 
-  private Map<String, Method> findProperties(Class bizClass) {
+  private Map<String, Method> findProperties(Class<?> bizClass) {
     final List<Method>          methods     = getGetters(bizClass);
     final Map<String, Method>   properties  = new LinkedHashMap<String, Method>(3);
 
@@ -84,15 +83,15 @@ public class EntityCache extends Object {
     return properties;
   }
 
-  public int getMethodIndex(Class bizClass, Method method) {
+  public int getMethodIndex(Class<?> bizClass, Method method) {
     return getGetters(bizClass).indexOf(method);
   }
 
-  public boolean hasBizMethod(Class bizClass, Method method) {
+  public boolean hasBizMethod(Class<?> bizClass, Method method) {
     return getGetters(bizClass).contains(method);
   }
 
-  public int getPropertyIndex(Class bizClass, String propertyName) {
+  public int getPropertyIndex(Class<?> bizClass, String propertyName) {
     final Map<String, Method> properties  = getProperties_(bizClass);
           int                 index       = 0;
 
@@ -120,7 +119,7 @@ public class EntityCache extends Object {
 
   }
 
-  public Method getGetter(Class bizClass, String propertyName) {
+  public Method getGetter(Class<?> bizClass, String propertyName) {
     return getProperties_(bizClass).get(propertyName.toLowerCase());
   }
 
