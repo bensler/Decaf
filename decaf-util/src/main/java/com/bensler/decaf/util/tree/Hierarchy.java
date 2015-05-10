@@ -288,26 +288,24 @@ public class Hierarchy<H extends Hierarchical> extends Object implements Seriali
 
     /** used by TreeModel */
     public Set<H> getChildren(final H member) {
-        final Set<H> children = children_.get(member);
+        final Set<H> children = getChildren_(member);
 
-        return ((children != null) ? new HashSet<H>(children) : Collections.<H>emptySet());
+        return (children.isEmpty() ? children : new HashSet<H>(children));
     }
 
     /** used by TreeModel */
     public int getChildCount(final H parent) {
-      if (children_.containsKey(parent)) {
-        final Set<H> children = children_.get(parent);
-
-        return ((children == null) ? 0 : children.size());
-      } else {
-        throw new IllegalArgumentException(parent + " is not member of this Hierarchy");
-      }
+      return getChildren_(parent).size();
     }
 
     private Set<H> getChildren_(final H member) {
+      if (children_.containsKey(member)) {
         final Set<H> children = children_.get(member);
-
+        
         return ((children != null) ? children : Collections.<H>emptySet());
+      } else {
+        throw new IllegalArgumentException(member + " is not member of this Hierarchy");
+      }
     }
 
     /**
