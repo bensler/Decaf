@@ -75,7 +75,9 @@ public class Bender extends Object {
   public void waitForAllTasksCompleted() {
     lock_.lock();
     try {
-      allTasksDone_.awaitUninterruptibly();
+      if (taskCount_ > 0) {
+        allTasksDone_.awaitUninterruptibly();
+      }
       if (!failures_.isEmpty()) {
         throw failures_.get(0);
       }
