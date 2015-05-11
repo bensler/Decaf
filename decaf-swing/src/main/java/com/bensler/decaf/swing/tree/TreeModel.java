@@ -247,15 +247,6 @@ public class TreeModel extends DefaultTreeModel {
     fireTreeNodesChanged(this, path, null, null);
   }
 
-  public List<Hierarchical> getPath(Hierarchical node, boolean removeSyntheticRoot) {
-    final List<Hierarchical> path = getPath_(node);
-
-    if (removeSyntheticRoot) {
-      path.remove(invisibleRoot);
-    }
-    return path;
-  }
-
   private List<Hierarchical> getPath_(Hierarchical node) {
     final List<Hierarchical> list = data_.getPath(node);
 

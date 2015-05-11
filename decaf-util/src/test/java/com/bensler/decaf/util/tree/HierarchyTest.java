@@ -1,11 +1,13 @@
 package com.bensler.decaf.util.tree;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Set;
 
 import org.junit.Assert;
 import org.junit.Test;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
 public class HierarchyTest {
@@ -50,7 +52,7 @@ public class HierarchyTest {
       tree1.add(bobsHome);
       tree1.add(root);
       tree1.add(home);
-      
+
       Set<Folder> expectedMembers = Sets.newHashSet(root, home, bobsHome, alicesHome);
       Assert.assertEquals("tree1 should have a size of " + expectedMembers.size(), expectedMembers.size(), tree1.getSize());
 
@@ -63,10 +65,13 @@ public class HierarchyTest {
       Assert.assertEquals("tree1 should have a size of 3", 3, tree2.getSize());
       expectedMembers = Sets.newHashSet(root, bobsHome, alicesHome);
       Assert.assertEquals("tree1 should have a size of 3", 3, tree2.getSize());
-      Assert.assertEquals("tree1 should consist of " + expectedMembers, expectedMembers, tree2.getMembers());
+      List<Folder> bobsHomePath = Lists.newArrayList(bobsHome);
+      Assert.assertEquals("path ob bobsHome should only consist of bobsHome", bobsHomePath, tree2.getPath(bobsHome));
       Assert.assertNotEquals("tree1 and tree2 should NOT be equal", tree1, tree2);
       tree2.add(home);
       Assert.assertEquals("tree1 and tree2 should be equal", tree1, tree2);
+      bobsHomePath = Lists.newArrayList(root, home, bobsHome);
+      Assert.assertEquals("path ob bobsHome should be " + bobsHomePath, bobsHomePath, tree2.getPath(bobsHome));
     }
 
 }
