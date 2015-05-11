@@ -6,6 +6,9 @@ import java.net.URL;
 
 import org.junit.Assert;
 
+/**
+ * Represents an image resource to be compared with an actual screenshot during a test.
+ */
 public class TestImageSample {
 
   public final static String TYPE_PNG = "png";
