@@ -219,7 +219,7 @@ public class Hierarchy<H extends Hierarchical> extends Object implements Seriali
      * @return  the member count of this hierarchy.
      */
     public int getSize() {
-        return (isEmpty() ? 0 : children_.size());
+        return (isEmpty() ? 0 : (children_.size() - (hasSyntheticRoot() ? 1 : 0)));
     }
 
     /**
@@ -288,27 +288,24 @@ public class Hierarchy<H extends Hierarchical> extends Object implements Seriali
 
     /** used by TreeModel */
     public Set<H> getChildren(final H member) {
-        final Set<H> children = children_.get(member);
+        final Set<H> children = getChildren_(member);
 
-        return ((children != null) ? new HashSet<H>(children) : Collections.<H>emptySet());
+        return (children.isEmpty() ? children : new HashSet<H>(children));
     }
 
     /** used by TreeModel */
     public int getChildCount(final H parent) {
-      if (children_.containsKey(parent)) {
-        final Set<H> children = children_.get(parent);
-
-        return ((children == null) ? 0 : children.size());
-      } else {
-        throw new IllegalArgumentException(parent + " is not member of this Hierarchy");
-      }
+      return getChildren_(parent).size();
     }
 
-    @SuppressWarnings("unchecked")
     private Set<H> getChildren_(final H member) {
+      if (children_.containsKey(member)) {
         final Set<H> children = children_.get(member);
-
-        return ((children != null) ? children : Collections.EMPTY_SET);
+        
+        return ((children != null) ? children : Collections.<H>emptySet());
+      } else {
+        throw new IllegalArgumentException(member + " is not member of this Hierarchy");
+      }
     }
 
     /**
@@ -344,31 +341,6 @@ public class Hierarchy<H extends Hierarchical> extends Object implements Seriali
           }
         }
         return list;
-    }
-
-    public static class Collector<E> extends Object implements Visitor<E> {
-
-        private final List<E> collector_;
-
-        public Collector() {
-            collector_ = new ArrayList<>();
-        }
-
-        @Override
-        public void visit(final E member) {
-            collector_.add(member);
-        }
-
-        public List<E> getList() {
-            return collector_;
-        }
-
-    }
-
-    public static interface Visitor<E> {
-
-        void visit(E member) throws CanceledException;
-
     }
 
     @Override
@@ -498,13 +470,6 @@ public class Hierarchy<H extends Hierarchical> extends Object implements Seriali
           }
           return leafs;
         }
-    }
-
-    /**
-     * @return  all members of this hierarchy in depth first order.
-     */
-    public List<H> getMembersList() {
-        return visitAll(new Collector<H>()).getList();
     }
 
     public boolean isLeaf(final H node) {

@@ -2,6 +2,7 @@ package com.bensler.decaf.swing.tree;
 
 import java.awt.AWTException;
 import java.awt.Dialog.ModalityType;
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -54,9 +55,10 @@ public class EntityTreeTest {
       }
     });
     panel.add(button, new CellConstraints(2, 4, CellConstraints.RIGHT, CellConstraints.CENTER));
+    panel.setPreferredSize(new Dimension(500, 750));
 
     dialog.setContentPane(panel);
-    dialog.setSize(500, 800);
+    dialog.pack();
     dialog.setLocation(500,  100);
     tree.expandCollapseAll(true);
 
