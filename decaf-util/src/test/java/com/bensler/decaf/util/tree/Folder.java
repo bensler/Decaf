@@ -2,7 +2,10 @@ package com.bensler.decaf.util.tree;
 
 import com.bensler.decaf.util.Named;
 
-public class Folder extends Object implements Hierarchical, Named {
+/**
+ * Sample of an entity or business class having hierarchical nature.
+ */
+public class Folder extends Object implements Hierarchical<Folder>, Named {
 
     private final Folder parent_;
     private final String name_;
@@ -13,7 +16,7 @@ public class Folder extends Object implements Hierarchical, Named {
     }
 
     @Override
-    public Object getParent() {
+    public Folder getParent() {
         return parent_;
     }
 

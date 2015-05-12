@@ -17,7 +17,7 @@ import com.bensler.decaf.util.CanceledException;
  * A Hierarchy forms a tree out of a collection of Hierarchicals. A synthetic root is used if there are more than one
  * nodes with an unknown or null parent ref. This is to make sure that there is always exactly one root.
  */
-public class Hierarchy<H extends Hierarchical> extends Object implements Serializable {
+public class Hierarchy<H extends Hierarchical<?>> extends Object implements Serializable {
 
     /**
      * Keys are all members of this hierarchy, values are the child nodes. <code>null</code> values are leaf nodes,
@@ -83,8 +83,8 @@ public class Hierarchy<H extends Hierarchical> extends Object implements Seriali
         if ((oldNode = resolve(newNode)) != null) {
 
             // node is allready in this hierarchy
-            final Hierarchical oldParent = resolveParent(oldNode);
-            final Hierarchical newParent = resolveParent(newNode);
+            final H oldParent = resolveParent(oldNode);
+            final H newParent = resolveParent(newNode);
 
             if (((oldParent != null) && oldParent.equals(newParent)) || ((oldParent == null) && (newParent == null))) {
                 // at the same position -> only replace the value
@@ -300,7 +300,7 @@ public class Hierarchy<H extends Hierarchical> extends Object implements Seriali
     private Set<H> getChildren_(final H member) {
       if (children_.containsKey(member)) {
         final Set<H> children = children_.get(member);
-        
+
         return ((children != null) ? children : Collections.<H>emptySet());
       } else {
         throw new IllegalArgumentException(member + " is not member of this Hierarchy");

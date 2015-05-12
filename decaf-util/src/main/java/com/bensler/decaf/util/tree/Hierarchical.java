@@ -5,8 +5,8 @@ package com.bensler.decaf.util.tree;
  * about children. This is possible only in the context of a Hierarchy. So one Hierarchical might be a member of
  * different hierarchies possibly performing some filtering.
  */
-public interface Hierarchical {
+public interface Hierarchical <P> {
 
-    Object getParent();
+    P getParent();
 
 }
