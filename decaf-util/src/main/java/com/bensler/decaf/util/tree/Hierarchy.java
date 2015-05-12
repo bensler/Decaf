@@ -245,17 +245,16 @@ public class Hierarchy<H extends Hierarchical> extends Object implements Seriali
 
         if (contains(member)) {
             final boolean removingRoot = member.equals(root_);
-            final boolean hadChildren = !getChildren_(member).isEmpty();
+            final Set<H> children = getChildren_(member);
+            final boolean hadChildren = !children.isEmpty();
 
             // handle children
-            if (recursive) {
-                for (H child : getChildren(member)) {
-                    remove(child, recursive);
-                }
-            } else {
-                final Set<? extends H> children = getChildren(member);
-
-                if (!children.isEmpty()) {
+            if (hadChildren) {
+                if (recursive) {
+                    for (H child : children) {
+                        remove(child, recursive);
+                    }
+                } else {
                     for (H child : children) {
                         addChild(child, null);
                     }
