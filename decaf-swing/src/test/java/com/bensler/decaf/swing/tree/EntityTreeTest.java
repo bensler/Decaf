@@ -59,7 +59,7 @@ public class EntityTreeTest {
 
     dialog.setContentPane(panel);
     dialog.pack();
-    dialog.setLocation(500,  100);
+    dialog.setLocation(bender_.getLargestScreensOrigin());
     tree.expandCollapseAll(true);
 
     bender_.assertEqualsVisually(dialog.getContentPane(), new TestImageSample());

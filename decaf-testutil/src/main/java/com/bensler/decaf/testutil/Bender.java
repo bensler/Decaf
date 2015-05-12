@@ -3,7 +3,10 @@ package com.bensler.decaf.testutil;
 import java.awt.AWTException;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.GraphicsDevice;
+import java.awt.GraphicsEnvironment;
 import java.awt.Point;
+import java.awt.Rectangle;
 import java.awt.Robot;
 import java.awt.event.InputEvent;
 import java.io.File;
@@ -44,6 +47,23 @@ public class Bender extends Object {
     scheduler_ = new ScheduledThreadPoolExecutor(1);
     robot_ = new Robot();
     currentDelay_ = 0;
+  }
+
+  public Point getLargestScreensOrigin() {
+    Rectangle candidate = null;
+
+    for (final GraphicsDevice device : GraphicsEnvironment.getLocalGraphicsEnvironment().getScreenDevices()) {
+      final Rectangle bounds = device.getDefaultConfiguration().getBounds();
+
+      if (
+        (candidate == null)
+        || ((candidate.width < bounds.width) && (candidate.height < bounds.height))
+      ) {
+        candidate = bounds;
+      }
+    }
+
+    return new Point(candidate.x, candidate.y);
   }
 
   private void runDelayedInEventDispatcher(final Runnable runnable) {
