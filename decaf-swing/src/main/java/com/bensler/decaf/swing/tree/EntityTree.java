@@ -239,7 +239,6 @@ TreeSelectionListener, FocusListener {
   }
 
   public void setData(Hierarchy hierarchy) {
-    hierarchy.getChildren(hierarchy.getRoot());
     model_.setData(hierarchy);
     tree_.setRootVisible(!hierarchy.hasSyntheticRoot());
     // try to expand the tree in the same manner as before.
