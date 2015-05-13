@@ -12,6 +12,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import com.bensler.decaf.util.CanceledException;
+import com.bensler.decaf.util.tree.ChildrenCollectionMaintainer.DefaultCollectionMaintainer;
 
 /**
  * A Hierarchy forms a tree out of a collection of Hierarchicals. A synthetic root is used if there are more than one
@@ -19,6 +20,7 @@ import com.bensler.decaf.util.CanceledException;
  */
 public class Hierarchy<H extends Hierarchical<?>> extends Object implements Serializable {
 
+    private final ChildrenCollectionMaintainer<H, ? extends Collection<H>> nanny_;
     /**
      * Keys are all members of this hierarchy, values are the child nodes. <code>null</code> values are leaf nodes,
      * <code>null</code> key is used as super root if there is no single root of all members.
@@ -31,37 +33,34 @@ public class Hierarchy<H extends Hierarchical<?>> extends Object implements Seri
     private H root_;
 
     /**
-     * used by TreeModel *
-     * Creates a new Hierarchy using all nodes of the given hierarchy.
-     */
-    public Hierarchy(final Hierarchy<H> hierarchy) {
-        this();
-
-        final Set<? extends H> members = hierarchy.getMembers();
-
-        members.remove(null);
-        addAll(members);
-        if (hierarchy.hasSyntheticRoot() && (!hasSyntheticRoot())) {
-            root_ = null;
-            addChild(root_, null);
-        }
-    }
-
-    /**
      * Creates a new empty hierarchy.
      */
+    public Hierarchy(ChildrenCollectionMaintainer<H, ? extends Collection<H>> nanny) {
+      nanny_ = nanny;
+      children_ = new HashMap<H, Collection<H>>();
+      root_ = null;
+      children_.put(root_, null);
+    }
+
     public Hierarchy() {
-        children_ = new HashMap<H, Collection<H>>();
-        root_ = null;
-        children_.put(root_, null);
+      this(new DefaultCollectionMaintainer<H>());
     }
 
     /**
      * Creates a new hierarchy using the given members.
      */
     public Hierarchy(final Collection<? extends H> members) {
-        this();
-        addAll(members);
+      this();
+      addAll(members);
+    }
+
+    /**
+     * used by TreeModel
+     * Creates a new Hierarchy using all nodes of the given hierarchy.
+     */
+    public Hierarchy(final Hierarchy<H> hierarchy) {
+      this(hierarchy.nanny_);
+      addAll(hierarchy.getMembers());
     }
 
     /**
@@ -170,12 +169,11 @@ public class Hierarchy<H extends Hierarchical<?>> extends Object implements Seri
         Collection<H> children = children_.get(parent);
 
         if (children == null) {
-            children = new HashSet<H>(2);
-            children_.put(parent, children);
+            children_.put(parent, (children = nanny_.createCollection()));
         } else {
             children.remove(child);
         }
-        children.add(child);
+        nanny_.addChild(child, children);
     }
 
     private H resolveParent(final H node) {
@@ -300,7 +298,7 @@ public class Hierarchy<H extends Hierarchical<?>> extends Object implements Seri
       if (children_.containsKey(member)) {
         final Collection<H> children = children_.get(member);
 
-        return ((children != null) ? children : Collections.<H>emptySet());
+        return ((children != null) ? children : nanny_.createEmptyCollection());
       } else {
         throw new IllegalArgumentException(member + " is not member of this Hierarchy");
       }

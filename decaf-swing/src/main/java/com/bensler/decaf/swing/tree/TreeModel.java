@@ -137,7 +137,7 @@ public class TreeModel extends DefaultTreeModel {
   void setData(Hierarchy data) {
     final boolean hadSynthRoot  = data_.hasSyntheticRoot();
 
-    data_ = new Hierarchy(data);
+    data_ = new Hierarchy(data.getMembers());
     fireStructureChanged(getRoot());
     fireRootMayHaveChanged(hadSynthRoot);
   }
