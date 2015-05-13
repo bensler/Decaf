@@ -23,7 +23,7 @@ public class Hierarchy<H extends Hierarchical<?>> extends Object implements Seri
      * Keys are all members of this hierarchy, values are the child nodes. <code>null</code> values are leaf nodes,
      * <code>null</code> key is used as super root if there is no single root of all members.
      */
-    private final Map<H, Set<H>> children_;
+    private final Map<H, Collection<H>> children_;
 
     /**
      * root node of this hierarchy.
@@ -51,7 +51,7 @@ public class Hierarchy<H extends Hierarchical<?>> extends Object implements Seri
      * Creates a new empty hierarchy.
      */
     public Hierarchy() {
-        children_ = new HashMap<H, Set<H>>();
+        children_ = new HashMap<H, Collection<H>>();
         root_ = null;
         children_.put(root_, null);
     }
@@ -105,7 +105,7 @@ public class Hierarchy<H extends Hierarchical<?>> extends Object implements Seri
             if (parent != null) {
                 addChild(newNode, parent);
                 if (hasSyntheticRoot()) {
-                    final Set<H> rootChildren = tryMoveSynthRootChildren(newNode);
+                    final Collection<H> rootChildren = tryMoveSynthRootChildren(newNode);
 
                     if (rootChildren.size() == 1) {
                         root_ = rootChildren.iterator().next();
@@ -125,9 +125,8 @@ public class Hierarchy<H extends Hierarchical<?>> extends Object implements Seri
                         root_ = null;
                     }
                 } else {
-
                     // synthetic root
-                    final Set<H> rootChildren = tryMoveSynthRootChildren(newNode);
+                    final Collection<H> rootChildren = tryMoveSynthRootChildren(newNode);
 
                     if (rootChildren.isEmpty()) {
                         children_.remove(null);
@@ -145,8 +144,8 @@ public class Hierarchy<H extends Hierarchical<?>> extends Object implements Seri
      *
      * @return  all (synth) roots children unable to move to the (im)possible new parent.
      */
-    private Set<H> tryMoveSynthRootChildren(final H possibleParent) {
-        final Set<H> rootChildren = getChildren_(root_);
+    private Collection<H> tryMoveSynthRootChildren(final H possibleParent) {
+        final Collection<H> rootChildren = getChildren_(root_);
 
         for (H node : getChildren(root_)) {
             if (possibleParent.equals(resolveParent(node))) {
@@ -168,7 +167,7 @@ public class Hierarchy<H extends Hierarchical<?>> extends Object implements Seri
     }
 
     private void addChild(final H child, final H parent) {
-        Set<H> children = children_.get(parent);
+        Collection<H> children = children_.get(parent);
 
         if (children == null) {
             children = new HashSet<H>(2);
@@ -245,7 +244,7 @@ public class Hierarchy<H extends Hierarchical<?>> extends Object implements Seri
 
         if (contains(member)) {
             final boolean removingRoot = member.equals(root_);
-            final Set<H> children = getChildren_(member);
+            final Collection<H> children = getChildren_(member);
             final boolean hadChildren = !children.isEmpty();
 
             // handle children
@@ -275,7 +274,7 @@ public class Hierarchy<H extends Hierarchical<?>> extends Object implements Seri
                 }
             } else {
                 final H parent = resolveParent(member);
-                final Set<H> siblings = getChildren_(parent);
+                final Collection<H> siblings = getChildren_(parent);
 
                 siblings.remove(member);
                 if (siblings.isEmpty()) {
@@ -286,8 +285,8 @@ public class Hierarchy<H extends Hierarchical<?>> extends Object implements Seri
     }
 
     /** used by TreeModel */
-    public Set<H> getChildren(final H member) {
-        final Set<H> children = getChildren_(member);
+    public Collection<H> getChildren(final H member) {
+        final Collection<H> children = getChildren_(member);
 
         return (children.isEmpty() ? children : new HashSet<H>(children));
     }
@@ -297,9 +296,9 @@ public class Hierarchy<H extends Hierarchical<?>> extends Object implements Seri
       return getChildren_(parent).size();
     }
 
-    private Set<H> getChildren_(final H member) {
+    private Collection<H> getChildren_(final H member) {
       if (children_.containsKey(member)) {
-        final Set<H> children = children_.get(member);
+        final Collection<H> children = children_.get(member);
 
         return ((children != null) ? children : Collections.<H>emptySet());
       } else {
@@ -462,7 +461,7 @@ public class Hierarchy<H extends Hierarchical<?>> extends Object implements Seri
         } else {
           final Set<H> leafs = new HashSet<H>();
 
-          for (Entry<H, Set<H>> entry : children_.entrySet()) {
+          for (Entry<H, Collection<H>> entry : children_.entrySet()) {
               if (entry.getValue() == null) {
                   leafs.add(entry.getKey());
               }

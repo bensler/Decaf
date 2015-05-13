@@ -1,6 +1,7 @@
 package com.bensler.decaf.swing.tree;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.EventListener;
 import java.util.HashMap;
@@ -88,7 +89,7 @@ public class TreeModel extends DefaultTreeModel {
   @SuppressWarnings("unchecked")
   protected List<Hierarchical> getChildren(Hierarchical parent) {
     if (!parentChildArrayMap_.containsKey(parent)) {
-      final Set<? extends Hierarchical> sourceChildren = data_.getChildren((parent == invisibleRoot) ? null : parent);
+      final Collection<? extends Hierarchical> sourceChildren = data_.getChildren((parent == invisibleRoot) ? null : parent);
       final List<Hierarchical>          list           = new ArrayList<Hierarchical>();
 
       Collections.sort((List)filter(sourceChildren, list), view_);
@@ -97,7 +98,7 @@ public class TreeModel extends DefaultTreeModel {
     return parentChildArrayMap_.get(parent);
   }
 
-  protected List<Hierarchical> filter(Set<? extends Hierarchical> source, List<Hierarchical> target) {
+  protected List<Hierarchical> filter(Collection<? extends Hierarchical> source, List<Hierarchical> target) {
     for (Hierarchical child : source) {
       if (filter_.accept((Viewable)child)) {
         target.add(child);
