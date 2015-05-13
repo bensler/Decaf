@@ -285,7 +285,7 @@ public class TreeModel extends DefaultTreeModel {
    * node. */
   void remove(Hierarchical subject) {
     final Hierarchical    parent      = data_.resolve(subject.getParent());
-    final boolean         hadChildren = !data_.getChildren(subject).isEmpty();
+    final boolean         hadChildren = !data_.isLeaf(subject);
 
     data_.remove(subject, false);
     if (parent != null) {
