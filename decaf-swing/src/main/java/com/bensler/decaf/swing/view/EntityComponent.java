@@ -7,28 +7,26 @@ import java.util.List;
 import javax.swing.JComponent;
 import javax.swing.JScrollPane;
 
-import com.bensler.decaf.swing.Viewable;
-
 /**
  */
-public interface EntityComponent {
+public interface EntityComponent <E> {
 
   public JComponent getComponent();
 
   public JScrollPane getScrollPane();
 
-  public List<? extends Viewable> getSelection();
+  public List<E> getSelection();
 
-  public Viewable getSingleSelection();
+  public E getSingleSelection();
 
 //  public void addSelectionListener(EntitySelectionListener listener);
 //  public void removeSelectionListener(EntitySelectionListener listener);
 
-  public boolean contains(Viewable entity);
+  public boolean contains(Object entity);
 
-  public void select(Collection<? extends Viewable> entities);
+  public void select(Collection<?> entities);
 
-  public void select(Viewable entity);
+  public void select(Object entity);
 
   public void clearSelection();
 
@@ -38,7 +36,7 @@ public interface EntityComponent {
 
   public interface FocusListener {
 
-    public void focusGained(EntityComponent component);
+    public void focusGained(EntityComponent<?> component);
 
   }
 

@@ -2,13 +2,11 @@ package com.bensler.decaf.swing.view;
 
 import java.util.Comparator;
 
-import com.bensler.decaf.swing.Viewable;
 
+public interface PropertyGetter<E, P> extends Comparator<E> {
 
-public interface PropertyGetter extends Comparator<Viewable> {
+  P getProperty(E viewable);
 
-  public Object getProperty(Viewable viewable);
+  boolean isSortable();
 
-  public boolean isSortable();
-  
 }

@@ -10,20 +10,20 @@ import javax.swing.tree.TreeCellRenderer;
 
 import com.bensler.decaf.swing.Viewable;
 
-public interface PropertyView extends Comparator<Viewable>, View, ListCellRenderer, TreeCellRenderer {
-  
-  public int compare(Viewable o1, Viewable o2);
+public interface PropertyView<E> extends Comparator<E>, View, ListCellRenderer, TreeCellRenderer {
+
+  public int compare(E o1, E o2);
 
   public boolean isSortable();
-  
+
   public Object getProperty(Viewable viewable);
 
   public String getPropertyString(Viewable viewable);
 
   public RenderComponentFactory getRenderComponentFactory();
-  
+
   public CellRenderer getRenderer();
-  
+
   public PropertyGetter getGetter();
 
   public JLabel renderLabel(JLabel label, Viewable viewable);

@@ -2,7 +2,7 @@ package com.bensler.decaf.swing.view;
 
 import com.bensler.decaf.swing.Viewable;
 
-public abstract class StringGetter extends Object implements PropertyGetter {
+public abstract class StringGetter<E> extends Object implements PropertyGetter<E, String> {
 
   protected final static    StringBuffer      buffer_               = new StringBuffer(200);
 
@@ -16,11 +16,11 @@ public abstract class StringGetter extends Object implements PropertyGetter {
     return true;
   }
 
-  public int compare(Viewable v1, Viewable v2) {
+  public int compare(E v1, E v2) {
     return comparator_.compare(this, v1, v2);
   }
 
-  public final static class Constant extends StringGetter {
+  public final static class Constant<E> extends StringGetter<E> {
 
     private   final           String constant_;
 
@@ -29,7 +29,7 @@ public abstract class StringGetter extends Object implements PropertyGetter {
       constant_ = constant;
     }
 
-    public String getProperty(Viewable viewable) {
+    public String getProperty(E viewable) {
       return constant_;
     }
 

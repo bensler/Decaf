@@ -41,7 +41,7 @@ public class EntityTreeTest {
       "3dlu, f:p:g, 3dlu",
       "3dlu, f:p:g, 3dlu, p, 3dlu"
     ));
-    final EntityTree tree = new EntityTree(new PropertyViewImpl("name"));
+    final EntityTree<Folder> tree = new EntityTree<>(new PropertyViewImpl<>("name"));
     final JButton button;
 
     dialog.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);

@@ -9,7 +9,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -33,20 +32,20 @@ import com.bensler.decaf.util.tree.Hierarchy;
 /**
  * This is a tree that displays a Hierarchy.
  */
-public class EntityTree extends Object implements EntityComponent,
+public class EntityTree <H extends Hierarchical<?>> extends Object implements EntityComponent<H>,
 TreeSelectionListener, FocusListener {
 
   private   final         Set<FocusListener>  focusListeners_;
 
   private   final         JScrollPane         scrollPane_;
 
-  private		final 				List<Viewable>      selection_;
+  private		final 				List<H>             selection_;
 
   protected final         TreeComponent       tree_;
 
   private                 boolean             silentSelectionChange_;
 
-  protected               TreeModel           model_;
+  protected               TreeModel<H>        model_;
 
 //  private                 DragSituation       dragSituation_;
 
@@ -56,7 +55,7 @@ TreeSelectionListener, FocusListener {
 
   protected               boolean             editable_;
 
-  public EntityTree(PropertyView propView) {
+  public EntityTree(PropertyView<? super H> propView) {
     super();
     final UnwrappingRenderer unwrapper = new UnwrappingRenderer(propView);
 
@@ -76,7 +75,7 @@ TreeSelectionListener, FocusListener {
 
     editable_ = true;
     scrollPane_ = new JScrollPane(tree_);
-    selection_ = new ArrayList<Viewable>(1);
+    selection_ = new ArrayList<>(1);
     silentSelectionChange_ = false;
     setSelectionMode(SelectionMode.SINGLE);
   }
@@ -98,15 +97,15 @@ TreeSelectionListener, FocusListener {
     return editable_;
   }
 
-  protected TreeModel createModel(PropertyView view) {
-    return new TreeModel(view);
+  protected TreeModel<H> createModel(PropertyView<? super H> view) {
+    return new TreeModel<>(view);
   }
 
   public JScrollPane getScrollPane() {
     return scrollPane_;
   }
 
-  void setModel(TreeModel newModel) {
+  void setModel(TreeModel<H> newModel) {
     model_ = newModel;
     tree_.setModel(newModel);
     tree_.setRootVisible(newModel.showRoot());
@@ -167,10 +166,9 @@ TreeSelectionListener, FocusListener {
     tree_.clearSelection();
   }
 
-  public void showAll(Set bosToShow) {
-    for (Iterator iter = bosToShow.iterator(); iter.hasNext();) {
-      final Hierarchical    item  = (Hierarchical)iter.next();
-      final Hierarchical[]  path  = model_.getPath(item);
+  public void showAll(Collection<Hierarchical<?>> bosToShow) {
+    for (Hierarchical<?> item : bosToShow) {
+      final Object[]  path  = model_.getPathAsObjectArray(item);
 
       if (path.length > 1) {
         tree_.expandPath(new TreePath(path).getParentPath());
@@ -192,7 +190,7 @@ TreeSelectionListener, FocusListener {
   }
 
   public void refireSelectionChanged() {
-    final List<Viewable> oldSelection = new ArrayList<Viewable>(selection_);
+    final List<H> oldSelection = new ArrayList<H>(selection_);
 
     select(Collections.<Viewable>emptyList());
     select(oldSelection);
@@ -200,45 +198,44 @@ TreeSelectionListener, FocusListener {
 
   protected void fireSelectionChanged() {
     if (!silentSelectionChange_) {
-      final List<Viewable> selection = Collections.unmodifiableList(selection_);
+      final List<H> selection = Collections.unmodifiableList(selection_);
     }
   }
 
   /** updates selection_ silently (no events are fired) */
+  @SuppressWarnings("unchecked")
   private void updateSelection() {
     final TreePath[]  paths     = tree_.getSelectionPaths();
 
     selection_.clear();
     if (paths != null) {
       for (int i = 0; i < paths.length; i++) {
-        final Hierarchical h = (Hierarchical)paths[i].getLastPathComponent();
-
-        selection_.add((Viewable)h);
+        selection_.add((H)paths[i].getLastPathComponent());
       }
     }
   }
 
-  public List<? extends Viewable> getSelection() {
-    return new ArrayList<Viewable>(selection_);
+  public List<H> getSelection() {
+    return new ArrayList<>(selection_);
   }
 
-  public void addData(Hierarchical hierarchical) {
+  public void addData(H hierarchical) {
     model_.addNode(hierarchical);
   }
 
-  public void updateData(Hierarchical hierarchical) {
+  public void updateData(H hierarchical) {
     model_.updateNode(hierarchical);
   }
 
-  public void removeData(Hierarchical ref) {
+  public void removeData(Hierarchical<?> ref) {
     model_.removeNode(ref);
   }
 
-  public void setData(Collection<? extends Hierarchical> entities) {
-    setData(new Hierarchy(entities));
+  public void setData(Collection<H> entities) {
+    setData(new Hierarchy<>(entities));
   }
 
-  public void setData(Hierarchy hierarchy) {
+  public void setData(Hierarchy<H> hierarchy) {
     model_.setData(hierarchy);
     tree_.setRootVisible(!hierarchy.hasSyntheticRoot());
     // try to expand the tree in the same manner as before.
@@ -246,35 +243,33 @@ TreeSelectionListener, FocusListener {
 //    applyState();
   }
 
-  public Set<? extends Hierarchical> getData() {
-    return new HashSet<Hierarchical>(model_.data_.getMembers());
+  public Set<H> getData() {
+    return new HashSet<H>(model_.data_.getMembers());
   }
 
-  public void select(Hierarchical subject) {
-    select((Viewable)subject);
-  }
-
-  public void select(Viewable subject) {
+  public void select(Object subject) {
     select(Arrays.asList(
-      ((subject != null) ? new Viewable[] {subject} : new Viewable[0])
+      ((subject != null) ? new Object[] {subject} : new Viewable[0])
     ));
   }
 
-  public boolean contains(Viewable entity) {
-    return model_.contains((Hierarchical)entity);
+  public boolean contains(Object entity) {
+    return model_.contains((Hierarchical<?>)entity);
   }
 
-  public boolean contains(Hierarchical entity) {
+  public boolean contains(Hierarchical<?> entity) {
     return model_.contains(entity);
   }
 
-  public void select(Collection<? extends Viewable> entities) {
+  public void select(Collection<?> entities) {
     try {
       silentSelectionChange_ = true;
       tree_.clearSelection();
-      for (Viewable entity : entities) {
-        if (model_.contains((Hierarchical)entity)) {
-          final TreePath selPath = model_.getTreePath((Hierarchical)entity);
+      for (Object entity : entities) {
+        final Hierarchical<?> node = (Hierarchical<?>) entity;
+
+        if (model_.contains(node)) {
+          final TreePath selPath = model_.getTreePath(node);
 
           tree_.expandPath(selPath);
         	tree_.addSelectionPath(selPath);
@@ -371,7 +366,7 @@ TreeSelectionListener, FocusListener {
     tree_.requestFocus();
   }
 
-  public Viewable getSingleSelection() {
+  public H getSingleSelection() {
     return ((selection_.isEmpty() ? null : selection_.get(0)));
   }
 
@@ -379,13 +374,13 @@ TreeSelectionListener, FocusListener {
     model_.setFilter(filter);
   }
 
-  public Hierarchical getRootNode() {
+  public Hierarchical<?> getRootNode() {
     return model_.getRoot();
   }
 
   /** Expands the given node and expand all nodes of its parent path.
    * Collapses the given node.  */
-  public void expandCollapse(Hierarchical node, boolean expand) {
+  public void expandCollapse(Hierarchical<?> node, boolean expand) {
     final TreePath path = new TreePath(model_.getPath(node));
 
     if (expand) {
@@ -396,8 +391,8 @@ TreeSelectionListener, FocusListener {
   }
 
   /** making node visible by expanding its parent path */
-  public void makeVisible(Hierarchical node) {
-    final Hierarchical[] path = model_.getPath(node);
+  public void makeVisible(Hierarchical<?> node) {
+    final Object[] path = model_.getPathAsObjectArray(node);
 
     if (path.length > 1) {
       tree_.expandPath(new TreePath(path).getParentPath());
@@ -408,7 +403,7 @@ TreeSelectionListener, FocusListener {
     if (!model_.data_.isEmpty()) {
       return new TreeState(
         tree_.getExpandedDescendants(new TreePath(model_.getRoot())),
-        (Hierarchical)getSingleSelection()
+        (Hierarchical<?>)getSingleSelection()
       );
     } else {
       return null;
@@ -435,8 +430,8 @@ TreeSelectionListener, FocusListener {
     setData(Collections.EMPTY_SET);
   }
 
-  public TreeModel getModel() {
-    return (TreeModel)tree_.getModel();
+  public TreeModel<H> getModel() {
+    return (TreeModel<H>)tree_.getModel();
   }
 
   private final class UnwrappingRenderer extends Object implements TreeCellRenderer {

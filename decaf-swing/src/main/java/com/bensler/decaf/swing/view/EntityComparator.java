@@ -2,49 +2,45 @@ package com.bensler.decaf.swing.view;
 
 import java.util.Comparator;
 
-import com.bensler.decaf.swing.Viewable;
 
-
-public class EntityComparator extends Object {
+public class EntityComparator<E, P> extends Object {
 
   public    final static  EntityComparator    NOT_SORTABLE  = new EntityComparator(new Nop());
 
   public    final static  EntityComparator    NOP           = new EntityComparator(new Nop());
 
-  private   final         NullPolicy<Viewable>      entityComparator_;
+  private   final         NullPolicy<? super E>       entityComparator_;
 
-  private   final         NullPolicy<Object>        propertyComparator_;
+  private   final         NullPolicy<? super P>       propertyComparator_;
 
-  public EntityComparator(Comparator<?> propertyComparator) {
+  public EntityComparator(Comparator<P> propertyComparator) {
     this(new Nop(), propertyComparator);
   }
 
-  @SuppressWarnings("unchecked")
-  public EntityComparator(Comparator<?> entityComparator, Comparator<?> propertyComparator) {
+  public EntityComparator(Comparator<? super E> entityComparator, Comparator<? super P> propertyComparator) {
     super();
-    entityComparator_ = new NullPolicy(entityComparator);
-    propertyComparator_ = new NullPolicy(propertyComparator);
+    entityComparator_ = new NullPolicy<>(entityComparator);
+    propertyComparator_ = new NullPolicy<>(propertyComparator);
   }
 
-  public int compare(PropertyGetter getter, Viewable v1, Viewable v2) {
+  public int compare(PropertyGetter<E, P> getter, E v1, E v2) {
     int cmpValue = compareEntity(v1, v2);
 
-    if ((cmpValue == 0) &&
-        entityComparator_.continue_) {
+    if ((cmpValue == 0) && entityComparator_.continue_) {
       cmpValue = compareProperty(getter.getProperty(v1), getter.getProperty(v2));
     }
     return cmpValue;
   }
 
-  public int compareEntity(Viewable v1, Viewable v2) {
+  public int compareEntity(E v1, E v2) {
     return entityComparator_.compare(v1, v2);
   }
 
-  public int compareProperty(Object p1, Object p2) {
+  public int compareProperty(P p1, P p2) {
     return propertyComparator_.compare(p1, p2);
   }
 
-  private final static class NullPolicy <T> extends Object implements Comparator<T> {
+  private final static class NullPolicy<T> extends Object implements Comparator<T> {
 
     private final Comparator<T> delegate_;
 

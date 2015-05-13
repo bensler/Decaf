@@ -176,7 +176,7 @@ public class Hierarchy<H extends Hierarchical<?>> extends Object implements Seri
         nanny_.addChild(child, children);
     }
 
-    private H resolveParent(final H node) {
+    private H resolveParent(final Hierarchical<?> node) {
         final H parent = resolve(node.getParent());
 
         return ((node == null) ? null : (((parent == null) && hasSyntheticRoot()) ? null : parent));
@@ -233,7 +233,7 @@ public class Hierarchy<H extends Hierarchical<?>> extends Object implements Seri
     }
 
     /** used by TreeModel */
-    public void remove(final H member, final boolean recursive) {
+    public void remove(final Hierarchical<?> member, final boolean recursive) {
         final boolean synthRoot = hasSyntheticRoot();
 
         if (synthRoot && (member == null)) {
@@ -283,18 +283,18 @@ public class Hierarchy<H extends Hierarchical<?>> extends Object implements Seri
     }
 
     /** used by TreeModel */
-    public Collection<H> getChildren(final H member) {
+    public Collection<H> getChildren(final Hierarchical<?> member) {
         final Collection<H> children = getChildren_(member);
 
         return (children.isEmpty() ? children : new HashSet<H>(children));
     }
 
     /** used by TreeModel */
-    public int getChildCount(final H parent) {
+    public int getChildCount(final Hierarchical<?> parent) {
       return getChildren_(parent).size();
     }
 
-    private Collection<H> getChildren_(final H member) {
+    private Collection<H> getChildren_(final Hierarchical<?> member) {
       if (children_.containsKey(member)) {
         final Collection<H> children = children_.get(member);
 
@@ -308,7 +308,7 @@ public class Hierarchy<H extends Hierarchical<?>> extends Object implements Seri
      * used by TreeModel *
      * Checks if a node is a member of this hierarchy.
      */
-    public boolean contains(final H node) {
+    public boolean contains(final Hierarchical<?> node) {
         return children_.containsKey(node);
     }
 
@@ -327,12 +327,12 @@ public class Hierarchy<H extends Hierarchical<?>> extends Object implements Seri
     }
 
     /** used by TreeModel */
-    public List<H> getPath(H node) {
+    public List<H> getPath(Hierarchical<?> node) {
         final List<H> list = new ArrayList<H>(4);
 
         if (children_.keySet().contains(node)) {
           while (node != null) {
-            list.add(0, node);
+            list.add(0, resolve(node));
             node = resolveParent(node);
           }
         }
@@ -468,7 +468,7 @@ public class Hierarchy<H extends Hierarchical<?>> extends Object implements Seri
         }
     }
 
-    public boolean isLeaf(final H node) {
+    public boolean isLeaf(final Hierarchical<?> node) {
         return ((!isEmpty()) && children_.containsKey(node) && (children_.get(node) == null));
     }
 

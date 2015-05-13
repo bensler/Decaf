@@ -13,24 +13,24 @@ import com.bensler.decaf.swing.view.RenderComponentFactory.Target;
 
 
 
-public class PropertyViewImpl extends Object implements PropertyView {
+public class PropertyViewImpl<E> extends Object implements PropertyView<E> {
 
-  public static class ToStringGetter extends StringGetter {
+  public static class ToStringGetter<E> extends StringGetter<E> {
 
     @Override
-    public String getProperty(Viewable viewable) {
+    public String getProperty(E viewable) {
       return viewable.toString();
     }
 
   }
 
-  public    final static  PropertyViewImpl        OBJECT    = new PropertyViewImpl(
+  public    final static  PropertyViewImpl<Object>  OBJECT    = new PropertyViewImpl<>(
     new ToStringGetter()
   );
 
-  public    final static  PropertyViewImpl        KEY       = new PropertyViewImpl("key_");
+  public    final static  PropertyViewImpl<Object>  KEY       = new PropertyViewImpl<>("key_");
 
-  public    final static  PropertyViewImpl        NAME      = new PropertyViewImpl("name");
+  public    final static  PropertyViewImpl<Object>  NAME      = new PropertyViewImpl<>("name");
 
   private   final         RenderComponentFactory  compFactory_;
 
@@ -83,14 +83,14 @@ public class PropertyViewImpl extends Object implements PropertyView {
     compFactory_ = componentFactory;
     nullPolicy_ = new DefaultNullPolicy();
   }
-
-  public PropertyViewImpl(String propertyName, PropertyView propertyView) {
-    this(propertyView.getRenderer(), new QueueGetter(propertyName, propertyView.getGetter()), propertyView.getRenderComponentFactory());
-  }
-
-  public PropertyViewImpl(PropertyGetter getter, PropertyView propertyView) {
-    this(propertyView.getRenderer(), new QueueGetter(getter, propertyView.getGetter()), propertyView.getRenderComponentFactory());
-  }
+//
+//  public PropertyViewImpl(String propertyName, PropertyView propertyView) {
+//    this(propertyView.getRenderer(), new QueueGetter(propertyName, propertyView.getGetter()), propertyView.getRenderComponentFactory());
+//  }
+//
+//  public PropertyViewImpl(PropertyGetter getter, PropertyView propertyView) {
+//    this(propertyView.getRenderer(), new QueueGetter(getter, propertyView.getGetter()), propertyView.getRenderComponentFactory());
+//  }
 
   protected PropertyViewImpl() {
     this(new SimpleCellRenderer(), (PropertyGetter)null);
@@ -161,7 +161,7 @@ public class PropertyViewImpl extends Object implements PropertyView {
   }
 
   @Override
-  public int compare(Viewable v1, Viewable v2) {
+  public int compare(E v1, E v2) {
     return getter_.compare(v1, v2);
   }
 
