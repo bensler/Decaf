@@ -21,8 +21,8 @@ public class NamePropertyGetter extends Object implements PropertyGetter<Object,
     }
   }
 
-  protected final         String                        propertyName_;
-  private   final         EntityComparator<Object, String>   comparator_;
+  protected final         String                            propertyName_;
+  private   final         EntityComparator<Object, String>  comparator_;
 
   public NamePropertyGetter(String propertyName) {
     this(propertyName, new EntityComparator<Object, String>(new CollatorComparator()));
@@ -41,11 +41,6 @@ public class NamePropertyGetter extends Object implements PropertyGetter<Object,
   @Override
   public int compare(Object v1, Object v2) {
     return comparator_.compare(this, v1, v2);
-  }
-
-  @Override
-  public boolean isSortable() {
-    return (comparator_ != EntityComparator.NOT_SORTABLE);
   }
 
 }

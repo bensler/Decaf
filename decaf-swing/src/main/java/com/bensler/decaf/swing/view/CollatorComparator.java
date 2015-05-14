@@ -6,12 +6,13 @@ import java.util.Comparator;
 
 public final class CollatorComparator extends Object implements Comparator<String> {
 
-  private                 Comparator<Object>  collator_;
+  private final Comparator<Object>  collator_;
+
+  public CollatorComparator() {
+    collator_ = Collator.getInstance();
+  }
 
   public int compare(String p1, String p2) {
-    if (collator_ == null) {
-      collator_ = Collator.getInstance();
-    }
     return collator_.compare(p1, p2);
   }
 

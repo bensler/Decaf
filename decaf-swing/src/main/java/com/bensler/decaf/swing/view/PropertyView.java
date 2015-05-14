@@ -14,8 +14,6 @@ public interface PropertyView<E> extends Comparator<E>, View, ListCellRenderer, 
 
   public int compare(E o1, E o2);
 
-  public boolean isSortable();
-
   public Object getProperty(Viewable viewable);
 
   public String getPropertyString(Viewable viewable);
@@ -24,7 +22,7 @@ public interface PropertyView<E> extends Comparator<E>, View, ListCellRenderer, 
 
   public CellRenderer getRenderer();
 
-  public PropertyGetter getGetter();
+  public PropertyGetter<E, ?> getGetter();
 
   public JLabel renderLabel(JLabel label, Viewable viewable);
 

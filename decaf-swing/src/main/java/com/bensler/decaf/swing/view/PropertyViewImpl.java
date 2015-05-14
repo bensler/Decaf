@@ -171,11 +171,6 @@ public class PropertyViewImpl<E> extends Object implements PropertyView<E> {
   }
 
   @Override
-  public boolean isSortable() {
-    return getter_.isSortable();
-  }
-
-  @Override
   public RenderComponentFactory getRenderComponentFactory() {
     return compFactory_;
   }

@@ -5,8 +5,6 @@ import java.util.Comparator;
 
 public class EntityComparator<E, P> extends Object {
 
-  public    final static  EntityComparator    NOT_SORTABLE  = new EntityComparator(new Nop());
-
   public    final static  EntityComparator    NOP           = new EntityComparator(new Nop());
 
   private   final         NullPolicy<? super E>       entityComparator_;
