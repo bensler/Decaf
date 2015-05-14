@@ -1,6 +1,5 @@
 package com.bensler.decaf.swing.view;
 
-import com.bensler.decaf.swing.Viewable;
 
 public abstract class StringGetter<E> extends Object implements PropertyGetter<E, String> {
 
@@ -12,10 +11,7 @@ public abstract class StringGetter<E> extends Object implements PropertyGetter<E
     comparator_ = new EntityComparator(new CollatorComparator());
   }
 
-  public boolean isSortable() {
-    return true;
-  }
-
+  @Override
   public int compare(E v1, E v2) {
     return comparator_.compare(this, v1, v2);
   }
@@ -29,6 +25,7 @@ public abstract class StringGetter<E> extends Object implements PropertyGetter<E
       constant_ = constant;
     }
 
+    @Override
     public String getProperty(E viewable) {
       return constant_;
     }

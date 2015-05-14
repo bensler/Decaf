@@ -8,7 +8,6 @@ import javax.swing.UIManager;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 
-import com.bensler.decaf.swing.Viewable;
 import com.bensler.decaf.swing.awt.ColorHelper;
 import com.bensler.decaf.swing.view.PropertyView;
 import com.bensler.decaf.util.tree.Hierarchical;
@@ -97,7 +96,7 @@ public class TreeComponent<H extends Hierarchical<?>> extends JTree implements T
     boolean leaf, int row, boolean hasFocus
   ) {
     if ((value != null) && (view_ != null)) {
-      final Object cellValue  = view_.getProperty((Viewable)value);
+      final Object cellValue  = view_.getProperty((H)value);
 
       if (cellValue != null) {
         return cellValue.toString();

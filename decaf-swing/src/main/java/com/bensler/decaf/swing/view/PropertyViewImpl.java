@@ -10,7 +10,7 @@ import javax.swing.JTree;
 
 import com.bensler.decaf.swing.Viewable;
 import com.bensler.decaf.swing.view.RenderComponentFactory.Target;
-
+import com.bensler.decaf.util.Named;
 
 
 public class PropertyViewImpl<E> extends Object implements PropertyView<E> {
@@ -25,23 +25,33 @@ public class PropertyViewImpl<E> extends Object implements PropertyView<E> {
   }
 
   public    final static  PropertyViewImpl<Object>  OBJECT    = new PropertyViewImpl<>(
-    new ToStringGetter()
+    new ToStringGetter<Object>()
   );
 
-  public    final static  PropertyViewImpl<Object>  KEY       = new PropertyViewImpl<>("key_");
+  public    final static  PropertyViewImpl<Named>  NAMED     = new PropertyViewImpl<Named>(new PropertyGetter<Named, String>() {
 
-  public    final static  PropertyViewImpl<Object>  NAME      = new PropertyViewImpl<>("name");
+    @Override
+    public int compare(Named o1, Named o2) {
+      // TODO Auto-generated method stub
+      return 0;
+    }
+
+    @Override
+    public String getProperty(Named viewable) {
+      return viewable.getName();
+    }
+  });
 
   private   final         RenderComponentFactory  compFactory_;
 
   private   final         CellRenderer            renderer_;
 
-  private   final         PropertyGetter          getter_;
+  private   final         PropertyGetter<E, ?>    getter_;
 
   private   final         NullPolicy              nullPolicy_;
 
   public PropertyViewImpl(
-    PropertyGetter getter
+    PropertyGetter<E, ?> getter
   ) {
     this(new SimpleCellRenderer(), getter);
   }
@@ -53,7 +63,7 @@ public class PropertyViewImpl<E> extends Object implements PropertyView<E> {
   }
 
   public PropertyViewImpl(
-    Icon icon, PropertyGetter getter
+    Icon icon, PropertyGetter<E, ?> getter
   ) {
     this(new SimpleCellRenderer(icon), getter);
   }
@@ -149,12 +159,12 @@ public class PropertyViewImpl<E> extends Object implements PropertyView<E> {
   }
 
   @Override
-  public Object getProperty(Viewable viewable) {
+  public Object getProperty(E viewable) {
     return getter_.getProperty(viewable);
   }
 
   @Override
-  public String getPropertyString(Viewable viewable) {
+  public String getPropertyString(E viewable) {
     final Object propertyValue = getProperty(viewable);
 
     return nullPolicy_.getPropertyString(propertyValue);
@@ -176,7 +186,7 @@ public class PropertyViewImpl<E> extends Object implements PropertyView<E> {
   }
 
   @Override
-  public PropertyGetter getGetter() {
+  public PropertyGetter<E, ?> getGetter() {
     return getter_;
   }
 

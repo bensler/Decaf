@@ -12,11 +12,12 @@ import com.bensler.decaf.swing.Viewable;
 
 public interface PropertyView<E> extends Comparator<E>, View, ListCellRenderer, TreeCellRenderer {
 
+  @Override
   public int compare(E o1, E o2);
 
-  public Object getProperty(Viewable viewable);
+  public Object getProperty(E viewable);
 
-  public String getPropertyString(Viewable viewable);
+  public String getPropertyString(E viewable);
 
   public RenderComponentFactory getRenderComponentFactory();
 
