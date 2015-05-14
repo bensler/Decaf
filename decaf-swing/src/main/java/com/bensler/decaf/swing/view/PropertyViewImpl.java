@@ -18,7 +18,7 @@ public class PropertyViewImpl<E> extends Object implements PropertyView<E> {
   public static class ToStringGetter<E> extends PropertyGetter<E, String> {
 
     public ToStringGetter() {
-      super(CollatorComparator.INSTANCE);
+      super(CollatorComparator.COLLATOR_COMPARATOR);
     }
 
     @Override
@@ -33,7 +33,7 @@ public class PropertyViewImpl<E> extends Object implements PropertyView<E> {
   );
 
   public    final static  PropertyViewImpl<Named>  NAMED     = new PropertyViewImpl<Named>(
-    new PropertyGetter<Named, String>(CollatorComparator.INSTANCE) {
+    new PropertyGetter<Named, String>(CollatorComparator.COLLATOR_COMPARATOR) {
       @Override
       public String getProperty(Named viewable) {
         return viewable.getName();
