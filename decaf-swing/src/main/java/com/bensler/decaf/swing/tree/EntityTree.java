@@ -21,7 +21,6 @@ import javax.swing.tree.TreeCellRenderer;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 
-import com.bensler.decaf.swing.Viewable;
 import com.bensler.decaf.swing.view.EntityComponent;
 import com.bensler.decaf.swing.view.NoSelectionModel;
 import com.bensler.decaf.swing.view.PropertyView;
@@ -198,7 +197,7 @@ TreeSelectionListener, FocusListener {
   public void refireSelectionChanged() {
     final List<H> oldSelection = new ArrayList<H>(selection_);
 
-    select(Collections.<Viewable>emptyList());
+    select(Collections.<Hierarchical<?>>emptyList());
     select(oldSelection);
   }
 
@@ -257,7 +256,7 @@ TreeSelectionListener, FocusListener {
   @Override
   public void select(Object subject) {
     select(Arrays.asList(
-      ((subject != null) ? new Object[] {subject} : new Viewable[0])
+      ((subject != null) ? new Object[] {subject} : new Hierarchical[0])
     ));
   }
 

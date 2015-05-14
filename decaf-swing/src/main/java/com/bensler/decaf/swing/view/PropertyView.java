@@ -8,9 +8,7 @@ import javax.swing.JTable;
 import javax.swing.ListCellRenderer;
 import javax.swing.tree.TreeCellRenderer;
 
-import com.bensler.decaf.swing.Viewable;
-
-public interface PropertyView<E> extends Comparator<E>, View, ListCellRenderer, TreeCellRenderer {
+public interface PropertyView<E> extends Comparator<E>, View, ListCellRenderer<E>, TreeCellRenderer {
 
   @Override
   public int compare(E o1, E o2);
@@ -25,10 +23,10 @@ public interface PropertyView<E> extends Comparator<E>, View, ListCellRenderer, 
 
   public PropertyGetter<E, ?> getGetter();
 
-  public JLabel renderLabel(JLabel label, Viewable viewable);
+  public JLabel renderLabel(JLabel label, E viewable);
 
   public Component getCellRendererComponent(
-    JTable table, Viewable viewable, Object cellValue, boolean isSelected, boolean hasFocus, int row, int column
+    JTable table, E viewable, Object cellValue, boolean isSelected, boolean hasFocus, int row, int column
   );
 
 }

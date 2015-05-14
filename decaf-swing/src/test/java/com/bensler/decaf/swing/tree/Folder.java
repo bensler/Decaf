@@ -1,10 +1,9 @@
 package com.bensler.decaf.swing.tree;
 
-import com.bensler.decaf.swing.Viewable;
 import com.bensler.decaf.util.Named;
 import com.bensler.decaf.util.tree.Hierarchical;
 
-public class Folder extends Object implements Hierarchical<Folder>, Named, Viewable {
+public class Folder extends Object implements Hierarchical<Folder>, Named {
 
     private final Folder parent_;
     private final String name_;

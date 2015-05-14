@@ -8,14 +8,18 @@ import javax.swing.JList;
 import javax.swing.JTable;
 import javax.swing.JTree;
 
-import com.bensler.decaf.swing.Viewable;
 import com.bensler.decaf.swing.view.RenderComponentFactory.Target;
 import com.bensler.decaf.util.Named;
+import com.bensler.decaf.util.cmp.CollatorComparator;
 
 
 public class PropertyViewImpl<E> extends Object implements PropertyView<E> {
 
-  public static class ToStringGetter<E> extends StringGetter<E> {
+  public static class ToStringGetter<E> extends PropertyGetter<E, String> {
+
+    public ToStringGetter() {
+      super(CollatorComparator.INSTANCE);
+    }
 
     @Override
     public String getProperty(E viewable) {
@@ -28,19 +32,14 @@ public class PropertyViewImpl<E> extends Object implements PropertyView<E> {
     new ToStringGetter<Object>()
   );
 
-  public    final static  PropertyViewImpl<Named>  NAMED     = new PropertyViewImpl<Named>(new PropertyGetter<Named, String>() {
-
-    @Override
-    public int compare(Named o1, Named o2) {
-      // TODO Auto-generated method stub
-      return 0;
+  public    final static  PropertyViewImpl<Named>  NAMED     = new PropertyViewImpl<Named>(
+    new PropertyGetter<Named, String>(CollatorComparator.INSTANCE) {
+      @Override
+      public String getProperty(Named viewable) {
+        return viewable.getName();
+      }
     }
-
-    @Override
-    public String getProperty(Named viewable) {
-      return viewable.getName();
-    }
-  });
+  );
 
   private   final         RenderComponentFactory  compFactory_;
 
@@ -57,36 +56,20 @@ public class PropertyViewImpl<E> extends Object implements PropertyView<E> {
   }
 
   public PropertyViewImpl(
-    String propertyName
-  ) {
-    this(new SimpleCellRenderer(), new NamePropertyGetter(propertyName));
-  }
-
-  public PropertyViewImpl(
     Icon icon, PropertyGetter<E, ?> getter
   ) {
     this(new SimpleCellRenderer(icon), getter);
   }
 
-  public PropertyViewImpl(Icon icon, String propertyName) {
-    this(new SimpleCellRenderer(icon), new NamePropertyGetter(propertyName));
-  }
-
   public PropertyViewImpl(
-    CellRenderer cellRenderer, String propertyName
-  ) {
-    this(cellRenderer, new NamePropertyGetter(propertyName));
-  }
-
-  public PropertyViewImpl(
-    CellRenderer cellRenderer, PropertyGetter propertyGetter
+    CellRenderer cellRenderer, PropertyGetter<E, ?> propertyGetter
   ) {
     this(cellRenderer, propertyGetter, RenderComponentFactory.DEFAULT_INSTANCE);
   }
 
   public PropertyViewImpl(
     CellRenderer cellRenderer,
-    PropertyGetter propertyGetter, RenderComponentFactory componentFactory
+    PropertyGetter<E, ?> propertyGetter, RenderComponentFactory componentFactory
   ) {
     renderer_ = cellRenderer;
     getter_ = propertyGetter;
@@ -102,10 +85,6 @@ public class PropertyViewImpl<E> extends Object implements PropertyView<E> {
 //    this(propertyView.getRenderer(), new QueueGetter(getter, propertyView.getGetter()), propertyView.getRenderComponentFactory());
 //  }
 
-  protected PropertyViewImpl() {
-    this(new SimpleCellRenderer(), (PropertyGetter)null);
-  }
-
   @Override
   public Component getTreeCellRendererComponent(
     JTree tree, Object value, boolean selected,
@@ -117,13 +96,13 @@ public class PropertyViewImpl<E> extends Object implements PropertyView<E> {
     treeComponent.prepareForTree(tree, selected, expanded, leaf, row, hasFocus);
     label = treeComponent.getComponent();
     nullPolicy_.render(value, label, getRenderer(), getter_);
-    compFactory_.afterRendering(Target.TREE, label, (Viewable)value);
+    compFactory_.afterRendering(Target.TREE, label, value);
     return label;
   }
 
   @Override
   public Component getCellRendererComponent(
-    JTable table, Viewable viewable, Object cellValue, boolean selected,
+    JTable table, E viewable, Object cellValue, boolean selected,
     boolean hasFocus, int row, int column
   ) {
     final TableRenderComponent  tableComponent  = compFactory_.getTableComponent();
@@ -147,12 +126,12 @@ public class PropertyViewImpl<E> extends Object implements PropertyView<E> {
     listComponent.prepareForList(list, selected, index, hasFocus);
     label = listComponent.getComponent();
     nullPolicy_.render(value, label, getRenderer(), getter_);
-    compFactory_.afterRendering(Target.LIST, label, (Viewable)value);
+    compFactory_.afterRendering(Target.LIST, label, value);
     return listComponent.getComponent();
   }
 
   @Override
-  public JLabel renderLabel(JLabel label, Viewable viewable) {
+  public JLabel renderLabel(JLabel label, E viewable) {
     nullPolicy_.render(viewable, label, getRenderer(), getter_);
     compFactory_.afterRendering(Target.LABEL, label, viewable);
     return label;
@@ -172,7 +151,7 @@ public class PropertyViewImpl<E> extends Object implements PropertyView<E> {
 
   @Override
   public int compare(E v1, E v2) {
-    return getter_.compare(v1, v2);
+    return getter_.getEntityComparator().compare(v1, v2);
   }
 
   @Override

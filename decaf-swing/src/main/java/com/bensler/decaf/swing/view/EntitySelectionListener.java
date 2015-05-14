@@ -2,13 +2,11 @@ package com.bensler.decaf.swing.view;
 
 import java.util.List;
 
-import com.bensler.decaf.swing.Viewable;
-
 
 /**
  */
-public interface EntitySelectionListener {
+public interface EntitySelectionListener<E> {
 
-  public void selectionChanged(EntityComponent source, List<? extends Viewable> selection);
+  public void selectionChanged(EntityComponent<E> source, List<E> selection);
 
 }

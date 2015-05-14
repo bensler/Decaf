@@ -2,9 +2,39 @@ package com.bensler.decaf.swing.view;
 
 import java.util.Comparator;
 
+import com.bensler.decaf.util.cmp.NullSafeComparator;
 
-public interface PropertyGetter<E, P> extends Comparator<E> {
 
-  P getProperty(E viewable);
+
+public abstract class PropertyGetter<E, P> {
+
+  private final Comparator<E> entityDelegate_;
+  private final Comparator<P> propertyDelegate_;
+
+  public PropertyGetter(Comparator<P> propertyDelegate) {
+    super();
+    propertyDelegate_ = new NullSafeComparator<>(propertyDelegate);
+    entityDelegate_ = new NullSafeComparator<>(new Comparator<E>() {
+      @Override
+      public int compare(E e1, E e2) {
+        return propertyDelegate_.compare(getProperty(e1), getProperty(e2));
+      }
+    });
+  }
+
+  public abstract P getProperty(E viewable);
+
+//  public int compare(E o1, E o2) {
+//    // TODO Auto-generated method stub
+//    return 0;
+//  }
+
+  public Comparator<E> getEntityComparator() {
+    return entityDelegate_;
+  }
+
+  public Comparator<P> getPropertyComparator() {
+    return propertyDelegate_;
+  }
 
 }

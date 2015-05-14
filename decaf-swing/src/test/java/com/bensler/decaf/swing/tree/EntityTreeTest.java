@@ -15,9 +15,11 @@ import javax.swing.UnsupportedLookAndFeelException;
 
 import org.junit.Test;
 
+import com.bensler.decaf.swing.view.NamePropertyGetter;
 import com.bensler.decaf.swing.view.PropertyViewImpl;
 import com.bensler.decaf.testutil.Bender;
 import com.bensler.decaf.testutil.TestImageSample;
+import com.bensler.decaf.util.cmp.CollatorComparator;
 import com.bensler.decaf.util.tree.Hierarchy;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
@@ -41,7 +43,9 @@ public class EntityTreeTest {
       "3dlu, f:p:g, 3dlu",
       "3dlu, f:p:g, 3dlu, p, 3dlu"
     ));
-    final EntityTree<Folder> tree = new EntityTree<>(new PropertyViewImpl<>("name"));
+    final EntityTree<Folder> tree = new EntityTree<>(new PropertyViewImpl<>(
+      new NamePropertyGetter<String>("name", CollatorComparator.INSTANCE))
+    );
     final JButton button;
 
     dialog.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
