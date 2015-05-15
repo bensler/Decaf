@@ -380,7 +380,7 @@ TreeSelectionListener, FocusListener {
     return ((selection_.isEmpty() ? null : selection_.get(0)));
   }
 
-  public void setFilter(TreeFilter filter) {
+  public void setFilter(TreeFilter<H> filter) {
     model_.setFilter(filter);
   }
 
@@ -449,11 +449,11 @@ TreeSelectionListener, FocusListener {
 
   private final class UnwrappingRenderer extends Object implements TreeCellRenderer {
 
-    private UnwrappingRenderer(PropertyView view) {
+    private UnwrappingRenderer(PropertyView<? super H> view) {
       view_ = view;
     }
 
-    private   final         PropertyView  view_;
+    private   final         PropertyView<? super H>  view_;
 
     @Override
     public Component getTreeCellRendererComponent(

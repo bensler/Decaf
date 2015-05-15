@@ -4,13 +4,13 @@ import javax.swing.JLabel;
 
 import com.bensler.decaf.swing.tree.TreeModel;
 
-public class DefaultNullPolicy extends Object implements NullPolicy {
+public class DefaultNullPolicy<E> extends Object implements NullPolicy<E> {
 
   public    final static  SimpleCellRenderer      NULL_RENDERER   = new SimpleCellRenderer();
 
   @Override
   public void render(
-    Object value, JLabel label, CellRenderer renderer, PropertyGetter getter
+    E value, JLabel label, CellRenderer renderer, PropertyGetter<E, ?> getter
   ) {
     if (
       (value == null)

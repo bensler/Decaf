@@ -295,7 +295,7 @@ public class TreeModel <H extends Hierarchical<?>> extends DefaultTreeModel {
     fireFilterChanged();
   }
 
-  public TreeFilter getFilter() {
+  public TreeFilter<H> getFilter() {
     return filter_;
   }
 

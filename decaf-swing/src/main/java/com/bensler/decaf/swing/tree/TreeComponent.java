@@ -96,6 +96,7 @@ public class TreeComponent<H extends Hierarchical<?>> extends JTree implements T
     boolean leaf, int row, boolean hasFocus
   ) {
     if ((value != null) && (view_ != null)) {
+      @SuppressWarnings("unchecked")
       final Object cellValue  = view_.getProperty((H)value);
 
       if (cellValue != null) {

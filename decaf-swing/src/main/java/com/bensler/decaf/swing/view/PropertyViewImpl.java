@@ -47,7 +47,7 @@ public class PropertyViewImpl<E> extends Object implements PropertyView<E> {
 
   private   final         PropertyGetter<E, ?>    getter_;
 
-  private   final         NullPolicy              nullPolicy_;
+  private   final         NullPolicy<E>           nullPolicy_;
 
   public PropertyViewImpl(
     PropertyGetter<E, ?> getter
@@ -74,7 +74,7 @@ public class PropertyViewImpl<E> extends Object implements PropertyView<E> {
     renderer_ = cellRenderer;
     getter_ = propertyGetter;
     compFactory_ = componentFactory;
-    nullPolicy_ = new DefaultNullPolicy();
+    nullPolicy_ = new DefaultNullPolicy<E>();
   }
 //
 //  public PropertyViewImpl(String propertyName, PropertyView propertyView) {
@@ -95,7 +95,7 @@ public class PropertyViewImpl<E> extends Object implements PropertyView<E> {
 
     treeComponent.prepareForTree(tree, selected, expanded, leaf, row, hasFocus);
     label = treeComponent.getComponent();
-    nullPolicy_.render(value, label, getRenderer(), getter_);
+    nullPolicy_.render((E)value, label, getRenderer(), getter_);
     compFactory_.afterRendering(Target.TREE, label, value);
     return label;
   }
@@ -117,7 +117,7 @@ public class PropertyViewImpl<E> extends Object implements PropertyView<E> {
 
   @Override
   public Component getListCellRendererComponent(
-    JList list, Object value, int index,
+    JList<? extends E> list, E value, int index,
     boolean selected, boolean hasFocus
   ) {
     final ListRenderComponent   listComponent   = compFactory_.getListComponent();

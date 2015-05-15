@@ -24,11 +24,6 @@ public abstract class PropertyGetter<E, P> {
 
   public abstract P getProperty(E viewable);
 
-//  public int compare(E o1, E o2) {
-//    // TODO Auto-generated method stub
-//    return 0;
-//  }
-
   public Comparator<E> getEntityComparator() {
     return entityDelegate_;
   }

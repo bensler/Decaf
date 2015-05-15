@@ -41,6 +41,7 @@ public class DefaultTreeCellRenderComponent extends RendererBase implements Tree
     setBorder(new EmptyBorder(0, 2, 0, 0));
   }
 
+  @Override
   public void paint(Graphics g) {
     final Color   bsColor     = borderSelectionColor_;
           int     imageOffset = getLabelStart();
@@ -78,6 +79,7 @@ public class DefaultTreeCellRenderComponent extends RendererBase implements Tree
    * Overrides <code>JComponent.getPreferredSize</code> to
    * return slightly wider preferred size value.
    */
+  @Override
   public Dimension getPreferredSize() {
     Dimension        retDimension = super.getPreferredSize();
 
@@ -87,11 +89,12 @@ public class DefaultTreeCellRenderComponent extends RendererBase implements Tree
     return retDimension;
   }
 
+  @Override
   public void prepareForTree(
     JTree aTree, boolean selected, boolean expanded,
     boolean leaf, int row, boolean hasFocus
   ) {
-    final TreeComponent tree = (TreeComponent)aTree;
+    final TreeComponent<?> tree = (TreeComponent<?>)aTree;
     final Icon          icon = (
       leaf ? icons_.getLeafIcon()
       : (expanded ? icons_.getOpenIcon() : icons_.getClosedIcon())
