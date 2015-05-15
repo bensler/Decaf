@@ -8,6 +8,7 @@ import org.junit.Test;
 
 import com.bensler.decaf.testutil.Bender;
 import com.bensler.decaf.testutil.TestImageSample;
+import com.bensler.decaf.util.tree.Folder;
 
 public class EntityTreeTest {
 
@@ -19,7 +20,7 @@ public class EntityTreeTest {
 
   @Test
   public void interactive() throws Exception {
-    final SampleTreeDialog app = new SampleTreeDialog();
+    final SampleTreeDialog<Folder> app = new SampleTreeDialog<>(SampleTreeDialog.createFolderData());
 
     app.dialog_.setLocation(bender_.getLargestScreensOrigin());
     app.dialog_.setVisible(true);

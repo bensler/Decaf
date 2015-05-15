@@ -1,5 +1,7 @@
 package com.bensler.decaf.swing.tree;
 
+import static com.bensler.decaf.util.cmp.CollatorComparator.COLLATOR_COMPARATOR;
+
 import java.awt.Dialog.ModalityType;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
@@ -14,25 +16,25 @@ import javax.swing.UnsupportedLookAndFeelException;
 
 import com.bensler.decaf.swing.view.NamePropertyGetter;
 import com.bensler.decaf.swing.view.PropertyViewImpl;
-import com.bensler.decaf.util.cmp.CollatorComparator;
 import com.bensler.decaf.util.tree.Folder;
+import com.bensler.decaf.util.tree.Hierarchical;
 import com.bensler.decaf.util.tree.Hierarchy;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 import com.jgoodies.looks.plastic.Plastic3DLookAndFeel;
 import com.jgoodies.looks.plastic.theme.DesertYellow;
 
-public class SampleTreeDialog implements ActionListener {
+public class SampleTreeDialog<H extends Hierarchical<?>> implements ActionListener {
 
   public static void main(String[] args) throws UnsupportedLookAndFeelException {
-    new SampleTreeDialog().dialog_.setVisible(true);
+    new SampleTreeDialog<Folder>(createFolderData()).dialog_.setVisible(true);
   }
 
   final JDialog dialog_;
-  final EntityTree<Folder> tree_;
+  final EntityTree<H> tree_;
   final JButton button_;
 
-  public SampleTreeDialog() throws UnsupportedLookAndFeelException {
+  public SampleTreeDialog(Hierarchy<H> data) throws UnsupportedLookAndFeelException {
     Plastic3DLookAndFeel.setCurrentTheme(new DesertYellow());
     UIManager.setLookAndFeel(new Plastic3DLookAndFeel());
     dialog_ = new JDialog(null, "Decaf Swing Test", ModalityType.MODELESS);
@@ -41,10 +43,10 @@ public class SampleTreeDialog implements ActionListener {
       "3dlu, f:p:g, 3dlu, p, 3dlu"
     ));
     tree_ = new EntityTree<>(new PropertyViewImpl<>(
-      new NamePropertyGetter<String>("name", CollatorComparator.COLLATOR_COMPARATOR))
+      new NamePropertyGetter<String>("name", COLLATOR_COMPARATOR))
     );
     dialog_.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-    tree_.setData(createData());
+    tree_.setData(data);
     panel.add(tree_.getScrollPane(), new CellConstraints(2, 2));
     button_ = new JButton("Close");
     button_.addActionListener(this);
@@ -56,7 +58,7 @@ public class SampleTreeDialog implements ActionListener {
     tree_.expandCollapseAll(true);
   }
 
-  private Hierarchy<Folder> createData() {
+  static Hierarchy<Folder> createFolderData() {
     final Hierarchy<Folder> tree = new Hierarchy<>();
 
     final Folder root = new Folder(null, "/");

@@ -11,9 +11,9 @@ public abstract class PropertyGetter<E, P> {
   private final Comparator<E> entityDelegate_;
   private final Comparator<P> propertyDelegate_;
 
-  public PropertyGetter(Comparator<P> propertyDelegate) {
+  public PropertyGetter(Comparator<? super P> propertyComparator) {
     super();
-    propertyDelegate_ = new NullSafeComparator<>(propertyDelegate);
+    propertyDelegate_ = new NullSafeComparator<>(propertyComparator);
     entityDelegate_ = new NullSafeComparator<>(new Comparator<E>() {
       @Override
       public int compare(E e1, E e2) {

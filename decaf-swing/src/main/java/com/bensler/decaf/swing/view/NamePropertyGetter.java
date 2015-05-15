@@ -25,7 +25,7 @@ public class NamePropertyGetter<P> extends PropertyGetter<Object, P> {
 
   protected final String   propertyName_;
 
-  public NamePropertyGetter(String propertyName, Comparator<P> comparatorDelegate) {
+  public NamePropertyGetter(String propertyName, Comparator<? super P> comparatorDelegate) {
     super(comparatorDelegate);
     propertyName_ = propertyName;
   }
