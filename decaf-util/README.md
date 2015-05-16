@@ -1,4 +1,4 @@
-# Decaf Utililies
+# Decaf Utilities
 
 This is my little playground project for practicing Test Driven Development.
 
