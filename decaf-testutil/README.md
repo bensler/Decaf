@@ -17,17 +17,20 @@ Test code of this project depends on JGoodies libs which are not available in a 
 ## Sample
 There is a sample test case [SimpleTest](src/test/java/com/bensler/decaf/testutil/SimpleTest.java) being a little dialog with an checkbox and a close button. The button gets enabled when the checkbox is checked and vice versa.
 
-<table border="no">
+<table border=0>
   <tr>
-    <td>how it should look like</td>
+    <td> **how it should look like** <br>
+    after clicking the checkbox (button enabled)</td>
     <td><img src="doc/com.bensler.decaf.testutil.SimpleTest.interactive.png" /></td>
   </tr>
   <tr>
-    <td>how it actually looks like</td>
+    <td> **how it actually looks like** <br>
+    button is not enabled, some code change introduced a bug</td>
     <td><img src="doc/com.bensler.decaf.testutil.SimpleTest.interactive.actual.png" /></td>
   </tr>
   <tr>
-    <td>diff</td>
+    <td> **diff-GIF** <br>
+    emphasizing the regions which are not as expected</td>
     <td><img src="doc/com.bensler.decaf.testutil.SimpleTest.interactive.failed.gif" /></td>
   </tr>
 </table>
