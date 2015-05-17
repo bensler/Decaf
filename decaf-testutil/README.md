@@ -13,4 +13,22 @@ If a test failure comes from an intended program change the actual screenshot mi
 
 ## Build
 Test code of this project depends on JGoodies libs which are not available in a public maven repo. You need to install them into your local repository as described in [decaf/README](../README.md) file.
+
+## Sample
+There is a sample test case [SimpleTest](src/test/java/com/bensler/decaf/testutil/SimpleTest.java) being a little dialog with an checkbox and a close button. The button gets enabled when the checkbox is checked and vice versa.
+
+<table border="no">
+  <tr>
+    <td>how it should look like</td>
+    <td><img src="doc/com.bensler.decaf.testutil.SimpleTest.interactive.png" /></td>
+  </tr>
+  <tr>
+    <td>how it actually looks</td>
+    <td><img src="doc/com.bensler.decaf.testutil.SimpleTest.interactive.actual.png" /></td>
+  </tr>
+  <tr>
+    <td>diff</td>
+    <td><img src="doc/com.bensler.decaf.testutil.SimpleTest.interactive.failed.gif" /></td>
+  </tr>
+</table>
  
