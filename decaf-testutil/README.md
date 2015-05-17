@@ -23,7 +23,7 @@ There is a sample test case [SimpleTest](src/test/java/com/bensler/decaf/testuti
     <td><img src="doc/com.bensler.decaf.testutil.SimpleTest.interactive.png" /></td>
   </tr>
   <tr>
-    <td>how it actually looks</td>
+    <td>how it actually looks like</td>
     <td><img src="doc/com.bensler.decaf.testutil.SimpleTest.interactive.actual.png" /></td>
   </tr>
   <tr>
