@@ -56,8 +56,8 @@ public class TestImageSample {
     return baseFileName_ + DELEMITER + TYPE_PNG;
   }
 
-  public String getErrorBaseFileName() {
-    return callerClass_.getPackage().getName() + DELEMITER + baseFileName_;
+  public String getBaseFileName() {
+    return baseFileName_;
   }
 
 }

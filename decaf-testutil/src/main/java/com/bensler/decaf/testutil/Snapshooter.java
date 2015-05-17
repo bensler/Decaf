@@ -39,8 +39,8 @@ class Snapshooter implements Runnable {
       diffImage = diffImage(image, actual);
       if (diffImage != null) {
         final AnimatedGifEncoder encoder = new AnimatedGifEncoder();
-        final String failedGifName = sampleImage_.getErrorBaseFileName() + ".failed.gif";
-        final String actualFileName = sampleImage_.getErrorBaseFileName() + ".actual.png";
+        final String failedGifName = sampleImage_.getBaseFileName() + ".failed.gif";
+        final String actualFileName = sampleImage_.getBaseFileName() + ".actual.png";
 
         encoder.setDelay(700);   // ms
         encoder.start(new FileOutputStream(new File(parent_.getReportsDir(), failedGifName)));
