@@ -19,17 +19,17 @@ There is a sample test case [SimpleTest](src/test/java/com/bensler/decaf/testuti
 
 <table border=0>
   <tr>
-    <td> *how it should look like* <br>
+    <td><strong>how it should look like</strong> <br>
     after clicking the checkbox (button enabled)</td>
     <td><img src="doc/com.bensler.decaf.testutil.SimpleTest.interactive.png" /></td>
   </tr>
   <tr>
-    <td> *how it actually looks like* <br>
+    <td><strong>how it actually looks like</strong> <br>
     button is not enabled, some code change introduced a bug</td>
     <td><img src="doc/com.bensler.decaf.testutil.SimpleTest.interactive.actual.png" /></td>
   </tr>
   <tr>
-    <td> *diff-GIF* <br>
+    <td><strong>diff-GIF</strong> <br>
     emphasizing the regions which are not as expected</td>
     <td><img src="doc/com.bensler.decaf.testutil.SimpleTest.interactive.failed.gif" /></td>
   </tr>
