@@ -19,8 +19,6 @@ public interface PropertyView<E, P> extends Comparator<E>, View, ListCellRendere
 
   public RenderComponentFactory getRenderComponentFactory();
 
-  public CellRenderer getRenderer();
-
   public PropertyGetter<E, P> getGetter();
 
   public JLabel renderLabel(JLabel label, E viewable);
