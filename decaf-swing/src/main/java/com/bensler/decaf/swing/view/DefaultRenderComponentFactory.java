@@ -13,22 +13,11 @@ public class DefaultRenderComponentFactory implements RenderComponentFactory {
   private   final         TreeRenderComponent   treeComp_;
 
   public DefaultRenderComponentFactory() {
-    this(new DefaultCellRenderComponent(), new DefaultTreeCellRenderComponent());
-  }
+    final DefaultCellRenderComponent tableListComponent = new DefaultCellRenderComponent();
 
-  public DefaultRenderComponentFactory(
-    RendererLabel tableListComponent, TreeRenderComponent treeComponent
-  ) {
-    this((ListRenderComponent)tableListComponent, (TableRenderComponent)tableListComponent, treeComponent);
-  }
-
-  public DefaultRenderComponentFactory(
-    ListRenderComponent listComponent, TableRenderComponent tableComponent,
-    TreeRenderComponent treeComponent
-  ) {
-    listComp_ = listComponent;
-    tableComp_ = tableComponent;
-    treeComp_ = treeComponent;
+    listComp_ = tableListComponent;
+    tableComp_ = tableListComponent;
+    treeComp_ = new DefaultTreeCellRenderComponent();
   }
 
   @Override
