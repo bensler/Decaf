@@ -54,7 +54,7 @@ TreeSelectionListener, FocusListener {
 
   protected               boolean             editable_;
 
-  public EntityTree(PropertyView<? super H> propView) {
+  public EntityTree(PropertyView<? super H, ?> propView) {
     super();
     final UnwrappingRenderer unwrapper = new UnwrappingRenderer(propView);
 
@@ -97,7 +97,7 @@ TreeSelectionListener, FocusListener {
     return editable_;
   }
 
-  protected TreeModel<H> createModel(PropertyView<? super H> view) {
+  protected TreeModel<H> createModel(PropertyView<? super H, ?> view) {
     return new TreeModel<>(view);
   }
 
@@ -449,11 +449,11 @@ TreeSelectionListener, FocusListener {
 
   private final class UnwrappingRenderer extends Object implements TreeCellRenderer {
 
-    private UnwrappingRenderer(PropertyView<? super H> view) {
+    private UnwrappingRenderer(PropertyView<? super H, ?> view) {
       view_ = view;
     }
 
-    private   final         PropertyView<? super H>  view_;
+    private   final         PropertyView<? super H, ?>  view_;
 
     @Override
     public Component getTreeCellRendererComponent(

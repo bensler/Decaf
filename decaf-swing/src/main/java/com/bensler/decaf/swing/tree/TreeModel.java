@@ -57,13 +57,13 @@ public class TreeModel <H extends Hierarchical<?>> extends DefaultTreeModel {
 
   protected final         Map<Object, List<H>>    parentChildArrayMap_;
 
-  private                 PropertyView<? super H> view_;
+  private                 PropertyView<? super H, ?> view_;
 
   protected               Hierarchy<H>            data_;
 
   private                 TreeFilter<H>           filter_;
 
-  TreeModel(PropertyView<? super H> view) {
+  TreeModel(PropertyView<? super H, ?> view) {
     super(null, false);
     parentChildArrayMap_ = new HashMap<Object, List<H>>();
     data_ = new Hierarchy<H>();

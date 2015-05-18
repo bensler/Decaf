@@ -13,7 +13,7 @@ import com.bensler.decaf.util.Named;
 import com.bensler.decaf.util.cmp.CollatorComparator;
 
 
-public class PropertyViewImpl<E> extends Object implements PropertyView<E> {
+public class PropertyViewImpl<E, P> extends Object implements PropertyView<E, P> {
 
   public static class ToStringGetter<E> extends PropertyGetter<E, String> {
 
@@ -28,11 +28,11 @@ public class PropertyViewImpl<E> extends Object implements PropertyView<E> {
 
   }
 
-  public    final static  PropertyViewImpl<Object>  OBJECT    = new PropertyViewImpl<>(
+  public    final static  PropertyViewImpl<Object, String>  OBJECT    = new PropertyViewImpl<>(
     new ToStringGetter<Object>()
   );
 
-  public    final static  PropertyViewImpl<Named>  NAMED     = new PropertyViewImpl<Named>(
+  public    final static  PropertyViewImpl<Named, String>  NAMED     = new PropertyViewImpl<>(
     new PropertyGetter<Named, String>(CollatorComparator.COLLATOR_COMPARATOR) {
       @Override
       public String getProperty(Named viewable) {
@@ -45,31 +45,31 @@ public class PropertyViewImpl<E> extends Object implements PropertyView<E> {
 
   private   final         CellRenderer            renderer_;
 
-  private   final         PropertyGetter<E, ?>    getter_;
+  private   final         PropertyGetter<E, P>    getter_;
 
   private   final         NullPolicy<E>           nullPolicy_;
 
   public PropertyViewImpl(
-    PropertyGetter<E, ?> getter
+    PropertyGetter<E, P> getter
   ) {
     this(new SimpleCellRenderer(), getter);
   }
 
   public PropertyViewImpl(
-    Icon icon, PropertyGetter<E, ?> getter
+    Icon icon, PropertyGetter<E, P> getter
   ) {
     this(new SimpleCellRenderer(icon), getter);
   }
 
   public PropertyViewImpl(
-    CellRenderer cellRenderer, PropertyGetter<E, ?> propertyGetter
+    CellRenderer cellRenderer, PropertyGetter<E, P> propertyGetter
   ) {
     this(cellRenderer, propertyGetter, RenderComponentFactory.DEFAULT_INSTANCE);
   }
 
   public PropertyViewImpl(
     CellRenderer cellRenderer,
-    PropertyGetter<E, ?> propertyGetter, RenderComponentFactory componentFactory
+    PropertyGetter<E, P> propertyGetter, RenderComponentFactory componentFactory
   ) {
     renderer_ = cellRenderer;
     getter_ = propertyGetter;
@@ -127,7 +127,7 @@ public class PropertyViewImpl<E> extends Object implements PropertyView<E> {
     label = listComponent.getComponent();
     nullPolicy_.render(value, label, getRenderer(), getter_);
     compFactory_.afterRendering(Target.LIST, label, value);
-    return listComponent.getComponent();
+    return label;
   }
 
   @Override
@@ -138,13 +138,13 @@ public class PropertyViewImpl<E> extends Object implements PropertyView<E> {
   }
 
   @Override
-  public Object getProperty(E viewable) {
+  public P getProperty(E viewable) {
     return getter_.getProperty(viewable);
   }
 
   @Override
   public String getPropertyString(E viewable) {
-    final Object propertyValue = getProperty(viewable);
+    final P propertyValue = getProperty(viewable);
 
     return nullPolicy_.getPropertyString(propertyValue);
   }
@@ -165,7 +165,7 @@ public class PropertyViewImpl<E> extends Object implements PropertyView<E> {
   }
 
   @Override
-  public PropertyGetter<E, ?> getGetter() {
+  public PropertyGetter<E, P> getGetter() {
     return getter_;
   }
 
