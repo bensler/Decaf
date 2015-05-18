@@ -7,24 +7,13 @@ public class SimpleCellRenderer extends Object implements CellRenderer {
 
   private   final         Icon      icon_;
 
-  private   final         boolean   renderIconEvenWithEmptyText_;
-
   public SimpleCellRenderer() {
-    this(null, false);
+    this(null);
   }
 
   public SimpleCellRenderer(Icon icon) {
-    this(icon, false);
-  }
-
-  public SimpleCellRenderer(boolean renderIconEvenWithEmptyText) {
-    this(null, renderIconEvenWithEmptyText);
-  }
-
-  public SimpleCellRenderer(Icon icon, boolean renderIconEvenWithEmptyText) {
     super();
     icon_ = icon;
-    renderIconEvenWithEmptyText_ = renderIconEvenWithEmptyText;
   }
 
   /** Sets the text to <code>value.toString()</code>.
@@ -47,7 +36,7 @@ public class SimpleCellRenderer extends Object implements CellRenderer {
 
   @Override
   public void render(Object viewable, Object cellValue, JLabel comp) {
-    if (setText(comp, cellValue) || renderIconEvenWithEmptyText_) {
+    if (setText(comp, cellValue)) {
       comp.setIcon(getIcon(viewable, cellValue));
     } else {
       comp.setIcon(null);
