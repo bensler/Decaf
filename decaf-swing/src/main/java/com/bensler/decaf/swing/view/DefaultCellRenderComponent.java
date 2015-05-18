@@ -7,7 +7,7 @@ import javax.swing.JTable;
 import javax.swing.UIManager;
 import javax.swing.border.Border;
 
-public class DefaultCellRenderComponent extends RendererBase implements ListRenderComponent, TableRenderComponent {
+public class DefaultCellRenderComponent extends RendererLabel implements ListRenderComponent, TableRenderComponent {
 
   public DefaultCellRenderComponent() {
     super();
@@ -49,7 +49,7 @@ public class DefaultCellRenderComponent extends RendererBase implements ListRend
   }
 
   @Override
-  public void prepareForList(JList list, boolean selected, int index, boolean focused) {
+  public void prepareForList(JList<?> list, boolean selected, int index, boolean focused) {
     Border border = BORDER_NO_FOCUS;
 
     setComponentOrientation(list.getComponentOrientation());

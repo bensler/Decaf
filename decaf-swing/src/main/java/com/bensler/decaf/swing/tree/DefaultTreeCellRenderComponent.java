@@ -8,12 +8,12 @@ import javax.swing.JTree;
 import javax.swing.UIManager;
 import javax.swing.border.EmptyBorder;
 
-import com.bensler.decaf.swing.view.RendererBase;
+import com.bensler.decaf.swing.view.RendererLabel;
 import com.bensler.decaf.swing.view.TreeRenderComponent;
 
 /**
  */
-public class DefaultTreeCellRenderComponent extends RendererBase implements TreeRenderComponent {
+public class DefaultTreeCellRenderComponent extends RendererLabel implements TreeRenderComponent {
 
   /** True if draws focus border around icon as well. */
   private   final         boolean       drawsFocusBorderAroundIcon_;

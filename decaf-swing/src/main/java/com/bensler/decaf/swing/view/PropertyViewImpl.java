@@ -8,7 +8,6 @@ import javax.swing.JList;
 import javax.swing.JTable;
 import javax.swing.JTree;
 
-import com.bensler.decaf.swing.view.RenderComponentFactory.Target;
 import com.bensler.decaf.util.Named;
 import com.bensler.decaf.util.cmp.CollatorComparator;
 
@@ -96,7 +95,6 @@ public class PropertyViewImpl<E, P> extends Object implements PropertyView<E, P>
     treeComponent.prepareForTree(tree, selected, expanded, leaf, row, hasFocus);
     label = treeComponent.getComponent();
     nullPolicy_.render((E)value, label, getRenderer(), getter_);
-    compFactory_.afterRendering(Target.TREE, label, value);
     return label;
   }
 
@@ -111,7 +109,6 @@ public class PropertyViewImpl<E, P> extends Object implements PropertyView<E, P>
     tableComponent.prepareForTable(table, selected, row, column, hasFocus);
     label = tableComponent.getComponent();
     getRenderer().render(viewable, cellValue, label);
-    compFactory_.afterRendering(Target.TABLE, label, viewable);
     return label;
   }
 
@@ -126,14 +123,12 @@ public class PropertyViewImpl<E, P> extends Object implements PropertyView<E, P>
     listComponent.prepareForList(list, selected, index, hasFocus);
     label = listComponent.getComponent();
     nullPolicy_.render(value, label, getRenderer(), getter_);
-    compFactory_.afterRendering(Target.LIST, label, value);
     return label;
   }
 
   @Override
   public JLabel renderLabel(JLabel label, E viewable) {
     nullPolicy_.render(viewable, label, getRenderer(), getter_);
-    compFactory_.afterRendering(Target.LABEL, label, viewable);
     return label;
   }
 

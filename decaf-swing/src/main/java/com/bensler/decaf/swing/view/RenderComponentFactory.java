@@ -1,6 +1,5 @@
 package com.bensler.decaf.swing.view;
 
-import javax.swing.JComponent;
 
 public interface RenderComponentFactory {
 
@@ -11,16 +10,5 @@ public interface RenderComponentFactory {
   public TableRenderComponent getTableComponent();
 
   public ListRenderComponent getListComponent();
-
-  public void afterRendering(Target target, JComponent rendererComponent, Object viewable);
-
-  public enum Target {
-
-    TREE,
-    TABLE,
-    LIST,
-    LABEL;
-
-  }
 
 }
