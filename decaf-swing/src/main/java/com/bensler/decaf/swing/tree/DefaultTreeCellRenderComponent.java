@@ -1,7 +1,6 @@
 package com.bensler.decaf.swing.tree;
 
 import java.awt.Color;
-import java.awt.Dimension;
 import java.awt.Graphics;
 
 import javax.swing.Icon;
@@ -24,8 +23,6 @@ public class DefaultTreeCellRenderComponent extends RendererBase implements Tree
   private   final         IconProvider  icons_;
   /** Is the value currently selected. */
   protected               boolean       selected_;
-  /** True if has focus. */
-  protected               boolean       hasFocus_;
 
   public DefaultTreeCellRenderComponent() {
     this(new SimpleIconProvider(null, null, null));
@@ -38,7 +35,7 @@ public class DefaultTreeCellRenderComponent extends RendererBase implements Tree
     borderSelectionColor_ = UIManager.getColor("Tree.selectionBorderColor");
     drawsFocusBorderAroundIcon_ = (drawsFocusBorderAroundIcon != null && ((Boolean)drawsFocusBorderAroundIcon).booleanValue());
     setOpaque(false);
-    setBorder(new EmptyBorder(0, 2, 0, 0));
+    setBorder(new EmptyBorder(0, 2, 0, 3));
   }
 
   @Override
@@ -75,20 +72,6 @@ public class DefaultTreeCellRenderComponent extends RendererBase implements Tree
     return 0;
   }
 
-  /**
-   * Overrides <code>JComponent.getPreferredSize</code> to
-   * return slightly wider preferred size value.
-   */
-  @Override
-  public Dimension getPreferredSize() {
-    Dimension        retDimension = super.getPreferredSize();
-
-    if (retDimension != null) {
-      retDimension = new Dimension(retDimension.width + 3, retDimension.height);
-    }
-    return retDimension;
-  }
-
   @Override
   public void prepareForTree(
     JTree aTree, boolean selected, boolean expanded,
@@ -100,9 +83,7 @@ public class DefaultTreeCellRenderComponent extends RendererBase implements Tree
       : (expanded ? icons_.getOpenIcon() : icons_.getClosedIcon())
     );
 
-    hasFocus_ = tree.hasFocus();
     selected_ = selected;
-
     setFont(tree.getFont());
     setForeground(
       selected_ ? tree.getForegroundSelectionColor() : tree.getForeground()
@@ -116,7 +97,7 @@ public class DefaultTreeCellRenderComponent extends RendererBase implements Tree
     }
     setComponentOrientation(tree.getComponentOrientation());
     if (selected_) {
-      setBackground(hasFocus_ ? tree.getBackgroundSelectionColor() : tree.getBackgroundSelectionColorUnfocused());
+      setBackground(tree.hasFocus() ? tree.getBackgroundSelectionColor() : tree.getBackgroundSelectionColorUnfocused());
     } else {
       setBackground(tree.getBackground());
     }
