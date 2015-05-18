@@ -85,7 +85,10 @@ public class Bender extends Object {
   }
 
   public void clickOn(final Component component) {
-    runDelayedInEventDispatcher(new Clicker(component));
+    clickOn(component, null);
+  }
+  public void clickOn(final Component component, Point position) {
+    runDelayedInEventDispatcher(new Clicker(component, position));
   }
 
   public void assertEqualsVisually(final Component component, final TestImageSample sample) {
@@ -134,10 +137,6 @@ public class Bender extends Object {
 
     private final Component target_;
     private final Point relativePosition_;
-
-    public Clicker(Component clickTarget) {
-      this(clickTarget, null);
-    }
 
     public Clicker(Component clickTarget, Point position) {
       target_ = clickTarget;

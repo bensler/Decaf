@@ -1,6 +1,7 @@
 package com.bensler.decaf.swing.tree;
 
 import java.awt.AWTException;
+import java.awt.Point;
 
 import javax.swing.UnsupportedLookAndFeelException;
 
@@ -24,6 +25,7 @@ public class EntityTreeTest {
 
     app.dialog_.setLocation(bender_.getLargestScreensOrigin());
     app.dialog_.setVisible(true);
+    bender_.clickOn(app.tree_.getScrollPane(), new Point(83,  51));
     bender_.assertEqualsVisually(app.dialog_.getContentPane(), new TestImageSample());
     bender_.clickOn(app.button_);
     bender_.waitForAllTasksCompleted();
