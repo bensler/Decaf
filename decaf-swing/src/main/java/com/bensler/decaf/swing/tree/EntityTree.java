@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -45,8 +46,6 @@ TreeSelectionListener, FocusListener {
   private                 boolean             silentSelectionChange_;
 
   protected               TreeModel<H>        model_;
-
-//  private                 DragSituation       dragSituation_;
 
   private                 SelectionMode       selectionMode_;
 
@@ -97,8 +96,8 @@ TreeSelectionListener, FocusListener {
     return editable_;
   }
 
-  protected TreeModel<H> createModel(PropertyView<? super H, ?> view) {
-    return new TreeModel<>(view);
+  protected TreeModel<H> createModel(Comparator<? super H> comparator) {
+    return new TreeModel<>(comparator);
   }
 
   @Override
@@ -378,10 +377,6 @@ TreeSelectionListener, FocusListener {
   @Override
   public H getSingleSelection() {
     return ((selection_.isEmpty() ? null : selection_.get(0)));
-  }
-
-  public void setFilter(TreeFilter<H> filter) {
-    model_.setFilter(filter);
   }
 
   public Hierarchical<?> getRootNode() {
