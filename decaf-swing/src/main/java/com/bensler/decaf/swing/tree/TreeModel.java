@@ -13,7 +13,6 @@ import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
 
 import com.bensler.decaf.swing.view.PropertyView;
-import com.bensler.decaf.util.NamedImpl;
 import com.bensler.decaf.util.tree.Hierarchical;
 import com.bensler.decaf.util.tree.Hierarchy;
 
@@ -31,17 +30,11 @@ public class TreeModel <H extends Hierarchical<?>> extends DefaultTreeModel {
 
   }
 
-  public static final class Root extends NamedImpl implements Hierarchical<Object> {
-
-      public Root() {
-          super("SynthRoot");
-      }
-
+  public static final class Root extends Object implements Hierarchical<Object> {
       @Override
       public Object getParent() {
           return null;
       }
-
   }
 
   public static final Hierarchical<?> invisibleRoot = new Root();
