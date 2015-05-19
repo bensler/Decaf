@@ -21,15 +21,6 @@ import com.bensler.decaf.util.tree.Hierarchy;
  */
 public class TreeModel <H extends Hierarchical<?>> extends DefaultTreeModel {
 
-  /** default-filter, which accepts all nodes.
-   */
-  public    final static class AcceptAllFilter<H extends Hierarchical<?>> implements TreeFilter<H> {
-    @Override
-    public boolean accept(H node) {
-      return true;
-    };
-  };
-
   /** Provides a method called when a TreeModel stops or starts using a synthetic
    * root. A EntityTree should listen on these events to switch its tree components
    * root visible flag. */
@@ -61,13 +52,10 @@ public class TreeModel <H extends Hierarchical<?>> extends DefaultTreeModel {
 
   protected               Hierarchy<H>            data_;
 
-  private                 TreeFilter<H>           filter_;
-
   TreeModel(PropertyView<? super H, ?> view) {
     super(null, false);
     parentChildArrayMap_ = new HashMap<Object, List<H>>();
     data_ = new Hierarchy<H>();
-    setFilter(null);
     view_ = view;
   }
 
@@ -86,44 +74,27 @@ public class TreeModel <H extends Hierarchical<?>> extends DefaultTreeModel {
   protected List<H> getChildren(Hierarchical<?> parent) {
     if (!parentChildArrayMap_.containsKey(parent)) {
       final Collection<H>   sourceChildren = data_.getChildren((parent == invisibleRoot) ? null : parent);
-      final List<H>         list           = new ArrayList<>();
+      final List<H>         list           = new ArrayList<>(sourceChildren);
 
-      Collections.sort(filter(sourceChildren, list), view_);
+      Collections.sort(list, view_);
       parentChildArrayMap_.put(parent, list);
     }
     return parentChildArrayMap_.get(parent);
   }
 
-  protected List<H> filter(Collection<H> source, List<H> target) {
-    for (H child : source) {
-      if (filter_.accept(child)) {
-        target.add(child);
-      }
-    }
-    return target;
-  }
-
-  /** @see javax.swing.tree.TreeModel#getChildCount(java.lang.Object)
-   */
   @Override
   public int getChildCount(Object parent) {
     return data_.getChildCount((parent == invisibleRoot) ? null : (Hierarchical<?>)parent);
   }
 
-  /** @see javax.swing.tree.TreeModel#isLeaf(java.lang.Object)
-   */
   @Override
   public boolean isLeaf(Object node) {
     return (getChildCount(node) < 1);
   }
 
-  /** @see javax.swing.tree.TreeModel#valueForPathChanged(javax.swing.tree.TreePath, java.lang.Object)
-   */
   @Override
   public void valueForPathChanged(TreePath path, Object newValue) {}
 
-  /** @see javax.swing.tree.TreeModel#getIndexOfChild(java.lang.Object, java.lang.Object)
-   */
   @Override
   public int getIndexOfChild(Object parent, Object child) {
     return getChildren((Hierarchical<?>)parent).indexOf(child);
@@ -288,24 +259,6 @@ public class TreeModel <H extends Hierarchical<?>> extends DefaultTreeModel {
 
   boolean contains(Hierarchical<?> entity) {
     return data_.contains(entity);
-  }
-
-  public void setFilter(TreeFilter<H> newFilter) {
-    filter_ = ((newFilter == null) ? new AcceptAllFilter<H>() : newFilter);
-    fireFilterChanged();
-  }
-
-  public TreeFilter<H> getFilter() {
-    return filter_;
-  }
-
-  /** Should be called, whenever the filter changes
-   */
-  private void fireFilterChanged() {
-    if (!data_.isEmpty()) {
-      // fire event only if tree is not empty
-      fireStructureChanged(getRoot());
-    }
   }
 
   public void clear() {

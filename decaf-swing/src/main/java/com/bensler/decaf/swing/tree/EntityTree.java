@@ -380,10 +380,6 @@ TreeSelectionListener, FocusListener {
     return ((selection_.isEmpty() ? null : selection_.get(0)));
   }
 
-  public void setFilter(TreeFilter<H> filter) {
-    model_.setFilter(filter);
-  }
-
   public Hierarchical<?> getRootNode() {
     return model_.getRoot();
   }
