@@ -1,28 +1,19 @@
 package com.bensler.decaf.swing.view;
 
 import java.awt.Color;
-import java.awt.Component;
 
 import javax.swing.JList;
 import javax.swing.JTable;
 import javax.swing.UIManager;
 import javax.swing.border.Border;
 
-public class DefaultCellRenderComponent extends RendererBase implements ListRenderComponent, TableRenderComponent {
+public class DefaultCellRenderComponent extends RendererLabel implements ListRenderComponent, TableRenderComponent {
 
   public DefaultCellRenderComponent() {
     super();
   }
 
-  public Component getTableCellRendererComponent(
-    JTable table, Object value,
-    boolean selected, boolean hasFocus, int row, int column
-  ) {
-    prepareForTable(table, selected, row, column, hasFocus);
-    setValue(value);
-    return this;
-  }
-
+  @Override
   public void prepareForTable(JTable table, boolean selected, int row, int column, boolean focused) {
     Border border = BORDER_NO_FOCUS;
 
@@ -57,7 +48,8 @@ public class DefaultCellRenderComponent extends RendererBase implements ListRend
     setBorder(border);
   }
 
-  public void prepareForList(JList list, boolean selected, int index, boolean focused) {
+  @Override
+  public void prepareForList(JList<?> list, boolean selected, int index, boolean focused) {
     Border border = BORDER_NO_FOCUS;
 
     setComponentOrientation(list.getComponentOrientation());

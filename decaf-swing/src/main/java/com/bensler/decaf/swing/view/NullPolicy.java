@@ -2,10 +2,10 @@ package com.bensler.decaf.swing.view;
 
 import javax.swing.JLabel;
 
-public interface NullPolicy {
+public interface NullPolicy<E> {
 
   public void render(
-    Object value, JLabel label, CellRenderer renderer, PropertyGetter getter
+    E value, JLabel label, CellRenderer renderer, PropertyGetter<E, ?> getter
   );
 
   public String getPropertyString(Object propertyValue);

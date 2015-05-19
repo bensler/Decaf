@@ -9,7 +9,7 @@ import javax.swing.JScrollPane;
 
 /**
  */
-public interface EntityComponent <E> {
+public interface EntityComponent<E> {
 
   public JComponent getComponent();
 

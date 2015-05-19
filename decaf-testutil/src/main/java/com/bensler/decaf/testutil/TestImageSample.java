@@ -37,11 +37,11 @@ public class TestImageSample {
       final String sampleFileName;
 
       callerClass_ = Class.forName(className);
-      baseFileName_ = callerClass_.getSimpleName()
+      baseFileName_ = callerClass_.getName()
         + DELEMITER + stackFrame.getMethodName()
         + (((name != null) && (!name.isEmpty())) ? (DELEMITER + name) : "");
       sampleFileName = getSampleFileName();
-      url_ = callerClass_.getResource(sampleFileName);
+      url_ = callerClass_.getClassLoader().getResource(sampleFileName);
       Assert.assertNotNull("missing resource " + sampleFileName, url_);
     } catch (ClassNotFoundException cnfe) {
       throw new RuntimeException(cnfe);
@@ -56,8 +56,8 @@ public class TestImageSample {
     return baseFileName_ + DELEMITER + TYPE_PNG;
   }
 
-  public String getErrorBaseFileName() {
-    return callerClass_.getPackage().getName() + DELEMITER + baseFileName_;
+  public String getBaseFileName() {
+    return baseFileName_;
   }
 
 }

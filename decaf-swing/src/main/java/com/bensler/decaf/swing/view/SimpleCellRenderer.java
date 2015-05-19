@@ -3,30 +3,17 @@ package com.bensler.decaf.swing.view;
 import javax.swing.Icon;
 import javax.swing.JLabel;
 
-import com.bensler.decaf.swing.Viewable;
-
 public class SimpleCellRenderer extends Object implements CellRenderer {
 
   private   final         Icon      icon_;
 
-  private   final         boolean   renderIconEvenWithEmptyText_;
-
   public SimpleCellRenderer() {
-    this(null, false);
+    this(null);
   }
 
   public SimpleCellRenderer(Icon icon) {
-    this(icon, false);
-  }
-
-  public SimpleCellRenderer(boolean renderIconEvenWithEmptyText) {
-    this(null, renderIconEvenWithEmptyText);
-  }
-
-  public SimpleCellRenderer(Icon icon, boolean renderIconEvenWithEmptyText) {
     super();
     icon_ = icon;
-    renderIconEvenWithEmptyText_ = renderIconEvenWithEmptyText;
   }
 
   /** Sets the text to <code>value.toString()</code>.
@@ -48,9 +35,9 @@ public class SimpleCellRenderer extends Object implements CellRenderer {
   }
 
   @Override
-  public void render(Viewable value, Object cellValue, JLabel comp) {
-    if (setText(comp, cellValue) || renderIconEvenWithEmptyText_) {
-      comp.setIcon(getIcon(value, cellValue));
+  public void render(Object viewable, Object cellValue, JLabel comp) {
+    if (setText(comp, cellValue)) {
+      comp.setIcon(getIcon(viewable, cellValue));
     } else {
       comp.setIcon(null);
     }
@@ -61,7 +48,7 @@ public class SimpleCellRenderer extends Object implements CellRenderer {
     return icon_;
   }
 
-  public Icon getIcon(Viewable value, Object cellValue) {
+  public Icon getIcon(Object viewable, Object cellValue) {
     return getIcon();
   }
 

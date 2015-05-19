@@ -12,7 +12,6 @@ import java.util.Set;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
 
-import com.bensler.decaf.swing.Viewable;
 import com.bensler.decaf.swing.view.PropertyView;
 import com.bensler.decaf.util.NamedImpl;
 import com.bensler.decaf.util.tree.Hierarchical;
@@ -24,9 +23,11 @@ public class TreeModel <H extends Hierarchical<?>> extends DefaultTreeModel {
 
   /** default-filter, which accepts all nodes.
    */
-  public    final static TreeFilter ACCEPT_ALL = new TreeFilter() {
+  public    final static class AcceptAllFilter<H extends Hierarchical<?>> implements TreeFilter<H> {
     @Override
-    public boolean accept(Viewable node) { return true; };
+    public boolean accept(H node) {
+      return true;
+    };
   };
 
   /** Provides a method called when a TreeModel stops or starts using a synthetic
@@ -39,7 +40,7 @@ public class TreeModel <H extends Hierarchical<?>> extends DefaultTreeModel {
 
   }
 
-  public static final class Root extends NamedImpl implements Hierarchical<Object>, Viewable {
+  public static final class Root extends NamedImpl implements Hierarchical<Object> {
 
       public Root() {
           super("SynthRoot");
@@ -54,19 +55,19 @@ public class TreeModel <H extends Hierarchical<?>> extends DefaultTreeModel {
 
   public static final Hierarchical<?> invisibleRoot = new Root();
 
-  protected final         Map<Object, List<H>>         parentChildArrayMap_;
+  protected final         Map<Object, List<H>>    parentChildArrayMap_;
 
-  private                 PropertyView<? super H> view_;
+  private                 PropertyView<? super H, ?> view_;
 
   protected               Hierarchy<H>            data_;
 
-  private                 TreeFilter              filter_;
+  private                 TreeFilter<H>           filter_;
 
-  TreeModel(PropertyView<? super H> view) {
+  TreeModel(PropertyView<? super H, ?> view) {
     super(null, false);
     parentChildArrayMap_ = new HashMap<Object, List<H>>();
     data_ = new Hierarchy<H>();
-    filter_ = ACCEPT_ALL;
+    setFilter(null);
     view_ = view;
   }
 
@@ -95,7 +96,7 @@ public class TreeModel <H extends Hierarchical<?>> extends DefaultTreeModel {
 
   protected List<H> filter(Collection<H> source, List<H> target) {
     for (H child : source) {
-      if (filter_.accept((Viewable)child)) {
+      if (filter_.accept(child)) {
         target.add(child);
       }
     }
@@ -181,7 +182,7 @@ public class TreeModel <H extends Hierarchical<?>> extends DefaultTreeModel {
       addNode(node);
     } else {
       // node exists in this model -> update
-      final H       oldNode       = resolve((Viewable)node);
+      final H       oldNode       = resolve(node);
       final H       oldParent     = data_.resolve(oldNode.getParent());
             int     oldIndex      = -1;
       final H       parent        = data_.resolve(node.getParent());
@@ -289,12 +290,12 @@ public class TreeModel <H extends Hierarchical<?>> extends DefaultTreeModel {
     return data_.contains(entity);
   }
 
-  public void setFilter(TreeFilter newFilter) {
-    filter_ = ((newFilter == null) ? ACCEPT_ALL : newFilter);
+  public void setFilter(TreeFilter<H> newFilter) {
+    filter_ = ((newFilter == null) ? new AcceptAllFilter<H>() : newFilter);
     fireFilterChanged();
   }
 
-  public TreeFilter getFilter() {
+  public TreeFilter<H> getFilter() {
     return filter_;
   }
 
@@ -323,7 +324,7 @@ public class TreeModel <H extends Hierarchical<?>> extends DefaultTreeModel {
     listenerList.add(RootChangeListener.class, listener);
   }
 
-  public H resolve(Viewable hierarchical) {
+  public H resolve(Object hierarchical) {
     return data_.resolve(hierarchical);
   }
 

@@ -1,7 +1,6 @@
-package com.bensler.decaf.swing.tree;
+package com.bensler.decaf.testutil;
 
 import java.awt.AWTException;
-import java.awt.Point;
 
 import javax.swing.UnsupportedLookAndFeelException;
 
@@ -9,23 +8,22 @@ import org.junit.Test;
 
 import com.bensler.decaf.testutil.Bender;
 import com.bensler.decaf.testutil.TestImageSample;
-import com.bensler.decaf.util.tree.Folder;
 
-public class EntityTreeTest {
+public class SimpleTest {
 
   private final Bender bender_;
 
-  public EntityTreeTest() throws UnsupportedLookAndFeelException, AWTException {
+  public SimpleTest() throws UnsupportedLookAndFeelException, AWTException {
     bender_ = new Bender("target/surefire-reports");
   }
 
   @Test
   public void interactive() throws Exception {
-    final SampleTreeDialog<Folder> app = new SampleTreeDialog<>(SampleTreeDialog.createFolderData());
+    final SimpleDialog app = new SimpleDialog();
 
     app.dialog_.setLocation(bender_.getLargestScreensOrigin());
     app.dialog_.setVisible(true);
-    bender_.clickOn(app.tree_.getScrollPane(), new Point(83,  51));
+    bender_.clickOn(app.checkBox_);
     bender_.assertEqualsVisually(app.dialog_.getContentPane(), new TestImageSample());
     bender_.clickOn(app.button_);
     bender_.waitForAllTasksCompleted();

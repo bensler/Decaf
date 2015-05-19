@@ -39,10 +39,11 @@ class Snapshooter implements Runnable {
       diffImage = diffImage(image, actual);
       if (diffImage != null) {
         final AnimatedGifEncoder encoder = new AnimatedGifEncoder();
-        final String failedGifName = sampleImage_.getErrorBaseFileName() + ".failed.gif";
-        final String actualFileName = sampleImage_.getErrorBaseFileName() + ".actual.png";
+        final String failedGifName = sampleImage_.getBaseFileName() + ".failed.gif";
+        final String actualFileName = sampleImage_.getBaseFileName() + ".actual.png";
 
         encoder.setDelay(700);   // ms
+        encoder.setRepeat(0);    // endless loop
         encoder.start(new FileOutputStream(new File(parent_.getReportsDir(), failedGifName)));
         encoder.setSize(diffImage.getWidth(), diffImage.getHeight());
         encoder.addFrame(image);
@@ -73,7 +74,7 @@ class Snapshooter implements Runnable {
     for (int x = 0; x < width; x++) {
       for (int y = 0; y < height; y++) {
         final int rgb1;
-        
+
         if (
           ((x < width1) && (x < width2) && (y < height1) && (y < height2))
           && ((rgb1 = img1.getRGB(x, y)) == img2.getRGB(x, y))

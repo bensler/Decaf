@@ -8,28 +8,25 @@ import javax.swing.JTable;
 import javax.swing.ListCellRenderer;
 import javax.swing.tree.TreeCellRenderer;
 
-import com.bensler.decaf.swing.Viewable;
+public interface PropertyView<E, P> extends Comparator<E>, View, ListCellRenderer<E>, TreeCellRenderer {
 
-public interface PropertyView<E> extends Comparator<E>, View, ListCellRenderer, TreeCellRenderer {
-
+  @Override
   public int compare(E o1, E o2);
 
-  public boolean isSortable();
+  public P getProperty(E viewable);
 
-  public Object getProperty(Viewable viewable);
-
-  public String getPropertyString(Viewable viewable);
+  public String getPropertyString(E viewable);
 
   public RenderComponentFactory getRenderComponentFactory();
 
   public CellRenderer getRenderer();
 
-  public PropertyGetter getGetter();
+  public PropertyGetter<E, P> getGetter();
 
-  public JLabel renderLabel(JLabel label, Viewable viewable);
+  public JLabel renderLabel(JLabel label, E viewable);
 
   public Component getCellRendererComponent(
-    JTable table, Viewable viewable, Object cellValue, boolean isSelected, boolean hasFocus, int row, int column
+    JTable table, E viewable, Object cellValue, boolean isSelected, boolean hasFocus, int row, int column
   );
 
 }

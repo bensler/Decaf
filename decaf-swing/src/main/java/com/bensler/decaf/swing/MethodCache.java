@@ -10,16 +10,16 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-/** Makes that an EntityData object contains all properties of an EntityImpl object. */
-public class EntityCache extends Object {
+import com.google.common.collect.ImmutableList;
 
-  private   final static  EntityCache                       INSTANCE = new EntityCache();
+/**
+ * Caches getter {@link Method}s of property names for fast lookup.
+ */
+public class MethodCache extends Object {
 
-  public static EntityCache getInstance() {
-    return INSTANCE;
-  }
+  public    final static  MethodCache                       INSTANCE = new MethodCache();
 
-  private   final static  String[]                          GETTER_PREFIXES  = new String[] {"get", "is", "has"};
+  public    final static  List<String>                      GETTER_PREFIXES  = ImmutableList.of("get", "is", "has");
 
   public    final static  Object[]                          NO_ARGS   = new Object[0];
 
@@ -27,7 +27,7 @@ public class EntityCache extends Object {
 
   private   final         Map<Class<?>, Map<String, Method>> properties_;
 
-  public EntityCache() {
+  public MethodCache() {
     super();
     getters_ = new HashMap<Class<?>, List<Method>>();
     properties_ = new HashMap<Class<?>, Map<String, Method>>();

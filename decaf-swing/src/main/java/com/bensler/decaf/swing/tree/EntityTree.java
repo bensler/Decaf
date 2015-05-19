@@ -21,7 +21,6 @@ import javax.swing.tree.TreeCellRenderer;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 
-import com.bensler.decaf.swing.Viewable;
 import com.bensler.decaf.swing.view.EntityComponent;
 import com.bensler.decaf.swing.view.NoSelectionModel;
 import com.bensler.decaf.swing.view.PropertyView;
@@ -39,9 +38,9 @@ TreeSelectionListener, FocusListener {
 
   private   final         JScrollPane         scrollPane_;
 
-  private		final 				List<H>             selection_;
+  private   final         List<H>             selection_;
 
-  protected final         TreeComponent       tree_;
+  protected final         TreeComponent<H>    tree_;
 
   private                 boolean             silentSelectionChange_;
 
@@ -55,16 +54,17 @@ TreeSelectionListener, FocusListener {
 
   protected               boolean             editable_;
 
-  public EntityTree(PropertyView<? super H> propView) {
+  public EntityTree(PropertyView<? super H, ?> propView) {
     super();
     final UnwrappingRenderer unwrapper = new UnwrappingRenderer(propView);
 
     focusListeners_ = new HashSet<FocusListener>();
     model_ = createModel(propView);
-    tree_ = new TreeComponent(this, model_, propView);
+    tree_ = new TreeComponent<>(model_, propView);
     tree_.setCellRenderer(unwrapper);
     // update the selection BEFORE any listener is notified!
     tree_.setMasterSelectionListener(new TreeSelectionListener() {
+      @Override
       public void valueChanged(TreeSelectionEvent e) {
         updateSelection();
       }
@@ -97,10 +97,11 @@ TreeSelectionListener, FocusListener {
     return editable_;
   }
 
-  protected TreeModel<H> createModel(PropertyView<? super H> view) {
+  protected TreeModel<H> createModel(PropertyView<? super H, ?> view) {
     return new TreeModel<>(view);
   }
 
+  @Override
   public JScrollPane getScrollPane() {
     return scrollPane_;
   }
@@ -115,6 +116,7 @@ TreeSelectionListener, FocusListener {
     tree_.setShowsRootHandles(visible);
   }
 
+  @Override
   public void setBackground(Color color) {
   	// set it for the tree
   	tree_.setBackground(color);
@@ -162,6 +164,7 @@ TreeSelectionListener, FocusListener {
     tree_.setCellRenderer(renderer);
   }
 
+  @Override
   public void clearSelection() {
     tree_.clearSelection();
   }
@@ -180,10 +183,12 @@ TreeSelectionListener, FocusListener {
   /** @return the JTable component wrapped by a JScrollpane
    * @see com.bensler.flob.gui.EntityComponent#getComponent()
    */
-  public TreeComponent getComponent() {
+  @Override
+  public TreeComponent<H> getComponent() {
     return tree_;
   }
 
+  @Override
   public void valueChanged(TreeSelectionEvent evt) {
     updateSelection();
     fireSelectionChanged();
@@ -192,7 +197,7 @@ TreeSelectionListener, FocusListener {
   public void refireSelectionChanged() {
     final List<H> oldSelection = new ArrayList<H>(selection_);
 
-    select(Collections.<Viewable>emptyList());
+    select(Collections.<Hierarchical<?>>emptyList());
     select(oldSelection);
   }
 
@@ -215,6 +220,7 @@ TreeSelectionListener, FocusListener {
     }
   }
 
+  @Override
   public List<H> getSelection() {
     return new ArrayList<>(selection_);
   }
@@ -247,12 +253,14 @@ TreeSelectionListener, FocusListener {
     return new HashSet<H>(model_.data_.getMembers());
   }
 
+  @Override
   public void select(Object subject) {
     select(Arrays.asList(
-      ((subject != null) ? new Object[] {subject} : new Viewable[0])
+      ((subject != null) ? new Object[] {subject} : new Hierarchical[0])
     ));
   }
 
+  @Override
   public boolean contains(Object entity) {
     return model_.contains((Hierarchical<?>)entity);
   }
@@ -261,6 +269,7 @@ TreeSelectionListener, FocusListener {
     return model_.contains(entity);
   }
 
+  @Override
   public void select(Collection<?> entities) {
     try {
       silentSelectionChange_ = true;
@@ -366,11 +375,12 @@ TreeSelectionListener, FocusListener {
     tree_.requestFocus();
   }
 
+  @Override
   public H getSingleSelection() {
     return ((selection_.isEmpty() ? null : selection_.get(0)));
   }
 
-  public void setFilter(TreeFilter filter) {
+  public void setFilter(TreeFilter<H> filter) {
     model_.setFilter(filter);
   }
 
@@ -403,7 +413,7 @@ TreeSelectionListener, FocusListener {
     if (!model_.data_.isEmpty()) {
       return new TreeState(
         tree_.getExpandedDescendants(new TreePath(model_.getRoot())),
-        (Hierarchical<?>)getSingleSelection()
+        getSingleSelection()
       );
     } else {
       return null;
@@ -417,10 +427,12 @@ TreeSelectionListener, FocusListener {
     tree_.repaint();
   }
 
+  @Override
   public boolean isEnabled() {
     return tree_.isEnabled();
   }
 
+  @Override
   public void setToolTipText(String hint) {
     tree_.setToolTipText(hint);
   }
@@ -430,18 +442,20 @@ TreeSelectionListener, FocusListener {
     setData(Collections.EMPTY_SET);
   }
 
+  @SuppressWarnings("unchecked")
   public TreeModel<H> getModel() {
     return (TreeModel<H>)tree_.getModel();
   }
 
   private final class UnwrappingRenderer extends Object implements TreeCellRenderer {
 
-    private UnwrappingRenderer(PropertyView view) {
+    private UnwrappingRenderer(PropertyView<? super H, ?> view) {
       view_ = view;
     }
 
-    private   final         PropertyView  view_;
+    private   final         PropertyView<? super H, ?>  view_;
 
+    @Override
     public Component getTreeCellRendererComponent(
       JTree tree, Object value, boolean selected, boolean expanded,
       boolean leaf, int row, boolean hasFocus
@@ -451,11 +465,13 @@ TreeSelectionListener, FocusListener {
 
   }
 
+  @Override
   public void focusGained(FocusEvent evt) {
     fireFocusGained();
     repaint();
   }
 
+  @Override
   public void focusLost(FocusEvent evt) { }
 
   public void focusLost() {

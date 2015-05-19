@@ -2,34 +2,32 @@ package com.bensler.decaf.swing.view;
 
 import javax.swing.JLabel;
 
-import com.bensler.decaf.swing.Viewable;
 import com.bensler.decaf.swing.tree.TreeModel;
 
-public class DefaultNullPolicy extends Object implements NullPolicy {
+public class DefaultNullPolicy<E> extends Object implements NullPolicy<E> {
 
   public    final static  SimpleCellRenderer      NULL_RENDERER   = new SimpleCellRenderer();
 
+  @Override
   public void render(
-    Object value, JLabel label, CellRenderer renderer, PropertyGetter getter
+    E value, JLabel label, CellRenderer renderer, PropertyGetter<E, ?> getter
   ) {
     if (
       (value == null)
-      || (!(value instanceof Viewable))
       || (value instanceof TreeModel.Root)
     ) {
       NULL_RENDERER.render(null, " ", label);
-      return;
-    }
-    final Viewable              viewable        = (Viewable)value;
-
-    try {
-      renderer.render(viewable, getter.getProperty(viewable), label);
-    } catch (Exception e) {
-      e.printStackTrace();
-      NULL_RENDERER.render(viewable, " ", label);
+    } else {
+      try {
+        renderer.render(value, getter.getProperty(value), label);
+      } catch (Exception e) {
+        e.printStackTrace(); // TODO
+        NULL_RENDERER.render(value, " ", label);
+      }
     }
   }
 
+  @Override
   public String getPropertyString(Object propertyValue) {
     return ((propertyValue == null) ? " " : propertyValue.toString());
   }
