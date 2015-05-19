@@ -3,6 +3,7 @@ package com.bensler.decaf.swing.tree;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.EventListener;
 import java.util.HashMap;
 import java.util.List;
@@ -12,7 +13,6 @@ import java.util.Set;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
 
-import com.bensler.decaf.swing.view.PropertyView;
 import com.bensler.decaf.util.tree.Hierarchical;
 import com.bensler.decaf.util.tree.Hierarchy;
 
@@ -41,15 +41,15 @@ public class TreeModel <H extends Hierarchical<?>> extends DefaultTreeModel {
 
   protected final         Map<Object, List<H>>    parentChildArrayMap_;
 
-  private                 PropertyView<? super H, ?> view_;
+  private                 Comparator<? super H>   comparator_;
 
   protected               Hierarchy<H>            data_;
 
-  TreeModel(PropertyView<? super H, ?> view) {
+  TreeModel(Comparator<? super H> comparator) {
     super(null, false);
     parentChildArrayMap_ = new HashMap<Object, List<H>>();
     data_ = new Hierarchy<H>();
-    view_ = view;
+    comparator_ = comparator;
   }
 
   @Override
@@ -69,7 +69,7 @@ public class TreeModel <H extends Hierarchical<?>> extends DefaultTreeModel {
       final Collection<H>   sourceChildren = data_.getChildren((parent == invisibleRoot) ? null : parent);
       final List<H>         list           = new ArrayList<>(sourceChildren);
 
-      Collections.sort(list, view_);
+      Collections.sort(list, comparator_);
       parentChildArrayMap_.put(parent, list);
     }
     return parentChildArrayMap_.get(parent);
