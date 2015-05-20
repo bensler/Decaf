@@ -8,7 +8,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public interface ChildrenCollectionMaintainer <H extends Hierarchical<?>, C extends Collection<H>> {
+public interface ChildrenCollectionMaintainer<H extends Hierarchical<?>, C extends Collection<H>> {
 
   C createCollection();
 
@@ -16,7 +16,7 @@ public interface ChildrenCollectionMaintainer <H extends Hierarchical<?>, C exte
 
   void addChild(H child, Collection<H> target);
 
-  class DefaultCollectionMaintainer <H extends Hierarchical<?>> implements ChildrenCollectionMaintainer<H, Set<H>> {
+  class DefaultCollectionMaintainer<H extends Hierarchical<?>> implements ChildrenCollectionMaintainer<H, Set<H>> {
 
     @Override
     public Set<H> createCollection() {
@@ -35,7 +35,7 @@ public interface ChildrenCollectionMaintainer <H extends Hierarchical<?>, C exte
 
   }
 
-  abstract class AbstractListMaintainer <H extends Hierarchical<?>> implements ChildrenCollectionMaintainer<H, List<H>> {
+  abstract class AbstractListMaintainer<H extends Hierarchical<?>> implements ChildrenCollectionMaintainer<H, List<H>> {
 
     @Override
     public List<H> createCollection() {
@@ -49,7 +49,7 @@ public interface ChildrenCollectionMaintainer <H extends Hierarchical<?>, C exte
 
   }
 
-  class SimpleListMaintainer <H extends Hierarchical<?>> extends AbstractListMaintainer<H> {
+  class SimpleListMaintainer<H extends Hierarchical<?>> extends AbstractListMaintainer<H> {
 
     private final boolean append_;
 
@@ -64,11 +64,11 @@ public interface ChildrenCollectionMaintainer <H extends Hierarchical<?>, C exte
 
   }
 
-  class SortedListMaintainer <H extends Hierarchical<?>> extends AbstractListMaintainer<H> {
+  class SortedListMaintainer<H extends Hierarchical<?>> extends AbstractListMaintainer<H> {
 
-    private final Comparator<H> comparator_;
+    private final Comparator<? super H> comparator_;
 
-    public SortedListMaintainer(Comparator<H> comparator) {
+    public SortedListMaintainer(Comparator<? super H> comparator) {
       comparator_ = comparator;
     }
 
@@ -76,13 +76,8 @@ public interface ChildrenCollectionMaintainer <H extends Hierarchical<?>, C exte
     public void addChild(H child, Collection<H> target) {
       final List<H> list = (List<H>) target;
 
-      for (int i = 0; i < list.size(); i++) {
-        if (comparator_.compare(child, list.get(i)) <= 0) {
-          list.add(i, child);
-          return;
-        }
-      }
-      list.add(list.size(), child);
+      list.add(child);
+      Collections.sort(list, comparator_);
     }
 
   }

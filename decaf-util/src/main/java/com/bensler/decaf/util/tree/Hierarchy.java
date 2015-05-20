@@ -286,7 +286,14 @@ public class Hierarchy<H extends Hierarchical<?>> extends Object implements Seri
     public Collection<H> getChildren(final Hierarchical<?> member) {
         final Collection<H> children = getChildren_(member);
 
-        return (children.isEmpty() ? children : new HashSet<H>(children));
+        if (children.isEmpty()) {
+          return children;
+        } else {
+          final Collection<H> copyChildren = nanny_.createCollection();
+
+          copyChildren.addAll(children);
+          return copyChildren;
+        }
     }
 
     /** used by TreeModel */
