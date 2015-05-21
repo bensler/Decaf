@@ -9,6 +9,7 @@ import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
 
 import com.bensler.decaf.util.tree.ChildrenCollectionMaintainer.SortedListMaintainer;
+import com.bensler.decaf.util.tree.AbstractHierarchy;
 import com.bensler.decaf.util.tree.Hierarchical;
 import com.bensler.decaf.util.tree.Hierarchy;
 
@@ -33,13 +34,21 @@ public class TreeModel <H extends Hierarchical<?>> extends DefaultTreeModel {
       }
   }
 
+  static class ListHierarchy<M extends Hierarchical<?>> extends AbstractHierarchy<M, List<M>> {
+
+    public ListHierarchy(Comparator<? super M> comparator) {
+      super(new SortedListMaintainer<M>(comparator));
+    }
+
+  }
+
   public static final Hierarchical<?> invisibleRoot = new Root();
 
-  protected final         Hierarchy<H>            data_;
+  protected final         ListHierarchy<H>            data_;
 
   TreeModel(Comparator<? super H> comparator) {
     super(null, false);
-    data_ = new Hierarchy<H>(new SortedListMaintainer<H>(comparator));
+    data_ = new ListHierarchy<H>(comparator);
   }
 
   @Override
@@ -255,7 +264,10 @@ public class TreeModel <H extends Hierarchical<?>> extends DefaultTreeModel {
   }
 
   public Hierarchy<H> getData() {
-    return new Hierarchy<H>(data_);
+    final Hierarchy<H> hierarchy = new Hierarchy<H>();
+
+    hierarchy.addAll(data_.getMembers());
+    return hierarchy;
   }
 
   public Set<H> getMembers() {
