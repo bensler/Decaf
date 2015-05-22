@@ -84,6 +84,7 @@ public class PropertyViewImpl<E, P> extends Object implements PropertyView<E, P>
 //    this(propertyView.getRenderer(), new QueueGetter(getter, propertyView.getGetter()), propertyView.getRenderComponentFactory());
 //  }
 
+  @SuppressWarnings("unchecked")
   @Override
   public Component getTreeCellRendererComponent(
     JTree tree, Object value, boolean selected,
@@ -94,7 +95,7 @@ public class PropertyViewImpl<E, P> extends Object implements PropertyView<E, P>
 
     treeComponent.prepareForTree(tree, selected, expanded, leaf, row, hasFocus);
     label = treeComponent.getComponent();
-    nullPolicy_.render((E)value, label, getRenderer(), getter_);
+    nullPolicy_.render((E)value, label, renderer_, getter_);
     return label;
   }
 
@@ -108,7 +109,7 @@ public class PropertyViewImpl<E, P> extends Object implements PropertyView<E, P>
 
     tableComponent.prepareForTable(table, selected, row, column, hasFocus);
     label = tableComponent.getComponent();
-    getRenderer().render(viewable, cellValue, label);
+    renderer_.render(viewable, cellValue, label);
     return label;
   }
 
@@ -122,13 +123,13 @@ public class PropertyViewImpl<E, P> extends Object implements PropertyView<E, P>
 
     listComponent.prepareForList(list, selected, index, hasFocus);
     label = listComponent.getComponent();
-    nullPolicy_.render(value, label, getRenderer(), getter_);
+    nullPolicy_.render(value, label, renderer_, getter_);
     return label;
   }
 
   @Override
   public JLabel renderLabel(JLabel label, E viewable) {
-    nullPolicy_.render(viewable, label, getRenderer(), getter_);
+    nullPolicy_.render(viewable, label, renderer_, getter_);
     return label;
   }
 
@@ -147,11 +148,6 @@ public class PropertyViewImpl<E, P> extends Object implements PropertyView<E, P>
   @Override
   public int compare(E v1, E v2) {
     return getter_.getEntityComparator().compare(v1, v2);
-  }
-
-  @Override
-  public CellRenderer getRenderer() {
-    return renderer_;
   }
 
   @Override

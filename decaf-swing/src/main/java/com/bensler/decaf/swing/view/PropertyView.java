@@ -8,7 +8,7 @@ import javax.swing.JTable;
 import javax.swing.ListCellRenderer;
 import javax.swing.tree.TreeCellRenderer;
 
-public interface PropertyView<E, P> extends Comparator<E>, View, ListCellRenderer<E>, TreeCellRenderer {
+public interface PropertyView<E, P> extends Comparator<E>, ListCellRenderer<E>, TreeCellRenderer {
 
   @Override
   public int compare(E o1, E o2);
@@ -18,8 +18,6 @@ public interface PropertyView<E, P> extends Comparator<E>, View, ListCellRendere
   public String getPropertyString(E viewable);
 
   public RenderComponentFactory getRenderComponentFactory();
-
-  public CellRenderer getRenderer();
 
   public PropertyGetter<E, P> getGetter();
 
