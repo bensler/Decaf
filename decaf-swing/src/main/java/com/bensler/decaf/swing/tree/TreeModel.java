@@ -40,6 +40,12 @@ public class TreeModel <H extends Hierarchical<?>> extends DefaultTreeModel {
       super(new SortedListMaintainer<M>(comparator));
     }
 
+    /** Widening visibility */
+    @Override
+    protected List<M> getChildrenNoCopy(Hierarchical<?> member) {
+      return super.getChildrenNoCopy(member);
+    }
+
   }
 
   public static final Hierarchical<?> invisibleRoot = new Root();
@@ -64,7 +70,7 @@ public class TreeModel <H extends Hierarchical<?>> extends DefaultTreeModel {
   }
 
   protected List<H> getChildren(Hierarchical<?> parent) {
-    return (List<H>) data_.getChildren((parent == invisibleRoot) ? null : parent);
+    return data_.getChildrenNoCopy((parent == invisibleRoot) ? null : parent);
   }
 
   @Override

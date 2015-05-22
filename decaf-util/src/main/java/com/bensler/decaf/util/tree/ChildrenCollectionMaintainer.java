@@ -49,21 +49,6 @@ public interface ChildrenCollectionMaintainer<H extends Hierarchical<?>, C exten
 
   }
 
-  class SimpleListMaintainer<H extends Hierarchical<?>> extends AbstractListMaintainer<H> {
-
-    private final boolean append_;
-
-    public SimpleListMaintainer(boolean append) {
-      append_ = append;
-    }
-
-    @Override
-    public void addChild(H child, Collection<H> target) {
-      ((List<H>) target).add((append_ ? target.size() : 0), child);
-    }
-
-  }
-
   class SortedListMaintainer<H extends Hierarchical<?>> extends AbstractListMaintainer<H> {
 
     private final Comparator<? super H> comparator_;

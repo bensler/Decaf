@@ -12,6 +12,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import com.bensler.decaf.util.CanceledException;
+import com.google.common.base.Preconditions;
 
 /**
  * A Hierarchy forms a tree out of a collection of {@link Hierarchical}s. A synthetic root is used if there are more than one
@@ -24,7 +25,7 @@ public class AbstractHierarchy<H extends Hierarchical<?>, C extends Collection<H
    * Keys are all members of this hierarchy, values are the child nodes. <code>null</code> values are leaf nodes,
    * <code>null</code> key is used as super root if there is no single root of all members.
    */
-  protected final Map<H, C> children_;
+  private final Map<H, C> children_;
 
   /**
    * root node of this hierarchy.
@@ -53,10 +54,7 @@ public class AbstractHierarchy<H extends Hierarchical<?>, C extends Collection<H
     final H oldNode;
     final H parent;
 
-    if (newNode == null) {
-      throw new IllegalArgumentException("Cannot add null to a Hierarchy.");
-    }
-
+    Preconditions.checkNotNull(newNode, "Cannot add null");
     if ((oldNode = resolve(newNode)) != null) {
       // node is allready in this hierarchy
       final H oldParent = resolveParent(oldNode);
@@ -120,7 +118,7 @@ public class AbstractHierarchy<H extends Hierarchical<?>, C extends Collection<H
    * @return  all (synth) roots children unable to move to the (im)possible new parent.
    */
   private Collection<H> tryMoveSynthRootChildren(final H possibleParent) {
-    final Collection<H> rootChildren = getChildren_(root_);
+    final Collection<H> rootChildren = getChildrenNoCopy(root_);
 
     for (H node : getChildren(root_)) {
       if (possibleParent.equals(resolveParent(node))) {
@@ -210,13 +208,10 @@ public class AbstractHierarchy<H extends Hierarchical<?>, C extends Collection<H
   public void remove(final Hierarchical<?> member, final boolean recursive) {
     final boolean synthRoot = hasSyntheticRoot();
 
-    if (synthRoot && (member == null)) {
-      throw new IllegalArgumentException("Want not remove synthetic root.");
-    }
-
+    Preconditions.checkNotNull(member, "Cannot remove null");
     if (contains(member)) {
       final boolean removingRoot = member.equals(root_);
-      final Collection<H> children = getChildren_(member);
+      final Collection<H> children = getChildrenNoCopy(member);
       final boolean hadChildren = !children.isEmpty();
 
       // handle children
@@ -246,7 +241,7 @@ public class AbstractHierarchy<H extends Hierarchical<?>, C extends Collection<H
         }
       } else {
         final H parent = resolveParent(member);
-        final Collection<H> siblings = getChildren_(parent);
+        final Collection<H> siblings = getChildrenNoCopy(parent);
 
         siblings.remove(member);
         if (siblings.isEmpty()) {
@@ -257,13 +252,15 @@ public class AbstractHierarchy<H extends Hierarchical<?>, C extends Collection<H
   }
 
   /** used by TreeModel */
-  public Collection<H> getChildren(final Hierarchical<?> member) {
-    final Collection<H> children = getChildren_(member);
+  public C getChildren(final Hierarchical<?> member) {
+    final C children;
 
+    checkMember(member);
+    children = getChildrenNoCopy(member);
     if (children.isEmpty()) {
       return children;
     } else {
-      final Collection<H> copyChildren = nanny_.createCollection();
+      final C copyChildren = nanny_.createCollection();
 
       copyChildren.addAll(children);
       return copyChildren;
@@ -272,15 +269,18 @@ public class AbstractHierarchy<H extends Hierarchical<?>, C extends Collection<H
 
   /** used by TreeModel */
   public int getChildCount(final Hierarchical<?> parent) {
-    return getChildren_(parent).size();
+    checkMember(parent);
+    return getChildrenNoCopy(parent).size();
   }
 
-  private Collection<H> getChildren_(final Hierarchical<?> member) {
-    if (children_.containsKey(member)) {
-      final Collection<H> children = children_.get(member);
+  protected C getChildrenNoCopy(final Hierarchical<?> member) {
+    final C children = children_.get(member);
 
-      return ((children != null) ? children : nanny_.createEmptyCollection());
-    } else {
+    return ((children != null) ? children : nanny_.createEmptyCollection());
+  }
+
+  protected void checkMember(final Hierarchical<?> member) {
+    if (!children_.containsKey(member)) {
       throw new IllegalArgumentException(member + " is not member of this Hierarchy");
     }
   }
@@ -395,7 +395,7 @@ public class AbstractHierarchy<H extends Hierarchical<?>, C extends Collection<H
 
   private void visitDown_(final Visitor<H> visitor, final H member) throws CanceledException {
     visitor.visit(member);
-    for (H child : getChildren_(member)) {
+    for (H child : getChildrenNoCopy(member)) {
       visitDown_(visitor, child);
     }
   }
