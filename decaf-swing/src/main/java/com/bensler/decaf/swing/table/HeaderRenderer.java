@@ -14,11 +14,11 @@ import javax.swing.table.TableCellRenderer;
  */
 class HeaderRenderer extends JButton implements TableCellRenderer {
 
-  private   final         ColumnModel             columnModel_;
+  private   final         ColumnModel<?>          columnModel_;
 
   private   final         Map<Sorting, JButton>   sortingButtonMap_;
 
-  HeaderRenderer(ColumnModel columnModel) {
+  HeaderRenderer(ColumnModel<?> columnModel) {
     final Insets              insets  = new Insets(0, 0, 0, 0);
     final int                 size    = getFont().getSize();
 

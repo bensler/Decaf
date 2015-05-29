@@ -444,7 +444,7 @@ implements ListSelectionListener, FocusListener, EntityComponent<E> {
 
   private void fireSelectionChanged() {
     if (!silentSelectionChange_ && enabled_) {
-      for (EntitySelectionListener listener : selectionListeners_) {
+      for (EntitySelectionListener<E> listener : selectionListeners_) {
         listener.selectionChanged(this, new ArrayList<E>(selection_));
       }
     }
@@ -646,16 +646,17 @@ implements ListSelectionListener, FocusListener, EntityComponent<E> {
   }
 
   private final class Background extends JPanel {
-    protected final         JComponent          comp_;
+
     private Background(JComponent comp) {
       super(new FormLayout("c:p:g", "c:p:g"));
-      comp_ = comp;
       add(comp, new CellConstraints(1, 1));
     }
+
     @Override
     public Dimension getPreferredSize() {
       return super.getPreferredSize();
     }
+
   }
 
   public void setRowView(TableRowView<E> rowView) {

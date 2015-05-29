@@ -54,7 +54,7 @@ public class SampleTreeDialog<H extends Hierarchical<?>> implements ActionListen
 
     tree_ = new EntityTree<>(view);
     list_ = new EntityList<>(view);
-    table_ = new EntityTable<H>(new TableView<H>(new TablePropertyView<H, String>("name", "Name", view)));
+    table_ = new EntityTable<H>(new TableView<>(new TablePropertyView<H, String>("name", "Name", view)));
     dialog_.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
     tree_.setData(data);
     list_.setData(data.getMembers());

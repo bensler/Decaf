@@ -16,21 +16,21 @@ public class TableModel<E> extends AbstractTableModel {
   /** TODO weg */
             final         EntityTable         boTable_;
 
-  private   final         TableView           view_;
+  private   final         TableView<E>        view_;
 
   private   final         Set<E>              entitiesUnfiltered_;
 
   private   final         List<E>             entityList_;
 
-  private   final         ComparatorList      comparator_;
+  private   final         ComparatorList<E>   comparator_;
 
-  TableModel(TableView view, EntityTable boTable) {
+  TableModel(TableView<E> view, EntityTable boTable) {
     super();
     boTable_ = boTable;
     view_ = view;
     entitiesUnfiltered_ = new HashSet<>();
     entityList_ = new ArrayList<>();
-    comparator_ = new ComparatorList();
+    comparator_ = new ComparatorList<E>();
   }
 
   @Override

@@ -33,11 +33,11 @@ public class TableComponent<E> extends JTable {
 
   private   final         Color               backgroundSelectionColorUnfocused_;
 
-  private   final         EntityTable         entityTable_;
+  private   final         EntityTable<E>      entityTable_;
 
   private   final         TableModel<E>       sortableTableModel_;
 
-  private   final         ColumnModel         columnModel_;
+  private   final         ColumnModel<E>         columnModel_;
 
   private   final         TableView<E>        view_;
 
@@ -51,19 +51,19 @@ public class TableComponent<E> extends JTable {
 
   private   final         HeaderRenderer      headerRenderer_;
 
-  private                 TableRowView        rowView_;
+  private                 TableRowView<E>     rowView_;
 
   private                 ColumnResizeState   columnResizeState_;
 
   TableComponent(
-    EntityTable boTable, TableModel<E> model, TableView<E> view
+    EntityTable<E> boTable, TableModel<E> model, TableView<E> view
   ) {
     super(model);
 
     backgroundSelectionColorUnfocused_ = ColorHelper.mix(getSelectionBackground(), 2, UIManager.getColor("Table.background"), 1);
     entityTable_ = boTable;
     columnResizeState_ = ColumnResizeState.NONE;
-    rowView_ = new TableRowView.Nop();
+    rowView_ = new TableRowView.Nop<E>();
     visibleRows_ = new int[]{10, 10};
     view_ = view;
     sortableTableModel_ = model;
@@ -97,7 +97,7 @@ public class TableComponent<E> extends JTable {
           int   sum   = 0;
 
     for (int i = 0; i < columnModel_.getColumnCount(); i++) {
-      final TablePropertyView view = columnModel_.getColumn(i).getView();
+      final TablePropertyView<E, ?> view = columnModel_.getColumn(i).getView();
 
       sizes[i] = headerRenderer_.getTableCellRendererComponent(
         this, view.getName(), false, false, -1, i
@@ -112,20 +112,16 @@ public class TableComponent<E> extends JTable {
   public void createDefaultColumnsFromModel() {
     if (columnModel.getColumnCount() < 1) {
       for (int i = 0; i < sortableTableModel_.getColumnCount(); i++) {
-        addColumn(new Column(view_.getColumnView(i), i));
+        addColumn(new Column<E>(view_.getColumnView(i), i));
       }
     }
   }
 
-  /** @see javax.swing.JTable#getAutoCreateColumnsFromModel()
-   */
   @Override
   public boolean getAutoCreateColumnsFromModel() {
     return false;
   }
 
-  /** @see javax.swing.JTable#createDefaultColumnModel()
-   */
   @Override
   protected TableColumnModel createDefaultColumnModel() {
     return new ColumnModel();
@@ -154,7 +150,7 @@ public class TableComponent<E> extends JTable {
 
   void setSelectedValues(Collection selection) {
     clearSelection();
-    for (Iterator iter = selection.iterator(); iter.hasNext();) {
+    for (Iterator<?> iter = selection.iterator(); iter.hasNext();) {
       final int index = sortableTableModel_.indexOf(iter.next());
 
       if (index >= 0) {

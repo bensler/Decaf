@@ -15,7 +15,7 @@ import javax.swing.table.TableColumn;
 
 /**
  */
-public class ColumnModel extends DefaultTableColumnModel {
+public class ColumnModel<E> extends DefaultTableColumnModel {
 
   private   final         Map<TablePropertyView, Column>  allPropertiesColumnMap_;
 
@@ -191,8 +191,6 @@ public class ColumnModel extends DefaultTableColumnModel {
     }
   }
 
-  /** @see javax.swing.table.TableColumnModel#addColumn(javax.swing.table.TableColumn)
-   */
   @Override
   public void addColumn(TableColumn aColumn) {
     final Column              column    = (Column)aColumn;
@@ -204,8 +202,6 @@ public class ColumnModel extends DefaultTableColumnModel {
     }
   }
 
-  /** @see javax.swing.table.TableColumnModel#removeColumn(javax.swing.table.TableColumn)
-   */
   @Override
   public void removeColumn(TableColumn column) {
     propertyColumnMap_.remove(((Column)column).getView());
