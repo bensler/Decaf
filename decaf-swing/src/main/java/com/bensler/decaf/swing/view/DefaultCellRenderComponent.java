@@ -7,6 +7,8 @@ import javax.swing.JTable;
 import javax.swing.UIManager;
 import javax.swing.border.Border;
 
+import com.bensler.decaf.swing.table.TableComponent;
+
 public class DefaultCellRenderComponent extends RendererLabel implements ListRenderComponent, TableRenderComponent {
 
   public DefaultCellRenderComponent() {
@@ -20,8 +22,7 @@ public class DefaultCellRenderComponent extends RendererLabel implements ListRen
     focused = table.hasFocus();
     if (selected) {
       setForeground(table.getSelectionForeground());
-      // TODO
-      //setBackground(focused ? table.getSelectionBackground() : ((TableComponent)table).getBackgroundSelectionColorUnfocused());
+      setBackground(focused ? table.getSelectionBackground() : ((TableComponent<?>)table).getBackgroundSelectionColorUnfocused());
     } else {
       setForeground(table.getForeground());
       setBackground(table.getBackground());

@@ -39,7 +39,7 @@ public class TableComponent<E> extends JTable {
 
   private   final         ColumnModel         columnModel_;
 
-  private   final         TableView           view_;
+  private   final         TableView<E>        view_;
 
   /** Causes a gap when right and left aligned columns are beside each other */
   private   final         Border              gapBorder_;
@@ -56,7 +56,7 @@ public class TableComponent<E> extends JTable {
   private                 ColumnResizeState   columnResizeState_;
 
   TableComponent(
-    EntityTable boTable, TableModel model, TableView view
+    EntityTable boTable, TableModel<E> model, TableView<E> view
   ) {
     super(model);
 
