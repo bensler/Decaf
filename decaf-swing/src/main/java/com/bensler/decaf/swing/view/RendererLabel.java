@@ -74,13 +74,6 @@ public class RendererLabel extends JLabel {
   @Override
   public void validate() {}
 
-  /** Sets the text to <code>value.toString()</code>.
-   * @param cellValue <code>null</code> allowed.
-   */
-  public void setValue(Object cellValue) {
-    setText((cellValue == null) ? "" : cellValue.toString());
-  }
-
   /** @return if the background is opaque and differs from
    *    the rendering component (JList/JTable/JTree).
    */
