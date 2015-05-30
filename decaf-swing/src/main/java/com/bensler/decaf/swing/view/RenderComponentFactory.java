@@ -7,8 +7,6 @@ public interface RenderComponentFactory {
 
   public TreeRenderComponent getTreeComponent();
 
-  public TableRenderComponent getTableComponent();
-
-  public ListRenderComponent getListComponent();
+  public RenderComponent getListTableComponent();
 
 }

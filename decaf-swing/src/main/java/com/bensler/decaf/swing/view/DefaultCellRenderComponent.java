@@ -9,7 +9,7 @@ import javax.swing.border.Border;
 
 import com.bensler.decaf.swing.table.TableComponent;
 
-public class DefaultCellRenderComponent extends RendererLabel implements ListRenderComponent, TableRenderComponent {
+public class DefaultCellRenderComponent extends RendererLabel implements RenderComponent {
 
   public DefaultCellRenderComponent() {
     super();
