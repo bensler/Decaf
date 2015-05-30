@@ -20,18 +20,18 @@ public class DefaultTreeCellRenderComponent extends RendererLabel implements Tre
   /** Color to use for the focus indicator when the node has focus. */
   private   final         Color         borderSelectionColor_;
 
-  private   final         IconProvider  icons_;
+  private   final         Icon          icon_;
   /** Is the value currently selected. */
   protected               boolean       selected_;
 
   public DefaultTreeCellRenderComponent() {
-    this(new SimpleIconProvider(null, null, null));
+    this(null);
   }
 
-  public DefaultTreeCellRenderComponent(IconProvider iconProvider) {
+  public DefaultTreeCellRenderComponent(Icon icon) {
     final Object drawsFocusBorderAroundIcon = UIManager.get("Tree.drawsFocusBorderAroundIcon");
 
-    icons_ = iconProvider;
+    icon_ = icon;
     borderSelectionColor_ = UIManager.getColor("Tree.selectionBorderColor");
     drawsFocusBorderAroundIcon_ = (drawsFocusBorderAroundIcon != null && ((Boolean)drawsFocusBorderAroundIcon).booleanValue());
     setOpaque(false);
@@ -78,10 +78,6 @@ public class DefaultTreeCellRenderComponent extends RendererLabel implements Tre
     boolean leaf, int row, boolean hasFocus
   ) {
     final TreeComponent<?> tree = (TreeComponent<?>)aTree;
-    final Icon          icon = (
-      leaf ? icons_.getLeafIcon()
-      : (expanded ? icons_.getOpenIcon() : icons_.getClosedIcon())
-    );
 
     selected_ = selected;
     setFont(tree.getFont());
@@ -91,9 +87,9 @@ public class DefaultTreeCellRenderComponent extends RendererLabel implements Tre
     // There needs to be a way to specify disabled icons.
     setEnabled(tree.isEnabled());
     if (!tree.isEnabled()) {
-      setDisabledIcon(icon);
+      setDisabledIcon(icon_);
     } else {
-      setIcon(icon);
+      setIcon(icon_);
     }
     setComponentOrientation(tree.getComponentOrientation());
     if (selected_) {
