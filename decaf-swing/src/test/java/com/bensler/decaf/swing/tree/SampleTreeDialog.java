@@ -1,6 +1,7 @@
 package com.bensler.decaf.swing.tree;
 
 import static com.bensler.decaf.util.cmp.CollatorComparator.COLLATOR_COMPARATOR;
+import static com.bensler.decaf.util.cmp.NopComparator.NOP_COMPARATOR;
 
 import java.awt.Dialog.ModalityType;
 import java.awt.Dimension;
@@ -20,6 +21,7 @@ import com.bensler.decaf.swing.table.TablePropertyView;
 import com.bensler.decaf.swing.table.TableView;
 import com.bensler.decaf.swing.view.NamePropertyGetter;
 import com.bensler.decaf.swing.view.PropertyViewImpl;
+import com.bensler.decaf.swing.view.QueueGetter;
 import com.bensler.decaf.util.tree.Folder;
 import com.bensler.decaf.util.tree.Hierarchical;
 import com.bensler.decaf.util.tree.Hierarchy;
@@ -48,13 +50,20 @@ public class SampleTreeDialog<H extends Hierarchical<?>> implements ActionListen
       "3dlu, f:p:g, 3dlu",
       "3dlu, f:p:g, 3dlu, f:p:g, 3dlu, f:p:g, 3dlu, p, 3dlu"
     ));
-    final PropertyViewImpl<Object, String> view = new PropertyViewImpl<>(
+    final PropertyViewImpl<Object, String> nameView = new PropertyViewImpl<Object, String>(
       new NamePropertyGetter<String>("name", COLLATOR_COMPARATOR)
     );
+    final PropertyViewImpl<H, String> parentNameView = new PropertyViewImpl<>(new QueueGetter<H, H, String>(
+      new NamePropertyGetter<H>("parent", NOP_COMPARATOR),
+      new NamePropertyGetter<String>("name", COLLATOR_COMPARATOR)
+    ));
 
-    tree_ = new EntityTree<>(view);
-    list_ = new EntityList<>(view);
-    table_ = new EntityTable<H>(new TableView<>(new TablePropertyView<H, String>("name", "Name", view)));
+    tree_ = new EntityTree<>(nameView);
+    list_ = new EntityList<>(nameView);
+    table_ = new EntityTable<H>(new TableView<H>(
+      new TablePropertyView<H, String>("name", "Name", nameView),
+      new TablePropertyView<H, String>("parentName", "Parent", parentNameView)
+    ));
     dialog_.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
     tree_.setData(data);
     list_.setData(data.getMembers());
