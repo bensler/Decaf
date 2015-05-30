@@ -6,7 +6,7 @@ import java.util.Comparator;
 import javax.swing.JTable;
 import javax.swing.table.TableCellRenderer;
 
-import com.bensler.decaf.swing.view.PropertyViewImpl;
+import com.bensler.decaf.swing.view.PropertyView;
 import com.bensler.decaf.util.Named;
 
 
@@ -18,16 +18,16 @@ implements TableCellRenderer, Named, Comparator<E> {
 
   private   final           boolean           defaultVisible_;
 
-  private   final           PropertyViewImpl<? super E, P>  propertyView_;
+  private   final           PropertyView<? super E, P>  propertyView_;
 
   public TablePropertyView(
-    String key, String name, PropertyViewImpl<? super E, P> propertyView
+    String key, String name, PropertyView<? super E, P> propertyView
   ) {
     this(key, name, true, propertyView);
   }
 
   public TablePropertyView(
-    String key, String name, boolean defaultVisible, PropertyViewImpl<? super E, P> propertyView
+    String key, String name, boolean defaultVisible, PropertyView<? super E, P> propertyView
   ) {
     id_ = key;
     name_ = name;
@@ -78,7 +78,7 @@ implements TableCellRenderer, Named, Comparator<E> {
     return true;//propertyView_.isSortable();
   }
 
-  public PropertyViewImpl<? super E, P> getPropertyView() {
+  public PropertyView<? super E, P> getPropertyView() {
     return propertyView_;
   }
 
