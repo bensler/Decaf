@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.Graphics;
 
 import javax.swing.Icon;
+import javax.swing.JLabel;
 import javax.swing.JTree;
 import javax.swing.UIManager;
 import javax.swing.border.EmptyBorder;
@@ -13,8 +14,9 @@ import com.bensler.decaf.swing.view.TreeRenderComponent;
 
 /**
  */
-public class DefaultTreeCellRenderComponent extends RendererLabel implements TreeRenderComponent {
+public class DefaultTreeCellRenderComponent implements TreeRenderComponent {
 
+  private   final         RendererLabel component_;
   /** True if draws focus border around icon as well. */
   private   final         boolean       drawsFocusBorderAroundIcon_;
   /** Color to use for the focus indicator when the node has focus. */
@@ -28,48 +30,50 @@ public class DefaultTreeCellRenderComponent extends RendererLabel implements Tre
     this(null);
   }
 
+  @Override
+  public JLabel getComponent() {
+    return component_;
+  }
+
   public DefaultTreeCellRenderComponent(Icon icon) {
     final Object drawsFocusBorderAroundIcon = UIManager.get("Tree.drawsFocusBorderAroundIcon");
 
     icon_ = icon;
     borderSelectionColor_ = UIManager.getColor("Tree.selectionBorderColor");
     drawsFocusBorderAroundIcon_ = (drawsFocusBorderAroundIcon != null && ((Boolean)drawsFocusBorderAroundIcon).booleanValue());
-    setOpaque(false);
-    setBorder(new EmptyBorder(0, 2, 0, 3));
-  }
+    component_ = new RendererLabel() {
+      @Override
+      public void paint(Graphics g) {
+        final Color   bsColor     = borderSelectionColor_;
+        final Icon    currentIcon = getIcon();
+              int     imageOffset = (
+                ((currentIcon != null) && (getText() != null))
+                ? (currentIcon.getIconWidth() + Math.max(0, getIconTextGap() - 1))
+                : 0
+              );
 
-  @Override
-  public void paint(Graphics g) {
-    final Color   bsColor     = borderSelectionColor_;
-          int     imageOffset = getLabelStart();
-
-    g.setColor(getBackground());
-    if(getComponentOrientation().isLeftToRight()) {
-      g.fillRect(imageOffset, 0, getWidth() - imageOffset, getHeight());
-    } else {
-      g.fillRect(0, 0, getWidth() - imageOffset, getHeight());
-    }
-    super.paint(g);
-    if (drawsFocusBorderAroundIcon_) {
-      imageOffset = 0;
-    }
-    if (bsColor != null && selected_) {
-      g.setColor(bsColor);
-      if(getComponentOrientation().isLeftToRight()) {
-        g.drawRect(imageOffset, 0, getWidth() - imageOffset - 1, getHeight() - 1);
-      } else {
-        g.drawRect(0, 0, getWidth() - imageOffset - 1, getHeight() - 1);
+        g.setColor(getBackground());
+        if(getComponentOrientation().isLeftToRight()) {
+          g.fillRect(imageOffset, 0, getWidth() - imageOffset, getHeight());
+        } else {
+          g.fillRect(0, 0, getWidth() - imageOffset, getHeight());
+        }
+        super.paint(g);
+        if (drawsFocusBorderAroundIcon_) {
+          imageOffset = 0;
+        }
+        if (bsColor != null && selected_) {
+          g.setColor(bsColor);
+          if(getComponentOrientation().isLeftToRight()) {
+            g.drawRect(imageOffset, 0, getWidth() - imageOffset - 1, getHeight() - 1);
+          } else {
+            g.drawRect(0, 0, getWidth() - imageOffset - 1, getHeight() - 1);
+          }
+        }
       }
-    }
-  }
-
-  private int getLabelStart() {
-    final Icon currentIcon = getIcon();
-
-    if ((currentIcon != null) && (getText() != null)) {
-      return currentIcon.getIconWidth() + Math.max(0, getIconTextGap() - 1);
-    }
-    return 0;
+    };
+    component_.setOpaque(false);
+    component_.setBorder(new EmptyBorder(0, 2, 0, 3));
   }
 
   @Override
@@ -80,22 +84,22 @@ public class DefaultTreeCellRenderComponent extends RendererLabel implements Tre
     final TreeComponent<?> tree = (TreeComponent<?>)aTree;
 
     selected_ = selected;
-    setFont(tree.getFont());
-    setForeground(
+    component_.setFont(tree.getFont());
+    component_.setForeground(
       selected_ ? tree.getForegroundSelectionColor() : tree.getForeground()
     );
     // There needs to be a way to specify disabled icons.
-    setEnabled(tree.isEnabled());
-    if (!tree.isEnabled()) {
-      setDisabledIcon(icon_);
+    component_.setEnabled(tree.isEnabled());
+    if (tree.isEnabled()) {
+      component_.setIcon(icon_);
     } else {
-      setIcon(icon_);
+      component_.setDisabledIcon(icon_);
     }
-    setComponentOrientation(tree.getComponentOrientation());
+    component_.setComponentOrientation(tree.getComponentOrientation());
     if (selected_) {
-      setBackground(tree.hasFocus() ? tree.getBackgroundSelectionColor() : tree.getBackgroundSelectionColorUnfocused());
+      component_.setBackground(tree.hasFocus() ? tree.getBackgroundSelectionColor() : tree.getBackgroundSelectionColorUnfocused());
     } else {
-      setBackground(tree.getBackground());
+      component_.setBackground(tree.getBackground());
     }
   }
 

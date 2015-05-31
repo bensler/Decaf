@@ -28,7 +28,6 @@ public class DefaultCellRenderComponent implements RenderComponent {
   public void prepareForTable(JTable table, boolean selected, int row, int column, boolean focused) {
     Border border = RendererLabel.BORDER_NO_FOCUS;
 
-    focused = table.hasFocus();
     if (selected) {
       component_.setForeground(table.getSelectionForeground());
       component_.setBackground(focused ? table.getSelectionBackground() : ((TableComponent<?>)table).getBackgroundSelectionColorUnfocused());
