@@ -303,7 +303,7 @@ public class TableComponent<E> extends JTable {
     final E          viewable     = getViewable(row);
     final Object     cellValue    = getValueAt(row, column);
           JComponent component    = (JComponent)((TablePropertyView)renderer).getCellRendererComponent(
-      this, viewable, cellValue, row, convertColumnIndexToModel(column), selected
+      this, viewable, cellValue, row, convertColumnIndexToModel(column), selected, isFocusOwner()
     );
 
     component = rowView_.prepareRenderer(this, component, viewable, row, selected);

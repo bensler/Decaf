@@ -104,8 +104,8 @@ public class PropertyViewImpl<E, P> extends Object implements PropertyView<E, P>
     JTable table, E viewable, Object cellValue, boolean selected,
     boolean hasFocus, int row, int column
   ) {
-    final TableRenderComponent  tableComponent  = compFactory_.getTableComponent();
-    final JLabel                label;
+    final RenderComponent  tableComponent  = compFactory_.getListTableComponent();
+    final JLabel           label;
 
     tableComponent.prepareForTable(table, selected, row, column, hasFocus);
     label = tableComponent.getComponent();
@@ -118,8 +118,8 @@ public class PropertyViewImpl<E, P> extends Object implements PropertyView<E, P>
     JList<? extends E> list, E value, int index,
     boolean selected, boolean hasFocus
   ) {
-    final ListRenderComponent   listComponent   = compFactory_.getListComponent();
-    final JLabel                label;
+    final RenderComponent   listComponent   = compFactory_.getListTableComponent();
+    final JLabel            label;
 
     listComponent.prepareForList(list, selected, index, hasFocus);
     label = listComponent.getComponent();
