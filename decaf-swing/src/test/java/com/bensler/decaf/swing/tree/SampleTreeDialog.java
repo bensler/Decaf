@@ -7,6 +7,7 @@ import java.awt.Dialog.ModalityType;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.List;
 
 import javax.swing.JButton;
 import javax.swing.JDialog;
@@ -19,6 +20,8 @@ import com.bensler.decaf.swing.list.EntityList;
 import com.bensler.decaf.swing.table.EntityTable;
 import com.bensler.decaf.swing.table.TablePropertyView;
 import com.bensler.decaf.swing.table.TableView;
+import com.bensler.decaf.swing.view.EntityComponent;
+import com.bensler.decaf.swing.view.EntitySelectionListener;
 import com.bensler.decaf.swing.view.NamePropertyGetter;
 import com.bensler.decaf.swing.view.PropertyViewImpl;
 import com.bensler.decaf.swing.view.QueueGetter;
@@ -59,6 +62,12 @@ public class SampleTreeDialog<H extends Hierarchical<?>> implements ActionListen
     ));
 
     tree_ = new EntityTree<>(nameView);
+    tree_.setSelectionListener(new EntitySelectionListener<H>()  {
+      @Override
+      public void selectionChanged(EntityComponent<?> source, List<H> selection) {
+        System.out.println(selection);// TODO
+      }
+    });
     list_ = new EntityList<>(nameView);
     table_ = new EntityTable<H>(new TableView<H>(
       new TablePropertyView<H, String>("name", "Name", nameView),

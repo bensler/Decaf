@@ -6,10 +6,7 @@ import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
-
 import javax.swing.DefaultListSelectionModel;
 import javax.swing.JComponent;
 import javax.swing.JList;
@@ -39,7 +36,7 @@ public class EntityList<E> extends Object implements ListSelectionListener, Enti
 
   private   final         PropertyView<? super E, ?>  view_;
 
-  private   final         Set<EntitySelectionListener<E>> selectionListeners_;
+  private                 EntitySelectionListener<E> selectionListener_;
 
   private   final         List<E>             selection_;
 
@@ -72,7 +69,7 @@ public class EntityList<E> extends Object implements ListSelectionListener, Enti
     list_.setCellRenderer(view_);
     scrollPane_ = new JScrollPane(list_);
     setVisibleRowCount(4, false);
-    selectionListeners_ = new HashSet<EntitySelectionListener<E>>(1);
+    setSelectionListener(null);
     silentSelectionChange_ = false;
     setVisibleRowCount();
     scrollPane_.getViewport().setBackground(list_.getBackground());
@@ -181,18 +178,11 @@ public class EntityList<E> extends Object implements ListSelectionListener, Enti
     applySavedSelection();
   }
 
-  public void addSelectionListener(EntitySelectionListener<E> listener) {
-    if (listener != null) {
-      selectionListeners_.add(listener);
-    }
+  @Override
+  public void setSelectionListener(EntitySelectionListener<E> listener) {
+    selectionListener_ = ((listener != null) ? listener : new EntitySelectionListener.Nop<E>());
   }
 
-  public void removeSelectionListener(EntitySelectionListener<E> listener) {
-    selectionListeners_.remove(listener);
-  }
-
-  /** @see javax.swing.event.ListSelectionListener#valueChanged(javax.swing.event.ListSelectionEvent)
-   */
   @Override
   public void valueChanged(ListSelectionEvent evt) {
     if (!evt.getValueIsAdjusting()) {
@@ -241,9 +231,7 @@ public class EntityList<E> extends Object implements ListSelectionListener, Enti
 
   private void fireSelectionChanged() {
     if (!silentSelectionChange_) {
-      for (EntitySelectionListener<E> listener : selectionListeners_) {
-        listener.selectionChanged(this, new ArrayList<E>(selection_));
-      }
+      selectionListener_.selectionChanged(this, new ArrayList<E>(selection_));
     }
   }
 

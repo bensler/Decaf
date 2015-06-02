@@ -19,8 +19,7 @@ public interface EntityComponent<E> {
 
   public E getSingleSelection();
 
-//  public void addSelectionListener(EntitySelectionListener listener);
-//  public void removeSelectionListener(EntitySelectionListener listener);
+  public void setSelectionListener(EntitySelectionListener<E> listener);
 
   public boolean contains(Object entity);
 

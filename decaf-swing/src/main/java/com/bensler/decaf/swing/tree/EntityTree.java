@@ -23,6 +23,7 @@ import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 
 import com.bensler.decaf.swing.view.EntityComponent;
+import com.bensler.decaf.swing.view.EntitySelectionListener;
 import com.bensler.decaf.swing.view.NoSelectionModel;
 import com.bensler.decaf.swing.view.PropertyView;
 import com.bensler.decaf.swing.view.SelectionMode;
@@ -32,7 +33,7 @@ import com.bensler.decaf.util.tree.Hierarchy;
 /**
  * This is a tree that displays a Hierarchy.
  */
-public class EntityTree <H extends Hierarchical<?>> extends Object implements EntityComponent<H>,
+public class EntityTree<H extends Hierarchical<?>> extends Object implements EntityComponent<H>,
 TreeSelectionListener, FocusListener {
 
   private   final         Set<FocusListener>  focusListeners_;
@@ -42,6 +43,8 @@ TreeSelectionListener, FocusListener {
   private   final         List<H>             selection_;
 
   protected final         TreeComponent<H>    tree_;
+
+  private                 EntitySelectionListener<H> selectionListener_;
 
   private                 boolean             silentSelectionChange_;
 
@@ -77,6 +80,7 @@ TreeSelectionListener, FocusListener {
     selection_ = new ArrayList<>(1);
     silentSelectionChange_ = false;
     setSelectionMode(SelectionMode.SINGLE);
+    setSelectionListener(null);
   }
 
   public void setEditable(boolean editable) {
@@ -203,6 +207,7 @@ TreeSelectionListener, FocusListener {
   protected void fireSelectionChanged() {
     if (!silentSelectionChange_) {
       final List<H> selection = Collections.unmodifiableList(selection_);
+      selectionListener_.selectionChanged(this, selection);
     }
   }
 
@@ -217,6 +222,7 @@ TreeSelectionListener, FocusListener {
         selection_.add((H)paths[i].getLastPathComponent());
       }
     }
+    fireSelectionChanged();
   }
 
   @Override
@@ -266,6 +272,11 @@ TreeSelectionListener, FocusListener {
 
   public boolean contains(Hierarchical<?> entity) {
     return model_.contains(entity);
+  }
+
+  @Override
+  public void setSelectionListener(EntitySelectionListener<H> listener) {
+    selectionListener_ = ((listener != null) ? listener : new EntitySelectionListener.Nop<H>());
   }
 
   @Override

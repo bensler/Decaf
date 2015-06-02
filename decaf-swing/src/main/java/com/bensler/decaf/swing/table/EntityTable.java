@@ -57,13 +57,13 @@ implements ListSelectionListener, FocusListener, EntityComponent<E> {
 
   private   final         TableView<E>        view_;
 
-  private   final         Set<EntitySelectionListener<E>> selectionListeners_;
-
   private   final         Map<PopupListener, PopupListenerWrapper> popupListeners_;
 
   private   final         List<E>             selection_;
 
   private   final         List<E>             savedSelection_;
+
+  private                 EntitySelectionListener<E> selectionListener_;
 
 //  private                 ActionImpl          customizeAction_;
 
@@ -106,7 +106,7 @@ implements ListSelectionListener, FocusListener, EntityComponent<E> {
     columnModel_.init();
     scrollPane_ = createScrollPane(table_);
     initCustAction();
-    selectionListeners_ = new HashSet<EntitySelectionListener<E>>(1);
+    setSelectionListener(null);
     popupListeners_ = new HashMap<PopupListener, PopupListenerWrapper>(1);
     silentSelectionChange_ = false;
     scrollPane_.getViewport().setBackground(table_.getBackground());
@@ -381,10 +381,9 @@ implements ListSelectionListener, FocusListener, EntityComponent<E> {
     ));
   }
 
-  public void addSelectionListener(EntitySelectionListener listener) {
-    if (listener != null) {
-      selectionListeners_.add(listener);
-    }
+  @Override
+  public void setSelectionListener(EntitySelectionListener<E> listener) {
+    selectionListener_ = ((listener != null) ? listener : new EntitySelectionListener.Nop<E>());
   }
 
   public void addPopupListener(PopupListener listener) {
@@ -397,16 +396,10 @@ implements ListSelectionListener, FocusListener, EntityComponent<E> {
     }
   }
 
-  public void removeSelectionListener(EntitySelectionListener listener) {
-    selectionListeners_.remove(listener);
-  }
-
   public void removePopupListener(PopupListener listener) {
     popupListeners_.remove(listener);
   }
 
-  /** @see javax.swing.event.ListSelectionListener#valueChanged(javax.swing.event.ListSelectionEvent)
-   */
   @Override
   public void valueChanged(ListSelectionEvent evt) {
     if (!evt.getValueIsAdjusting()) {
@@ -444,9 +437,7 @@ implements ListSelectionListener, FocusListener, EntityComponent<E> {
 
   private void fireSelectionChanged() {
     if (!silentSelectionChange_ && enabled_) {
-      for (EntitySelectionListener<E> listener : selectionListeners_) {
-        listener.selectionChanged(this, new ArrayList<E>(selection_));
-      }
+      selectionListener_.selectionChanged(this, new ArrayList<E>(selection_));
     }
   }
 
