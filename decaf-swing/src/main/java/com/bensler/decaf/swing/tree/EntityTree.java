@@ -44,7 +44,7 @@ TreeSelectionListener, FocusListener {
 
   protected final         TreeComponent<H>    tree_;
 
-  private                 EntitySelectionListener<H> selectionListener_;
+  private                 EntitySelectionListener<? super H> selectionListener_;
 
   private                 boolean             silentSelectionChange_;
 
@@ -275,8 +275,8 @@ TreeSelectionListener, FocusListener {
   }
 
   @Override
-  public void setSelectionListener(EntitySelectionListener<H> listener) {
-    selectionListener_ = ((listener != null) ? listener : new EntitySelectionListener.Nop<H>());
+  public void setSelectionListener(EntitySelectionListener<? super H> listener) {
+    selectionListener_ = ((listener != null) ? listener : EntitySelectionListener.NOP);
   }
 
   @Override

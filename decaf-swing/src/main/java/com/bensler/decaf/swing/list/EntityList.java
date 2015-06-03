@@ -36,7 +36,7 @@ public class EntityList<E> extends Object implements ListSelectionListener, Enti
 
   private   final         PropertyView<? super E, ?>  view_;
 
-  private                 EntitySelectionListener<E> selectionListener_;
+  private                 EntitySelectionListener<? super E> selectionListener_;
 
   private   final         List<E>             selection_;
 
@@ -179,8 +179,8 @@ public class EntityList<E> extends Object implements ListSelectionListener, Enti
   }
 
   @Override
-  public void setSelectionListener(EntitySelectionListener<E> listener) {
-    selectionListener_ = ((listener != null) ? listener : new EntitySelectionListener.Nop<E>());
+  public void setSelectionListener(EntitySelectionListener<? super E> listener) {
+    selectionListener_ = ((listener != null) ? listener : EntitySelectionListener.NOP);
   }
 
   @Override

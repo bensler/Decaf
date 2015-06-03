@@ -64,7 +64,7 @@ public class SampleTreeDialog<H extends Hierarchical<?>> implements ActionListen
     tree_ = new EntityTree<>(nameView);
     tree_.setSelectionListener(new EntitySelectionListener<H>()  {
       @Override
-      public void selectionChanged(EntityComponent<?> source, List<H> selection) {
+      public void selectionChanged(EntityComponent<?> source, List<? extends H> selection) {
         System.out.println(selection);// TODO
       }
     });

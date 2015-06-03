@@ -63,7 +63,7 @@ implements ListSelectionListener, FocusListener, EntityComponent<E> {
 
   private   final         List<E>             savedSelection_;
 
-  private                 EntitySelectionListener<E> selectionListener_;
+  private                 EntitySelectionListener<? super E> selectionListener_;
 
 //  private                 ActionImpl          customizeAction_;
 
@@ -382,8 +382,8 @@ implements ListSelectionListener, FocusListener, EntityComponent<E> {
   }
 
   @Override
-  public void setSelectionListener(EntitySelectionListener<E> listener) {
-    selectionListener_ = ((listener != null) ? listener : new EntitySelectionListener.Nop<E>());
+  public void setSelectionListener(EntitySelectionListener<? super E> listener) {
+    selectionListener_ = ((listener != null) ? listener : EntitySelectionListener.NOP);
   }
 
   public void addPopupListener(PopupListener listener) {
