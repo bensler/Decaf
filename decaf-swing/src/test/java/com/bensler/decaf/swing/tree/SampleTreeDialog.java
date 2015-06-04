@@ -60,19 +60,22 @@ public class SampleTreeDialog<H extends Hierarchical<?>> implements ActionListen
       new NamePropertyGetter<H>("parent", NOP_COMPARATOR),
       new NamePropertyGetter<String>("name", COLLATOR_COMPARATOR)
     ));
-
-    tree_ = new EntityTree<>(nameView);
-    tree_.setSelectionListener(new EntitySelectionListener<H>()  {
+    final EntitySelectionListener<H> selectionListener = new EntitySelectionListener<H>()  {
       @Override
       public void selectionChanged(EntityComponent<?> source, List<? extends H> selection) {
-        System.out.println(selection);// TODO
+        System.out.println(source.getClass().getSimpleName() + ": " + selection);// TODO
       }
-    });
+    };
+
+    tree_ = new EntityTree<>(nameView);
+    tree_.setSelectionListener(selectionListener);
     list_ = new EntityList<>(nameView);
+    list_.setSelectionListener(selectionListener);
     table_ = new EntityTable<H>(new TableView<H>(
       new TablePropertyView<H, String>("name", "Name", nameView),
       new TablePropertyView<H, String>("parentName", "Parent", parentNameView)
     ));
+    table_.setSelectionListener(selectionListener);
     dialog_.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
     tree_.setData(data);
     list_.setData(data.getMembers());
