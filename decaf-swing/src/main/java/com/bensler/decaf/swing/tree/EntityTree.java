@@ -65,12 +65,6 @@ TreeSelectionListener, FocusListener {
     tree_ = new TreeComponent<>(model_, propView);
     tree_.setCellRenderer(unwrapper);
     // update the selection BEFORE any listener is notified!
-    tree_.setMasterSelectionListener(new TreeSelectionListener() {
-      @Override
-      public void valueChanged(TreeSelectionEvent e) {
-        updateSelection();
-      }
-    });
     tree_.addTreeSelectionListener(this);
     tree_.setShowsRootHandles(true);
     tree_.addFocusListener(this);

@@ -5,9 +5,6 @@ import java.awt.Dimension;
 
 import javax.swing.JTree;
 import javax.swing.UIManager;
-import javax.swing.event.TreeSelectionEvent;
-import javax.swing.event.TreeSelectionListener;
-
 import com.bensler.decaf.swing.awt.ColorHelper;
 import com.bensler.decaf.swing.view.PropertyView;
 import com.bensler.decaf.util.tree.Hierarchical;
@@ -20,8 +17,6 @@ public class TreeComponent<H extends Hierarchical<?>> extends JTree implements T
 
   private   final         PropertyView<? super H, ?> view_;
 
-  private                 TreeSelectionListener   masterSelListener_;
-
   private                 float                   widthFactor_;
 
   public TreeComponent(TreeModel<H> newModel, PropertyView<? super H, ?> view) {
@@ -32,7 +27,6 @@ public class TreeComponent<H extends Hierarchical<?>> extends JTree implements T
       backgroundSelectionColor_, 2,
       UIManager.getColor("Tree.background"), 1
     );
-    masterSelListener_ = null;
     view_ = view;
     widthFactor_ = -1;
     setRootVisible(false);
@@ -44,19 +38,6 @@ public class TreeComponent<H extends Hierarchical<?>> extends JTree implements T
 
   public Color getForegroundSelectionColor() {
     return foregroundSelectionColor_;
-  }
-
-  /** Sets a listener that will be informed BEFORE all others! **/
-  public void setMasterSelectionListener(TreeSelectionListener l) {
-    masterSelListener_ = l;
-  }
-
-  @Override
-  protected void fireValueChanged(TreeSelectionEvent e) {
-    if (masterSelListener_ != null) {
-      masterSelListener_.valueChanged(e);
-    }
-    super.fireValueChanged(e);
   }
 
   public void setVisibleRowCount(int rowCount, float widthFactor) {
