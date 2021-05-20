@@ -1,8 +1,12 @@
 package com.bensler.decaf.swing.view;
 
+import javax.swing.JList;
+import javax.swing.JTable;
+import javax.swing.JTree;
 import javax.swing.ListSelectionModel;
 import javax.swing.tree.TreeSelectionModel;
-
+/** Just unifying constants from {@link ListSelectionModel} (used in {@link JList} and {@link JTable}) and
+ * {@link TreeSelectionModel}. */
 public enum SelectionMode {
 
   NONE(-1, -1),
@@ -12,31 +16,31 @@ public enum SelectionMode {
 
   private final int listTableConstant_;
   private final int treeConstant_;
-  
+
   private SelectionMode(int listTableConstant, int treeConstant) {
     listTableConstant_ = listTableConstant;
     treeConstant_ = treeConstant;
   }
 
   /**
-   * gets the constant to be used in a JTable
+   * gets the constant to be used in a {@link JTable}
    */
   public int getTableConstant() {
   	return getListConstant();
   }
 
   /**
-   * gets the constant to be used in a JList
+   * gets the constant to be used in a {@link JList}
    */
   public int getListConstant() {
     return listTableConstant_;
   }
 
   /**
-   * gets the constant to be used in a JTree
+   * gets the constant to be used in a {@link JTree}
    */
   public int getTreeConstant() {
     return treeConstant_;
   }
 
-  }
+}

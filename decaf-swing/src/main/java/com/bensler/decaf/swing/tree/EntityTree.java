@@ -8,10 +8,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Function;
 
 import javax.swing.JScrollPane;
 import javax.swing.JTree;
@@ -27,6 +27,7 @@ import com.bensler.decaf.swing.view.EntitySelectionListener;
 import com.bensler.decaf.swing.view.NoSelectionModel;
 import com.bensler.decaf.swing.view.PropertyView;
 import com.bensler.decaf.swing.view.SelectionMode;
+import com.bensler.decaf.swing.view.TreePropertyView;
 import com.bensler.decaf.util.tree.Hierarchical;
 import com.bensler.decaf.util.tree.Hierarchy;
 
@@ -56,12 +57,12 @@ TreeSelectionListener, FocusListener {
 
   protected               boolean             editable_;
 
-  public EntityTree(PropertyView<? super H, ?> propView) {
-    super();
+  public EntityTree(TreePropertyView<? super H, ?> treePropertyView) {
+    final PropertyView<? super H, ?> propView = treePropertyView.getPropertyView();
     final UnwrappingRenderer unwrapper = new UnwrappingRenderer(propView);
 
-    focusListeners_ = new HashSet<FocusListener>();
-    model_ = createModel(propView);
+    focusListeners_ = new HashSet<>();
+    model_ = createModel(treePropertyView);
     tree_ = new TreeComponent<>(model_, propView);
     tree_.setCellRenderer(unwrapper);
     // update the selection BEFORE any listener is notified!
@@ -94,8 +95,11 @@ TreeSelectionListener, FocusListener {
     return editable_;
   }
 
-  protected TreeModel<H> createModel(Comparator<? super H> comparator) {
-    return new TreeModel<>(comparator);
+  protected TreeModel<H> createModel(TreePropertyView<? super H, ?> treePropertyView) {
+    PropertyView<H, ?> propertyView = (PropertyView<H, ?>) treePropertyView.getPropertyView(); // TODO
+    Function<H, ?> parentRefProvider = (Function<H, ?>) treePropertyView.getParentRefProvider(); // TODO
+
+    return new TreeModel<>(propertyView, parentRefProvider);
   }
 
   @Override
@@ -166,8 +170,8 @@ TreeSelectionListener, FocusListener {
     tree_.clearSelection();
   }
 
-  public void showAll(Collection<Hierarchical<?>> bosToShow) {
-    for (Hierarchical<?> item : bosToShow) {
+  public void showAll(Collection<H> bosToShow) {
+    for (H item : bosToShow) {
       final Object[]  path  = model_.getPathAsObjectArray(item);
 
       if (path.length > 1) {
@@ -192,9 +196,9 @@ TreeSelectionListener, FocusListener {
   }
 
   public void refireSelectionChanged() {
-    final List<H> oldSelection = new ArrayList<H>(selection_);
+    final List<H> oldSelection = new ArrayList<>(selection_);
 
-    select(Collections.<Hierarchical<?>>emptyList());
+    select(Collections.emptyList());
     select(oldSelection);
   }
 
@@ -232,12 +236,8 @@ TreeSelectionListener, FocusListener {
     model_.updateNode(hierarchical);
   }
 
-  public void removeData(Hierarchical<?> ref) {
+  public void removeData(H ref) {
     model_.removeNode(ref);
-  }
-
-  public void setData(Collection<H> entities) {
-    setData(new Hierarchy<>(entities));
   }
 
   public void setData(Hierarchy<H> hierarchy) {
@@ -249,22 +249,18 @@ TreeSelectionListener, FocusListener {
   }
 
   public Set<H> getData() {
-    return new HashSet<H>(model_.data_.getMembers());
+    return new HashSet<>(model_.data_.getMembers());
   }
 
   @Override
-  public void select(Object subject) {
-    select(Arrays.asList(
-      ((subject != null) ? new Object[] {subject} : new Hierarchical[0])
-    ));
+  public void select(H subject) {
+    select(
+      ((subject != null) ? Arrays.asList(subject) : Collections.emptyList())
+    );
   }
 
   @Override
-  public boolean contains(Object entity) {
-    return model_.contains((Hierarchical<?>)entity);
-  }
-
-  public boolean contains(Hierarchical<?> entity) {
+  public boolean contains(H entity) {
     return model_.contains(entity);
   }
 
@@ -274,13 +270,11 @@ TreeSelectionListener, FocusListener {
   }
 
   @Override
-  public void select(Collection<?> entities) {
+  public void select(Collection<H> entities) {
     try {
       silentSelectionChange_ = true;
       tree_.clearSelection();
-      for (Object entity : entities) {
-        final Hierarchical<?> node = (Hierarchical<?>) entity;
-
+      for (H node : entities) {
         if (model_.contains(node)) {
           final TreePath selPath = model_.getTreePath(node);
 
@@ -390,7 +384,7 @@ TreeSelectionListener, FocusListener {
 
   /** Expands the given node and expand all nodes of its parent path.
    * Collapses the given node.  */
-  public void expandCollapse(Hierarchical<?> node, boolean expand) {
+  public void expandCollapse(H node, boolean expand) {
     final TreePath path = new TreePath(model_.getPath(node));
 
     if (expand) {
@@ -401,7 +395,7 @@ TreeSelectionListener, FocusListener {
   }
 
   /** making node visible by expanding its parent path */
-  public void makeVisible(Hierarchical<?> node) {
+  public void makeVisible(H node) {
     final Object[] path = model_.getPathAsObjectArray(node);
 
     if (path.length > 1) {
@@ -409,9 +403,9 @@ TreeSelectionListener, FocusListener {
     }
   }
 
-  public TreeState getState() {
+  public TreeState<H> getState() {
     if (!model_.data_.isEmpty()) {
-      return new TreeState(
+      return new TreeState<>(
         tree_.getExpandedDescendants(new TreePath(model_.getRoot())),
         getSingleSelection()
       );
@@ -435,11 +429,6 @@ TreeSelectionListener, FocusListener {
   @Override
   public void setToolTipText(String hint) {
     tree_.setToolTipText(hint);
-  }
-
-  @SuppressWarnings("unchecked")
-  public void clear() {
-    setData(Collections.EMPTY_SET);
   }
 
   @SuppressWarnings("unchecked")

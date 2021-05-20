@@ -21,11 +21,11 @@ public interface EntityComponent<E> {
 
   public void setSelectionListener(EntitySelectionListener<? super E> listener);
 
-  public boolean contains(Object entity);
+  public boolean contains(E entity);
 
-  public void select(Collection<?> entities);
+  public void select(Collection<E> entities);
 
-  public void select(Object entity);
+  public void select(E entity);
 
   public void clearSelection();
 

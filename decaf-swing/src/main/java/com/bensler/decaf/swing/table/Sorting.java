@@ -4,7 +4,7 @@ import java.util.Map;
 
 import com.google.common.collect.ImmutableMap;
 
-/**
+/** Represents a sort direction: {@link #ASCENDING}, {@link #DESCENDING} or {@link #NONE} .
  */
 public enum Sorting {
 

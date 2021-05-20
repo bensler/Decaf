@@ -9,7 +9,7 @@ import javax.swing.tree.TreePath;
 
 import com.bensler.decaf.util.tree.Hierarchical;
 
-public class TreeState extends Object {
+public class TreeState<H extends Hierarchical<?>> extends Object {
 
 //  public static List<String> loadIdList(PrefKey prefKey) {
 //    final List<String> result = new ArrayList<String>();
@@ -27,31 +27,31 @@ public class TreeState extends Object {
 //    return result;
 //  }
 
-  private   final         Set<Hierarchical<?>> expandedNodes_;
+  private   final         Set<H> expandedNodes_;
 
-  private   final         Hierarchical<?>      selectedNode_;
+  private   final         H      selectedNode_;
 
-  TreeState(Enumeration<TreePath> expandedPaths, Hierarchical<?> selectedNode) {
+  TreeState(Enumeration<TreePath> expandedPaths, H selectedNode) {
     super();
 
-    expandedNodes_  = new HashSet<Hierarchical<?>>();
+    expandedNodes_  = new HashSet<>();
     if (expandedPaths != null) {
       while (expandedPaths.hasMoreElements()) {
         expandedNodes_.add(
-          (Hierarchical<?>)(expandedPaths.nextElement()).getLastPathComponent()
+          (H)(expandedPaths.nextElement()).getLastPathComponent()
         );
       }
     }
     selectedNode_ = selectedNode;
   }
 
-  public TreeState(Collection<? extends Hierarchical<?>> expandedNodes, Hierarchical<?> selectedNode) {
-    expandedNodes_  = new HashSet<Hierarchical<?>>(expandedNodes);
+  public TreeState(Collection<? extends H> expandedNodes, H selectedNode) {
+    expandedNodes_  = new HashSet<>(expandedNodes);
     selectedNode_ = selectedNode;
   }
 
-  void apply(EntityTree<?> tree) {
-    for (Hierarchical<?> node : expandedNodes_) {
+  void apply(EntityTree<H> tree) {
+    for (H node : expandedNodes_) {
       tree.expandCollapse(node, true);
     }
     if (selectedNode_ != null) {
@@ -63,7 +63,7 @@ public class TreeState extends Object {
     return (selectedNode_ != null);
   }
 
-  public Set<Hierarchical<?>> getExpandedNodes() {
+  public Set<H> getExpandedNodes() {
     return expandedNodes_;
   }
 

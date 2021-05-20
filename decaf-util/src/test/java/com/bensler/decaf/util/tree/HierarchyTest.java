@@ -14,7 +14,7 @@ public class HierarchyTest {
 
     @Test
     public void testIsEmpty() {
-        final Hierarchy<Folder> tree = new Hierarchy<Folder>();
+        final Hierarchy<Folder> tree = new Hierarchy<>(folder -> folder);
 
         final Folder root = new Folder(null, "/");
         final Folder home = new Folder(root, "home");
@@ -40,8 +40,8 @@ public class HierarchyTest {
 
     @Test
     public void equalsAndHashcode() {
-      final Hierarchy<Folder> tree1 = new Hierarchy<Folder>();
-      final Hierarchy<Folder> tree2 = new Hierarchy<Folder>();
+      final Hierarchy<Folder> tree1 = new Hierarchy<>(folder -> folder);
+      final Hierarchy<Folder> tree2 = new Hierarchy<>(folder -> folder);
 
       final Folder root = new Folder(null, "/");
       final Folder home = new Folder(root, "home");
@@ -54,7 +54,7 @@ public class HierarchyTest {
       tree1.add(home);
 
       Set<Folder> expectedMembers = Sets.newHashSet(root, home, bobsHome, alicesHome);
-      Assert.assertEquals("tree1 should have a size of " + expectedMembers.size(), expectedMembers.size(), tree1.getSize());
+      Assert.assertEquals("tree1 should have a size of " + expectedMembers.size(), expectedMembers.size(), tree1.size());
 
       Assert.assertNotEquals("tree1 and tree2 should NOT be equal", tree1, tree2);
       tree2.add(bobsHome);
@@ -62,9 +62,9 @@ public class HierarchyTest {
       tree2.add(alicesHome);
       Assert.assertNotEquals("tree1 and tree2 should NOT be equal", tree1, tree2);
       tree2.add(root);
-      Assert.assertEquals("tree1 should have a size of 3", 3, tree2.getSize());
+      Assert.assertEquals("tree1 should have a size of 3", 3, tree2.size());
       expectedMembers = Sets.newHashSet(root, bobsHome, alicesHome);
-      Assert.assertEquals("tree1 should have a size of 3", 3, tree2.getSize());
+      Assert.assertEquals("tree1 should have a size of 3", 3, tree2.size());
       List<Folder> bobsHomePath = Lists.newArrayList(bobsHome);
       Assert.assertEquals("path ob bobsHome should only consist of bobsHome", bobsHomePath, tree2.getPath(bobsHome));
       Assert.assertNotEquals("tree1 and tree2 should NOT be equal", tree1, tree2);

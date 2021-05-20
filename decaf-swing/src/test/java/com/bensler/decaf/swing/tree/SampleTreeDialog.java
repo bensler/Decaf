@@ -22,30 +22,30 @@ import com.bensler.decaf.swing.table.TablePropertyView;
 import com.bensler.decaf.swing.table.TableView;
 import com.bensler.decaf.swing.view.EntityComponent;
 import com.bensler.decaf.swing.view.EntitySelectionListener;
-import com.bensler.decaf.swing.view.NamePropertyGetter;
 import com.bensler.decaf.swing.view.PropertyViewImpl;
 import com.bensler.decaf.swing.view.QueueGetter;
+import com.bensler.decaf.swing.view.SimplePropertyGetter;
+import com.bensler.decaf.swing.view.TreePropertyView;
 import com.bensler.decaf.util.tree.Folder;
-import com.bensler.decaf.util.tree.Hierarchical;
 import com.bensler.decaf.util.tree.Hierarchy;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 import com.jgoodies.looks.plastic.Plastic3DLookAndFeel;
 import com.jgoodies.looks.plastic.theme.DesertYellow;
 
-public class SampleTreeDialog<H extends Hierarchical<?>> implements ActionListener {
+public class SampleTreeDialog implements ActionListener {
 
   public static void main(String[] args) throws UnsupportedLookAndFeelException {
-    new SampleTreeDialog<Folder>(createFolderData()).dialog_.setVisible(true);
+    new SampleTreeDialog(createFolderData()).dialog_.setVisible(true);
   }
 
   final JDialog dialog_;
-  final EntityTree<H> tree_;
-  final EntityList<H> list_;
-  final EntityTable<H> table_;
+  final EntityTree<Folder> tree_;
+  final EntityList<Folder> list_;
+  final EntityTable<Folder> table_;
   final JButton button_;
 
-  public SampleTreeDialog(Hierarchy<H> data) throws UnsupportedLookAndFeelException {
+  public SampleTreeDialog(Hierarchy<Folder> data) throws UnsupportedLookAndFeelException {
     Plastic3DLookAndFeel.setCurrentTheme(new DesertYellow());
     UIManager.setLookAndFeel(new Plastic3DLookAndFeel());
     dialog_ = new JDialog(null, "Decaf Swing Test", ModalityType.MODELESS);
@@ -53,27 +53,27 @@ public class SampleTreeDialog<H extends Hierarchical<?>> implements ActionListen
       "3dlu, f:p:g, 3dlu",
       "3dlu, f:p:g, 3dlu, f:p:g, 3dlu, f:p:g, 3dlu, p, 3dlu"
     ));
-    final PropertyViewImpl<Object, String> nameView = new PropertyViewImpl<Object, String>(
-      new NamePropertyGetter<String>("name", COLLATOR_COMPARATOR)
+    final PropertyViewImpl<Folder, String> nameView = new PropertyViewImpl<>(
+      new SimplePropertyGetter<>(Folder::getName, COLLATOR_COMPARATOR)
     );
-    final PropertyViewImpl<H, String> parentNameView = new PropertyViewImpl<>(new QueueGetter<H, H, String>(
-      new NamePropertyGetter<H>("parent", NOP_COMPARATOR),
-      new NamePropertyGetter<String>("name", COLLATOR_COMPARATOR)
+    final PropertyViewImpl<Folder, String> parentNameView = new PropertyViewImpl<>(new QueueGetter<>(
+      new SimplePropertyGetter<>(Folder::getParent, NOP_COMPARATOR),
+      new SimplePropertyGetter<>(Folder::getName, COLLATOR_COMPARATOR)
     ));
-    final EntitySelectionListener<H> selectionListener = new EntitySelectionListener<H>()  {
+    final EntitySelectionListener<Folder> selectionListener = new EntitySelectionListener<Folder>()  {
       @Override
-      public void selectionChanged(EntityComponent<?> source, List<? extends H> selection) {
+      public void selectionChanged(EntityComponent<?> source, List<? extends Folder> selection) {
         System.out.println(source.getClass().getSimpleName() + ": " + selection);// TODO
       }
     };
 
-    tree_ = new EntityTree<>(nameView);
+    tree_ = new EntityTree<>(new TreePropertyView<>(nameView, data.getParentRefProvider()));
     tree_.setSelectionListener(selectionListener);
     list_ = new EntityList<>(nameView);
     list_.setSelectionListener(selectionListener);
-    table_ = new EntityTable<H>(new TableView<H>(
-      new TablePropertyView<H, String>("name", "Name", nameView),
-      new TablePropertyView<H, String>("parentName", "Parent", parentNameView)
+    table_ = new EntityTable<>(new TableView<>(
+      new TablePropertyView<>("name", "Name", nameView),
+      new TablePropertyView<>("parentName", "Parent", parentNameView)
     ));
     table_.setSelectionListener(selectionListener);
     dialog_.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -94,7 +94,7 @@ public class SampleTreeDialog<H extends Hierarchical<?>> implements ActionListen
   }
 
   static Hierarchy<Folder> createFolderData() {
-    final Hierarchy<Folder> tree = new Hierarchy<>();
+    final Hierarchy<Folder> tree = new Hierarchy<>(folder -> folder);
 
     final Folder root = new Folder(null, "/");
     final Folder home = new Folder(root, "home");

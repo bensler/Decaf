@@ -2,6 +2,7 @@ package com.bensler.decaf.util.tree;
 
 import java.util.Collection;
 import java.util.Set;
+import java.util.function.Function;
 
 import com.bensler.decaf.util.tree.ChildrenCollectionMaintainer.DefaultCollectionMaintainer;
 
@@ -14,15 +15,15 @@ public class Hierarchy<H extends Hierarchical<?>> extends AbstractHierarchy<H, S
   /**
    * Creates a new empty hierarchy.
    */
-  public Hierarchy() {
-    super(new DefaultCollectionMaintainer<H>());
+  public Hierarchy(Function<H, ?> parentRefProvider) {
+    super(new DefaultCollectionMaintainer<H>(), parentRefProvider);
   }
 
   /**
    * Creates a new hierarchy using the given members.
    */
-  public Hierarchy(final Collection<? extends H> members) {
-    this();
+  public Hierarchy(final Collection<? extends H> members, Function<H, ?> parentRefProvider) {
+    this(parentRefProvider);
     addAll(members);
   }
 

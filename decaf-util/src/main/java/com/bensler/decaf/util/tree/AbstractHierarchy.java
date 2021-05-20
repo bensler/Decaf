@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.function.Function;
 
 import com.bensler.decaf.util.CanceledException;
 import com.google.common.base.Preconditions;
@@ -27,6 +28,8 @@ public class AbstractHierarchy<H extends Hierarchical<?>, C extends Collection<H
    */
   private final Map<H, C> children_;
 
+  private final ParentResolver<H> parentResolver_;
+
   /**
    * root node of this hierarchy.
    */
@@ -35,13 +38,16 @@ public class AbstractHierarchy<H extends Hierarchical<?>, C extends Collection<H
   /**
    * Creates a new empty hierarchy.
    */
-  public AbstractHierarchy(ChildrenCollectionMaintainer<H, C> nanny) {
+  public AbstractHierarchy(ChildrenCollectionMaintainer<H, C> nanny, Function<H, ?> parentRefProvider) {
     nanny_ = nanny;
-    children_ = new HashMap<H, C>();
-    root_ = null;
-    children_.put(root_, null);
+    parentResolver_ = new ParentResolver<>(parentRefProvider);
+    children_ = new HashMap<>();
+    children_.put(root_ = null, null);
   }
 
+  public Function<H, ?> getParentRefProvider() {
+    return parentResolver_.getParentRefProvider();
+  }
   /**
    * used by TreeModel *
    *
@@ -62,6 +68,7 @@ public class AbstractHierarchy<H extends Hierarchical<?>, C extends Collection<H
 
       if (((oldParent != null) && oldParent.equals(newParent)) || ((oldParent == null) && (newParent == null))) {
         // at the same position -> only replace the value
+        parentResolver_.addTarget(newNode);
         children_.put(newNode, children_.get(oldNode));
         return;
       } else {
@@ -71,11 +78,13 @@ public class AbstractHierarchy<H extends Hierarchical<?>, C extends Collection<H
 
     if (isEmpty()) {
       children_.remove(null);
+      parentResolver_.addTarget(newNode);
       children_.put(newNode, null);
       root_ = newNode;
     } else {
+      parentResolver_.addTarget(newNode);
       children_.put(newNode, null);
-      parent = resolve(newNode.getParent());
+      parent = resolveParent(newNode);
       if (parent != null) {
         addChild(newNode, parent);
         if (hasSyntheticRoot()) {
@@ -149,13 +158,10 @@ public class AbstractHierarchy<H extends Hierarchical<?>, C extends Collection<H
     nanny_.addChild(child, children);
   }
 
-  private H resolveParent(final Hierarchical<?> node) {
-    final H parent = resolve(node.getParent());
-
-    return ((node == null) ? null : (((parent == null) && hasSyntheticRoot()) ? null : parent));
+  private H resolveParent(final H node) {
+    return parentResolver_.resolveParent(node);
   }
 
-  /** used by TreeModel */
   public H resolve(final Object ref) {
     if (ref != null) {
       final int refHash = ref.hashCode();
@@ -182,21 +188,21 @@ public class AbstractHierarchy<H extends Hierarchical<?>, C extends Collection<H
    * @return  true if this hierarchies only member is its own synthetic root.
    */
   public boolean isEmpty() {
-    return ((children_.size() == 1) && children_.containsKey(null));
+    return parentResolver_.isEmpty();
   }
 
   /**
    * @return  the member count of this hierarchy.
    */
-  public int getSize() {
-    return (isEmpty() ? 0 : (children_.size() - (hasSyntheticRoot() ? 1 : 0)));
+  public int size() {
+    return parentResolver_.size();
   }
 
   /**
    * @return  all members of this Hierarchy in undefined order
    */
   public Set<H> getMembers() {
-    final Set<H> result = (isEmpty() ? (Set<H>) Collections.<H>emptySet() : new HashSet<H>(children_.keySet()));
+    final Set<H> result = (isEmpty() ? (Set<H>) Collections.<H>emptySet() : new HashSet<>(children_.keySet()));
 
     if (hasSyntheticRoot()) {
       result.remove(getRoot());
@@ -205,7 +211,7 @@ public class AbstractHierarchy<H extends Hierarchical<?>, C extends Collection<H
   }
 
   /** used by TreeModel */
-  public void remove(final Hierarchical<?> member, final boolean recursive) {
+  public void remove(final H member, final boolean recursive) {
     final boolean synthRoot = hasSyntheticRoot();
 
     Preconditions.checkNotNull(member, "Cannot remove null");
@@ -231,6 +237,7 @@ public class AbstractHierarchy<H extends Hierarchical<?>, C extends Collection<H
         }
       }
 
+      parentResolver_.removeTarget(member);
       children_.remove(member);
 
       // handle parent
@@ -286,11 +293,11 @@ public class AbstractHierarchy<H extends Hierarchical<?>, C extends Collection<H
   }
 
   /**
-   * used by TreeModel *
+   * used by TreeModel <p>
    * Checks if a node is a member of this hierarchy.
    */
-  public boolean contains(final Hierarchical<?> node) {
-    return children_.containsKey(node);
+  public boolean contains(final H node) {
+    return parentResolver_.containsTarget(node);
   }
 
   /**
@@ -298,8 +305,7 @@ public class AbstractHierarchy<H extends Hierarchical<?>, C extends Collection<H
    */
   public void clear() {
     children_.clear();
-    root_ = null;
-    children_.put(root_, null);
+    children_.put(root_ = null, null);
   }
 
   /** used by TreeModel */
@@ -308,10 +314,10 @@ public class AbstractHierarchy<H extends Hierarchical<?>, C extends Collection<H
   }
 
   /** used by TreeModel */
-  public List<H> getPath(Hierarchical<?> node) {
-    final List<H> list = new ArrayList<H>(4);
+  public List<H> getPath(H node) {
+    final List<H> list = new ArrayList<>(4);
 
-    if (children_.keySet().contains(node)) {
+    if (parentResolver_.containsTarget(node)) {
       while (node != null) {
         list.add(0, resolve(node));
         node = resolveParent(node);
@@ -386,9 +392,11 @@ public class AbstractHierarchy<H extends Hierarchical<?>, C extends Collection<H
 
   private void visitUp_(final Visitor<H> visitor, final H member) throws CanceledException {
     if (member != null) {
+      final Object parent = member.getParent();
+
       visitor.visit(member);
-      if (member.getParent() != null) {
-        visitUp_(visitor, resolve(member.getParent()));
+      if (parent != null) {
+        visitUp_(visitor, resolve(parent));
       }
     }
   }
@@ -401,7 +409,7 @@ public class AbstractHierarchy<H extends Hierarchical<?>, C extends Collection<H
   }
 
   public List<H> getPath(final H hierarchical, final List<H> target) {
-    final H parent = resolve(hierarchical.getParent());
+    final H parent = resolveParent(hierarchical);
 
     target.add(0, hierarchical);
     if (parent == null) {
@@ -436,7 +444,7 @@ public class AbstractHierarchy<H extends Hierarchical<?>, C extends Collection<H
     if (isEmpty()) {
         return Collections.emptySet();
     } else {
-      final Set<H> leafs = new HashSet<H>();
+      final Set<H> leafs = new HashSet<>();
 
       for (Entry<H, C> entry : children_.entrySet()) {
         if (entry.getValue() == null) {

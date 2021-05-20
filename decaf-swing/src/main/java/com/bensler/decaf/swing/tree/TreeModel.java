@@ -4,12 +4,13 @@ import java.util.Comparator;
 import java.util.EventListener;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Function;
 
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
 
-import com.bensler.decaf.util.tree.ChildrenCollectionMaintainer.SortedListMaintainer;
 import com.bensler.decaf.util.tree.AbstractHierarchy;
+import com.bensler.decaf.util.tree.ChildrenCollectionMaintainer.SortedListMaintainer;
 import com.bensler.decaf.util.tree.Hierarchical;
 import com.bensler.decaf.util.tree.Hierarchy;
 
@@ -36,8 +37,8 @@ public class TreeModel <H extends Hierarchical<?>> extends DefaultTreeModel {
 
   static class ListHierarchy<M extends Hierarchical<?>> extends AbstractHierarchy<M, List<M>> {
 
-    public ListHierarchy(Comparator<? super M> comparator) {
-      super(new SortedListMaintainer<M>(comparator));
+    public ListHierarchy(Comparator<? super M> comparator, Function<M, ?> parentRefProvider) {
+      super(new SortedListMaintainer<M>(comparator), parentRefProvider);
     }
 
     /** Widening visibility */
@@ -52,9 +53,9 @@ public class TreeModel <H extends Hierarchical<?>> extends DefaultTreeModel {
 
   protected final         ListHierarchy<H>            data_;
 
-  TreeModel(Comparator<? super H> comparator) {
+  TreeModel(Comparator<? super H> comparator, Function<H, ?> parentRefProvider) {
     super(null, false);
-    data_ = new ListHierarchy<H>(comparator);
+    data_ = new ListHierarchy<>(comparator, parentRefProvider);
   }
 
   @Override
@@ -96,7 +97,7 @@ public class TreeModel <H extends Hierarchical<?>> extends DefaultTreeModel {
 
     data_.clear();
     data_.addAll(data.getMembers());
-    fireStructureChanged(getRoot());
+    fireRootChanged();
     fireRootMayHaveChanged(hadSynthRoot);
   }
 
@@ -164,7 +165,7 @@ public class TreeModel <H extends Hierarchical<?>> extends DefaultTreeModel {
         fireNodeChanged(node);
       } else {
         if ((oldIndex < 0) ^ (newIndex < 0)) {
-          fireStructureChanged(getRoot());
+          fireRootChanged();
         }
         final Object[] parentPath    = getPathAsObjectArray(parent);
 
@@ -180,7 +181,7 @@ public class TreeModel <H extends Hierarchical<?>> extends DefaultTreeModel {
     }
   }
 
-  public void removeNode(Hierarchical<?> node) {
+  public void removeNode(H node) {
 		final H   hierarchical  = data_.resolve(node);
 		final H   parent        = data_.resolve(hierarchical.getParent());
     final int index;
@@ -195,7 +196,7 @@ public class TreeModel <H extends Hierarchical<?>> extends DefaultTreeModel {
     }
   }
 
-  public void fireNodeChanged(Hierarchical<?> element) {
+  public void fireNodeChanged(H element) {
     fireTreeNodesChanged(getPathAsObjectArray(element));
   }
 
@@ -203,11 +204,11 @@ public class TreeModel <H extends Hierarchical<?>> extends DefaultTreeModel {
     fireTreeNodesChanged(this, path, null, null);
   }
 
-  public List<H> getPath(Hierarchical<?> node) {
+  public List<H> getPath(H node) {
     return data_.getPath(node);
   }
 
-  public Object[] getPathAsObjectArray(Hierarchical<?> node) {
+  Object[] getPathAsObjectArray(H node) {
     final List<H> path = data_.getPath(node);
 
     return (path.isEmpty() ? new Object[] {invisibleRoot} : path.toArray(new Object[path.size()]));
@@ -217,11 +218,15 @@ public class TreeModel <H extends Hierarchical<?>> extends DefaultTreeModel {
     return new TreePath(getPath(data_.resolve(node)));
   }
 
-  void fireStructureChanged(Hierarchical<?> node) {
+  private void fireRootChanged() {
+    fireTreeStructureChanged(this, new Object[] {invisibleRoot}, null, null);
+  }
+
+  private void fireStructureChanged(H node) {
     fireTreeStructureChanged(this, getPathAsObjectArray(node), null, null);
   }
 
-  void removeTree(Hierarchical<?> subject) {
+  void removeTree(H subject) {
     final H parent = data_.resolve(subject.getParent());
 
     data_.remove(subject, true);
@@ -232,7 +237,7 @@ public class TreeModel <H extends Hierarchical<?>> extends DefaultTreeModel {
 
   /** Removes a node. If the removed node has children they became siblings of the root
    * node. */
-  void remove(Hierarchical<?> subject) {
+  void remove(H subject) {
     final H         parent      = data_.resolve(subject.getParent());
     final boolean   hadChildren = !data_.isLeaf(subject);
 
@@ -241,16 +246,20 @@ public class TreeModel <H extends Hierarchical<?>> extends DefaultTreeModel {
       fireStructureChanged(parent);
     }
     if (hadChildren) {
-      fireStructureChanged(getRoot());
+      fireRootChanged();
     }
   }
 
-  boolean contains(Hierarchical<?> entity) {
+  boolean contains(H entity) {
     return data_.contains(entity);
   }
 
   public void clear() {
-    setData(new Hierarchy<H>());
+    final boolean hadSynthRoot  = data_.hasSyntheticRoot();
+
+    data_.clear();
+    fireRootChanged();
+    fireRootMayHaveChanged(hadSynthRoot);
   }
 
   public boolean hasSyntheticRoot() {
@@ -267,13 +276,6 @@ public class TreeModel <H extends Hierarchical<?>> extends DefaultTreeModel {
 
   public H resolve(Object hierarchical) {
     return data_.resolve(hierarchical);
-  }
-
-  public Hierarchy<H> getData() {
-    final Hierarchy<H> hierarchy = new Hierarchy<H>();
-
-    hierarchy.addAll(data_.getMembers());
-    return hierarchy;
   }
 
   public Set<H> getMembers() {

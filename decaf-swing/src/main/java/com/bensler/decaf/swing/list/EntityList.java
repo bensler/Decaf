@@ -4,9 +4,11 @@ import java.awt.Color;
 import java.awt.Point;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+
 import javax.swing.DefaultListSelectionModel;
 import javax.swing.JComponent;
 import javax.swing.JList;
@@ -19,7 +21,6 @@ import com.bensler.decaf.swing.view.EntitySelectionListener;
 import com.bensler.decaf.swing.view.NoSelectionModel;
 import com.bensler.decaf.swing.view.PropertyView;
 import com.bensler.decaf.swing.view.SelectionMode;
-import com.google.common.collect.Lists;
 
 
 /**
@@ -62,10 +63,10 @@ public class EntityList<E> extends Object implements ListSelectionListener, Enti
     view_ = view;
     visibleRowCount_ = 10;
     shrinkIfPossible_ = true;
-    selection_ = new ArrayList<E>(2);
-    savedSelection_ = new ArrayList<E>(2);
-    model_ = new SortedListModel<E>(view);
-    list_ = new JList<E>(model_);
+    selection_ = new ArrayList<>(2);
+    savedSelection_ = new ArrayList<>(2);
+    model_ = new SortedListModel<>(view);
+    list_ = new JList<>(model_);
     list_.setCellRenderer(view_);
     scrollPane_ = new JScrollPane(list_);
     setVisibleRowCount(4, false);
@@ -193,12 +194,12 @@ public class EntityList<E> extends Object implements ListSelectionListener, Enti
   }
 
   @Override
-  public void select(Object subject) {
-    select(Lists.newArrayList(subject));
+  public void select(E subject) {
+    select(Arrays.asList(subject));
   }
 
   @Override
-  public void select(Collection<?> subject) {
+  public void select(Collection<E> subject) {
     silentSelectionChange_ = true;
 
     try {
@@ -231,7 +232,7 @@ public class EntityList<E> extends Object implements ListSelectionListener, Enti
 
   private void fireSelectionChanged() {
     if (!silentSelectionChange_) {
-      selectionListener_.selectionChanged(this, new ArrayList<E>(selection_));
+      selectionListener_.selectionChanged(this, new ArrayList<>(selection_));
     }
   }
 
