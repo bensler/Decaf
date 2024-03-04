@@ -34,7 +34,7 @@ import com.bensler.decaf.util.tree.Hierarchy;
 /**
  * This is a tree that displays a Hierarchy.
  */
-public class EntityTree<H extends Hierarchical<?>> extends Object implements EntityComponent<H>,
+public class EntityTree<H extends Hierarchical<H>> extends Object implements EntityComponent<H>,
 TreeSelectionListener, FocusListener {
 
   private   final         Set<FocusListener>  focusListeners_;
@@ -96,8 +96,8 @@ TreeSelectionListener, FocusListener {
   }
 
   protected TreeModel<H> createModel(TreePropertyView<? super H, ?> treePropertyView) {
-    PropertyView<H, ?> propertyView = (PropertyView<H, ?>) treePropertyView.getPropertyView(); // TODO
-    Function<H, ?> parentRefProvider = (Function<H, ?>) treePropertyView.getParentRefProvider(); // TODO
+    PropertyView<H, H> propertyView = (PropertyView<H, H>) treePropertyView.getPropertyView(); // TODO
+    Function<H, H> parentRefProvider = (Function<H, H>) treePropertyView.getParentRefProvider(); // TODO
 
     return new TreeModel<>(propertyView, parentRefProvider);
   }
@@ -244,7 +244,6 @@ TreeSelectionListener, FocusListener {
     model_.setData(hierarchy);
     tree_.setRootVisible(!hierarchy.hasSyntheticRoot());
     // try to expand the tree in the same manner as before.
-    // This is useful for deletion of nodes.
 //    applyState();
   }
 

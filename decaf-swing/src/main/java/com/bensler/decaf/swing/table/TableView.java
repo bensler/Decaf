@@ -10,6 +10,7 @@ public class TableView<E> extends Object {
 
   protected final         List<TablePropertyView<E, ?>>   views_;
 
+  @SafeVarargs
   public TableView(TablePropertyView<E, ?>... views) {
     this(Arrays.asList(views));
   }
@@ -44,7 +45,7 @@ public class TableView<E> extends Object {
   }
 
   public List<String> getDefaultVisibleViews() {
-    final List<String> result = new ArrayList<String>(views_.size());
+    final List<String> result = new ArrayList<>(views_.size());
 
     for (TablePropertyView<E, ?> view : views_) {
       if (view.isDefaultVisible()) {

@@ -9,7 +9,7 @@ import javax.swing.tree.TreePath;
 
 import com.bensler.decaf.util.tree.Hierarchical;
 
-public class TreeState<H extends Hierarchical<?>> extends Object {
+public class TreeState<H extends Hierarchical<H>> extends Object {
 
 //  public static List<String> loadIdList(PrefKey prefKey) {
 //    final List<String> result = new ArrayList<String>();

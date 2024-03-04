@@ -5,11 +5,12 @@ import java.awt.Dimension;
 
 import javax.swing.JTree;
 import javax.swing.UIManager;
+
 import com.bensler.decaf.swing.awt.ColorHelper;
 import com.bensler.decaf.swing.view.PropertyView;
 import com.bensler.decaf.util.tree.Hierarchical;
 
-public class TreeComponent<H extends Hierarchical<?>> extends JTree implements TreeModel.RootChangeListener {
+public class TreeComponent<H extends Hierarchical<H>> extends JTree implements TreeModel.RootChangeListener {
 
   private   final         Color                   backgroundSelectionColor_;
   private   final         Color                   backgroundSelectionColorUnfocused_;

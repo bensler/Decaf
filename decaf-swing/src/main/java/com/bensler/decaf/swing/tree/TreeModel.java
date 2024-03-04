@@ -16,7 +16,7 @@ import com.bensler.decaf.util.tree.Hierarchy;
 
 /**
  */
-public class TreeModel <H extends Hierarchical<?>> extends DefaultTreeModel {
+public class TreeModel <H extends Hierarchical<H>> extends DefaultTreeModel {
 
   /** Provides a method called when a TreeModel stops or starts using a synthetic
    * root. A EntityTree should listen on these events to switch its tree components
@@ -35,10 +35,10 @@ public class TreeModel <H extends Hierarchical<?>> extends DefaultTreeModel {
       }
   }
 
-  static class ListHierarchy<M extends Hierarchical<?>> extends AbstractHierarchy<M, List<M>> {
+  static class ListHierarchy<M extends Hierarchical<M>> extends AbstractHierarchy<M, List<M>> {
 
-    public ListHierarchy(Comparator<? super M> comparator, Function<M, ?> parentRefProvider) {
-      super(new SortedListMaintainer<M>(comparator), parentRefProvider);
+    public ListHierarchy(Comparator<? super M> comparator, Function<M, M> parentRefProvider) {
+      super(new SortedListMaintainer<>(comparator), parentRefProvider);
     }
 
     /** Widening visibility */
@@ -49,20 +49,21 @@ public class TreeModel <H extends Hierarchical<?>> extends DefaultTreeModel {
 
   }
 
-  public static final Hierarchical<?> invisibleRoot = new Root();
-
   protected final         ListHierarchy<H>            data_;
 
-  TreeModel(Comparator<? super H> comparator, Function<H, ?> parentRefProvider) {
+  private Hierarchical<?> invisibleRoot_ = new Root();
+
+  TreeModel(Comparator<? super H> comparator, Function<H, H> parentRefProvider) {
     super(null, false);
     data_ = new ListHierarchy<>(comparator, parentRefProvider);
+    invisibleRoot_ = new Root();
   }
 
   @Override
   public Hierarchical<?> getRoot() {
     final H dataRoot = data_.getRoot();
 
-    return ((dataRoot == null) ? invisibleRoot : dataRoot);
+    return ((dataRoot == null) ? invisibleRoot_ : dataRoot);
   }
 
   @Override
@@ -71,12 +72,12 @@ public class TreeModel <H extends Hierarchical<?>> extends DefaultTreeModel {
   }
 
   protected List<H> getChildren(Hierarchical<?> parent) {
-    return data_.getChildrenNoCopy((parent == invisibleRoot) ? null : parent);
+    return data_.getChildrenNoCopy((parent == invisibleRoot_) ? null : parent);
   }
 
   @Override
   public int getChildCount(Object parent) {
-    return data_.getChildCount((parent == invisibleRoot) ? null : (Hierarchical<?>)parent);
+    return data_.getChildCount((parent == invisibleRoot_) ? null : (Hierarchical<?>)parent);
   }
 
   @Override
@@ -95,10 +96,13 @@ public class TreeModel <H extends Hierarchical<?>> extends DefaultTreeModel {
   void setData(Hierarchy<H> data) {
     final boolean hadSynthRoot  = data_.hasSyntheticRoot();
 
+    invisibleRoot_ = new Root();
     data_.clear();
     data_.addAll(data.getMembers());
-    fireRootChanged();
-    fireRootMayHaveChanged(hadSynthRoot);
+    fireTreeStructureChanged(this, null,  null, null);
+//    fireRootChanged();
+//    fireRootMayHaveChanged(hadSynthRoot);
+    fireTreeStructureChanged(this, new Object[] {getRoot()},  null, null);
   }
 
   public boolean showRoot() {
@@ -211,7 +215,7 @@ public class TreeModel <H extends Hierarchical<?>> extends DefaultTreeModel {
   Object[] getPathAsObjectArray(H node) {
     final List<H> path = data_.getPath(node);
 
-    return (path.isEmpty() ? new Object[] {invisibleRoot} : path.toArray(new Object[path.size()]));
+    return (path.isEmpty() ? new Object[] {invisibleRoot_} : path.toArray(new Object[path.size()]));
   }
 
   public TreePath getTreePath(Hierarchical<?> node) {
@@ -219,7 +223,7 @@ public class TreeModel <H extends Hierarchical<?>> extends DefaultTreeModel {
   }
 
   private void fireRootChanged() {
-    fireTreeStructureChanged(this, new Object[] {invisibleRoot}, null, null);
+    fireTreeStructureChanged(this, new Object[] {invisibleRoot_}, null, null);
   }
 
   private void fireStructureChanged(H node) {

@@ -53,7 +53,7 @@ implements ListSelectionListener, FocusListener, EntityComponent<E> {
 
   private   final         TableModel<E>       model_;
 
-  protected final         ColumnModel         columnModel_;
+  protected final         ColumnModel<E>      columnModel_;
 
   private   final         TableView<E>        view_;
 
@@ -96,7 +96,7 @@ implements ListSelectionListener, FocusListener, EntityComponent<E> {
     autoColumnResize_ = true;
     sortable_ = true;
     view_ = view;
-    focusListeners_ = new HashSet<FocusListener>();
+    focusListeners_ = new HashSet<>();
     selection_ = new ArrayList<>(2);
     savedSelection_ = new ArrayList<>(2);
     model_ = new TableModel<>(view_, this);
@@ -107,7 +107,7 @@ implements ListSelectionListener, FocusListener, EntityComponent<E> {
     scrollPane_ = createScrollPane(table_);
     initCustAction();
     setSelectionListener(null);
-    popupListeners_ = new HashMap<PopupListener, PopupListenerWrapper>(1);
+    popupListeners_ = new HashMap<>(1);
     silentSelectionChange_ = false;
     scrollPane_.getViewport().setBackground(table_.getBackground());
     defSelModel_ = table_.getSelectionModel();
@@ -188,11 +188,11 @@ implements ListSelectionListener, FocusListener, EntityComponent<E> {
 //  }
 
   public void clear() {
-    setData(new ArrayList<E>());
+    setData(new ArrayList<>());
   }
 
   public void setData(Collection<E> newData) {
-    if (!new HashSet<>(newData).equals(new HashSet<Object>(getValues()))) {
+    if (!new HashSet<>(newData).equals(new HashSet<>(getValues()))) {
       saveSelection();
       model_.setData(newData);
       dataSizeChanged();
@@ -306,7 +306,7 @@ implements ListSelectionListener, FocusListener, EntityComponent<E> {
     return ((selection.isEmpty() ? null : selection.get(0)));
   }
 
-  public List getValues() {
+  public List<E> getValues() {
     return model_.getValues();
   }
 
@@ -415,7 +415,7 @@ implements ListSelectionListener, FocusListener, EntityComponent<E> {
   }
 
   @Override
-  public void select(Collection subject) {
+  public void select(Collection<E> subject) {
     table_.setSelectedValues(subject);
     fireSelectionChanged();
     scrollSelectionVisible();
@@ -437,7 +437,7 @@ implements ListSelectionListener, FocusListener, EntityComponent<E> {
 
   private void fireSelectionChanged() {
     if (!silentSelectionChange_ && enabled_) {
-      selectionListener_.selectionChanged(this, new ArrayList<E>(selection_));
+      selectionListener_.selectionChanged(this, new ArrayList<>(selection_));
     }
   }
 
@@ -476,11 +476,11 @@ implements ListSelectionListener, FocusListener, EntityComponent<E> {
 
   List<E> setSelectionSilent() {
     silentSelectionChange_ = true;
-    return new ArrayList<E>(selection_);
+    return new ArrayList<>(selection_);
   }
 
   void setSelectionUnsilent(List<E> selectionBefore) {
-    if (!new HashSet<E>(selectionBefore).equals(new HashSet<E>(selection_))) {
+    if (!new HashSet<>(selectionBefore).equals(new HashSet<>(selection_))) {
       table_.setSelectedValues(selectionBefore);
       silentSelectionChange_ = false;
       fireSelectionChanged();
@@ -603,7 +603,7 @@ implements ListSelectionListener, FocusListener, EntityComponent<E> {
     return model_.indexOf(object);
   }
 
-  ColumnModel getColumnModel() {
+  ColumnModel<E> getColumnModel() {
     return columnModel_;
   }
 
