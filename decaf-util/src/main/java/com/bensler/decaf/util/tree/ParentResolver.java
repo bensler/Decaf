@@ -6,18 +6,18 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 
-public class ParentResolver <TARGET extends Hierarchical<?>> {
+public class ParentResolver <TARGET extends Hierarchical<TARGET>> {
 
   private final Map<Object, TARGET> cache_;
 
-  private final Function<TARGET, ?> refProvider_;
+  private final Function<TARGET, TARGET> refProvider_;
 
-  public ParentResolver(Function<TARGET, ?> refProvider) {
+  public ParentResolver(Function<TARGET, TARGET> refProvider) {
     cache_ = new HashMap<>();
     refProvider_ = refProvider;
   }
 
-  Function<TARGET, ?> getParentRefProvider() {
+  Function<TARGET, TARGET> getParentRefProvider() {
     return refProvider_;
   }
 

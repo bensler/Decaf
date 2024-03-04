@@ -19,7 +19,7 @@ import com.google.common.base.Preconditions;
  * A Hierarchy forms a tree out of a collection of {@link Hierarchical}s. A synthetic root is used if there are more than one
  * nodes with an unknown or null parent ref. This is to make sure that there is always exactly one root.
  */
-public class AbstractHierarchy<H extends Hierarchical<?>, C extends Collection<H>> extends Object implements Serializable {
+public class AbstractHierarchy<H extends Hierarchical<H>, C extends Collection<H>> extends Object implements Serializable {
 
   private final ChildrenCollectionMaintainer<H, C> nanny_;
   /**
@@ -38,14 +38,14 @@ public class AbstractHierarchy<H extends Hierarchical<?>, C extends Collection<H
   /**
    * Creates a new empty hierarchy.
    */
-  public AbstractHierarchy(ChildrenCollectionMaintainer<H, C> nanny, Function<H, ?> parentRefProvider) {
+  public AbstractHierarchy(ChildrenCollectionMaintainer<H, C> nanny, Function<H, H> parentRefProvider) {
     nanny_ = nanny;
     parentResolver_ = new ParentResolver<>(parentRefProvider);
     children_ = new HashMap<>();
     children_.put(root_ = null, null);
   }
 
-  public Function<H, ?> getParentRefProvider() {
+  public Function<H, H> getParentRefProvider() {
     return parentResolver_.getParentRefProvider();
   }
   /**
