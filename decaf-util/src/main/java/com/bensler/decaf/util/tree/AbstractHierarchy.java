@@ -63,12 +63,11 @@ public class AbstractHierarchy<H extends Hierarchical<H>, C extends Collection<H
     Preconditions.checkNotNull(newNode, "Cannot add null");
     if ((oldNode = resolve(newNode)) != null) {
       // node is allready in this hierarchy
-      final H oldParent = resolveParent(oldNode);
-      final H newParent = resolveParent(newNode);
+      final H oldParent = oldNode.getParent();
+      final H newParent = newNode.getParent();
 
       if (((oldParent != null) && oldParent.equals(newParent)) || ((oldParent == null) && (newParent == null))) {
         // at the same position -> only replace the value
-        parentResolver_.addTarget(newNode);
         children_.put(newNode, children_.get(oldNode));
         return;
       } else {
@@ -78,13 +77,11 @@ public class AbstractHierarchy<H extends Hierarchical<H>, C extends Collection<H
 
     if (isEmpty()) {
       children_.remove(null);
-      parentResolver_.addTarget(newNode);
       children_.put(newNode, null);
       root_ = newNode;
     } else {
-      parentResolver_.addTarget(newNode);
       children_.put(newNode, null);
-      parent = resolveParent(newNode);
+      parent = newNode.getParent();
       if (parent != null) {
         addChild(newNode, parent);
         if (hasSyntheticRoot()) {
@@ -98,7 +95,7 @@ public class AbstractHierarchy<H extends Hierarchical<H>, C extends Collection<H
       } else {
         // no parent found
         if (!hasSyntheticRoot()) {
-          if (newNode.equals(resolveParent(root_))) {
+          if (newNode.equals(root_.getParent())) {
             addChild(root_, newNode);
             root_ = newNode;
           } else {
@@ -130,7 +127,7 @@ public class AbstractHierarchy<H extends Hierarchical<H>, C extends Collection<H
     final Collection<H> rootChildren = getChildrenNoCopy(root_);
 
     for (H node : getChildren(root_)) {
-      if (possibleParent.equals(resolveParent(node))) {
+      if (possibleParent.equals(node.getParent())) {
         addChild(node, possibleParent);
         rootChildren.remove(node);
       }
@@ -156,10 +153,6 @@ public class AbstractHierarchy<H extends Hierarchical<H>, C extends Collection<H
       children.remove(child);
     }
     nanny_.addChild(child, children);
-  }
-
-  private H resolveParent(final H node) {
-    return parentResolver_.resolveParent(node);
   }
 
   public H resolve(final Object ref) {
@@ -188,21 +181,21 @@ public class AbstractHierarchy<H extends Hierarchical<H>, C extends Collection<H
    * @return  true if this hierarchies only member is its own synthetic root.
    */
   public boolean isEmpty() {
-    return parentResolver_.isEmpty();
+    return (children_.size() == 1) && children_.containsKey(null);
   }
 
   /**
    * @return  the member count of this hierarchy.
    */
   public int size() {
-    return parentResolver_.size();
+    return children_.size() - (children_.containsKey(null) ? 1 : 0);
   }
 
   /**
    * @return  all members of this Hierarchy in undefined order
    */
   public Set<H> getMembers() {
-    final Set<H> result = (isEmpty() ? (Set<H>) Collections.<H>emptySet() : new HashSet<>(children_.keySet()));
+    final Set<H> result = (isEmpty() ? Collections.emptySet() : new HashSet<>(children_.keySet()));
 
     if (hasSyntheticRoot()) {
       result.remove(getRoot());
@@ -237,7 +230,6 @@ public class AbstractHierarchy<H extends Hierarchical<H>, C extends Collection<H
         }
       }
 
-      parentResolver_.removeTarget(member);
       children_.remove(member);
 
       // handle parent
@@ -247,7 +239,7 @@ public class AbstractHierarchy<H extends Hierarchical<H>, C extends Collection<H
           children_.put(null, null);
         }
       } else {
-        final H parent = resolveParent(member);
+        final H parent = member.getParent();
         final Collection<H> siblings = getChildrenNoCopy(parent);
 
         siblings.remove(member);
@@ -297,7 +289,7 @@ public class AbstractHierarchy<H extends Hierarchical<H>, C extends Collection<H
    * Checks if a node is a member of this hierarchy.
    */
   public boolean contains(final H node) {
-    return parentResolver_.containsTarget(node);
+    return children_.containsKey(node);
   }
 
   /**
@@ -317,10 +309,10 @@ public class AbstractHierarchy<H extends Hierarchical<H>, C extends Collection<H
   public List<H> getPath(H node) {
     final List<H> list = new ArrayList<>(4);
 
-    if (parentResolver_.containsTarget(node)) {
+    if (children_.containsKey(node)) {
       while (node != null) {
         list.add(0, resolve(node));
-        node = resolveParent(node);
+        node = node.getParent();
       }
     }
     return list;
@@ -409,7 +401,7 @@ public class AbstractHierarchy<H extends Hierarchical<H>, C extends Collection<H
   }
 
   public List<H> getPath(final H hierarchical, final List<H> target) {
-    final H parent = resolveParent(hierarchical);
+    final H parent = hierarchical.getParent();
 
     target.add(0, hierarchical);
     if (parent == null) {
