@@ -4,7 +4,6 @@ import java.util.Comparator;
 import java.util.EventListener;
 import java.util.List;
 import java.util.Set;
-import java.util.function.Function;
 
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
@@ -37,8 +36,8 @@ public class TreeModel <H extends Hierarchical<H>> extends DefaultTreeModel {
 
   static class ListHierarchy<M extends Hierarchical<M>> extends AbstractHierarchy<M, List<M>> {
 
-    public ListHierarchy(Comparator<? super M> comparator, Function<M, M> parentRefProvider) {
-      super(new SortedListMaintainer<>(comparator), parentRefProvider);
+    public ListHierarchy(Comparator<? super M> comparator) {
+      super(new SortedListMaintainer<>(comparator));
     }
 
     /** Widening visibility */
@@ -53,9 +52,9 @@ public class TreeModel <H extends Hierarchical<H>> extends DefaultTreeModel {
 
   private Hierarchical<?> invisibleRoot_ = new Root();
 
-  TreeModel(Comparator<? super H> comparator, Function<H, H> parentRefProvider) {
+  TreeModel(Comparator<? super H> comparator) {
     super(null, false);
-    data_ = new ListHierarchy<>(comparator, parentRefProvider);
+    data_ = new ListHierarchy<H>(comparator);
     invisibleRoot_ = new Root();
   }
 

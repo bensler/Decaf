@@ -25,7 +25,6 @@ import com.bensler.decaf.swing.view.EntitySelectionListener;
 import com.bensler.decaf.swing.view.PropertyViewImpl;
 import com.bensler.decaf.swing.view.QueueGetter;
 import com.bensler.decaf.swing.view.SimplePropertyGetter;
-import com.bensler.decaf.swing.view.TreePropertyView;
 import com.bensler.decaf.util.tree.Folder;
 import com.bensler.decaf.util.tree.Hierarchy;
 import com.jgoodies.forms.layout.CellConstraints;
@@ -67,7 +66,7 @@ public class SampleTreeDialog implements ActionListener {
       }
     };
 
-    tree_ = new EntityTree<>(new TreePropertyView<>(nameView, data.getParentRefProvider()));
+    tree_ = new EntityTree<>(nameView);
     tree_.setSelectionListener(selectionListener);
     list_ = new EntityList<>(nameView);
     list_.setSelectionListener(selectionListener);
@@ -94,7 +93,7 @@ public class SampleTreeDialog implements ActionListener {
   }
 
   static Hierarchy<Folder> createFolderData() {
-    final Hierarchy<Folder> tree = new Hierarchy<>(folder -> folder);
+    final Hierarchy<Folder> tree = new Hierarchy<>();
 
     final Folder root = new Folder(null, "/");
     final Folder home = new Folder(root, "home");

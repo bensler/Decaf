@@ -11,7 +11,6 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.function.Function;
 
 import javax.swing.JScrollPane;
 import javax.swing.JTree;
@@ -27,7 +26,6 @@ import com.bensler.decaf.swing.view.EntitySelectionListener;
 import com.bensler.decaf.swing.view.NoSelectionModel;
 import com.bensler.decaf.swing.view.PropertyView;
 import com.bensler.decaf.swing.view.SelectionMode;
-import com.bensler.decaf.swing.view.TreePropertyView;
 import com.bensler.decaf.util.tree.Hierarchical;
 import com.bensler.decaf.util.tree.Hierarchy;
 
@@ -57,13 +55,12 @@ TreeSelectionListener, FocusListener {
 
   protected               boolean             editable_;
 
-  public EntityTree(TreePropertyView<? super H, ?> treePropertyView) {
-    final PropertyView<? super H, ?> propView = treePropertyView.getPropertyView();
-    final UnwrappingRenderer unwrapper = new UnwrappingRenderer(propView);
+  public EntityTree(PropertyView<? super H, ?> propertyView) {
+    final UnwrappingRenderer unwrapper = new UnwrappingRenderer(propertyView);
 
     focusListeners_ = new HashSet<>();
-    model_ = createModel(treePropertyView);
-    tree_ = new TreeComponent<>(model_, propView);
+    model_ = createModel(propertyView);
+    tree_ = new TreeComponent<>(model_, propertyView);
     tree_.setCellRenderer(unwrapper);
     // update the selection BEFORE any listener is notified!
     tree_.addTreeSelectionListener(this);
@@ -95,11 +92,8 @@ TreeSelectionListener, FocusListener {
     return editable_;
   }
 
-  protected TreeModel<H> createModel(TreePropertyView<? super H, ?> treePropertyView) {
-    PropertyView<H, H> propertyView = (PropertyView<H, H>) treePropertyView.getPropertyView(); // TODO
-    Function<H, H> parentRefProvider = (Function<H, H>) treePropertyView.getParentRefProvider(); // TODO
-
-    return new TreeModel<>(propertyView, parentRefProvider);
+  protected TreeModel<H> createModel(PropertyView<? super H, ?> propertyView) {
+    return new TreeModel<>((PropertyView<H, H>)propertyView); // TODO cast
   }
 
   @Override

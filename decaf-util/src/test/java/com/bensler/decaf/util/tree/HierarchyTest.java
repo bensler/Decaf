@@ -14,7 +14,7 @@ public class HierarchyTest {
 
     @Test
     public void testIsEmpty() {
-        final Hierarchy<Folder> tree = new Hierarchy<>(folder -> folder);
+        final Hierarchy<Folder> tree = new Hierarchy<>();
 
         final Folder root = new Folder(null, "/");
         final Folder home = new Folder(root, "home");
@@ -25,23 +25,25 @@ public class HierarchyTest {
 
         tree.add(alicesHome);
         Assert.assertEquals("'alice' should be root", alicesHome, tree.getRoot());
+        Assert.assertTrue("'alice' should be a leaf node", tree.getChildren(alicesHome).isEmpty());
         tree.add(bobsHome);
         Assert.assertTrue("syntheticRoot should be root", tree.hasSyntheticRoot());
         tree.add(home);
         Assert.assertEquals("'home' should be root", home, tree.getRoot());
+        Assert.assertEquals("'alice' and 'bob' should be under 'home'", Set.of(alicesHome, bobsHome), tree.getChildren(home));
         tree.add(root);
         Assert.assertEquals("'alice's path should be [/, home, alice]", Arrays.asList(root, home, alicesHome), tree.getPath(alicesHome));
         Assert.assertEquals("leaf nodes should be [alice, bob]", Sets.newHashSet(bobsHome,alicesHome), tree.getLeafNodes());
         tree.remove(home, false);
         Assert.assertTrue("syntheticRoot should be root", tree.hasSyntheticRoot());
         Assert.assertEquals("there should be [/, alice, bob] under synth root", 3, tree.getChildren(tree.getRoot()).size());
-        Assert.assertEquals("leaf nodes should be [/, alice, bob]", Sets.newHashSet(root, bobsHome,alicesHome), tree.getLeafNodes());
+        Assert.assertEquals("leaf nodes should be [/, alice, bob]", Sets.newHashSet(root, bobsHome, alicesHome), tree.getLeafNodes());
     }
 
     @Test
     public void equalsAndHashcode() {
-      final Hierarchy<Folder> tree1 = new Hierarchy<>(folder -> folder);
-      final Hierarchy<Folder> tree2 = new Hierarchy<>(folder -> folder);
+      final Hierarchy<Folder> tree1 = new Hierarchy<>();
+      final Hierarchy<Folder> tree2 = new Hierarchy<>();
 
       final Folder root = new Folder(null, "/");
       final Folder home = new Folder(root, "home");

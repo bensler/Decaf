@@ -10,7 +10,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-import java.util.function.Function;
 
 import com.bensler.decaf.util.CanceledException;
 import com.google.common.base.Preconditions;
@@ -28,8 +27,6 @@ public class AbstractHierarchy<H extends Hierarchical<H>, C extends Collection<H
    */
   private final Map<H, C> children_;
 
-  private final ParentResolver<H> parentResolver_;
-
   /**
    * root node of this hierarchy.
    */
@@ -38,16 +35,12 @@ public class AbstractHierarchy<H extends Hierarchical<H>, C extends Collection<H
   /**
    * Creates a new empty hierarchy.
    */
-  public AbstractHierarchy(ChildrenCollectionMaintainer<H, C> nanny, Function<H, H> parentRefProvider) {
+  public AbstractHierarchy(ChildrenCollectionMaintainer<H, C> nanny) {
     nanny_ = nanny;
-    parentResolver_ = new ParentResolver<>(parentRefProvider);
     children_ = new HashMap<>();
     children_.put(root_ = null, null);
   }
 
-  public Function<H, H> getParentRefProvider() {
-    return parentResolver_.getParentRefProvider();
-  }
   /**
    * used by TreeModel *
    *
@@ -81,7 +74,7 @@ public class AbstractHierarchy<H extends Hierarchical<H>, C extends Collection<H
       root_ = newNode;
     } else {
       children_.put(newNode, null);
-      parent = newNode.getParent();
+      parent = resolve(newNode.getParent());
       if (parent != null) {
         addChild(newNode, parent);
         if (hasSyntheticRoot()) {
@@ -312,7 +305,7 @@ public class AbstractHierarchy<H extends Hierarchical<H>, C extends Collection<H
     if (children_.containsKey(node)) {
       while (node != null) {
         list.add(0, resolve(node));
-        node = node.getParent();
+        node = resolve(node.getParent());
       }
     }
     return list;
