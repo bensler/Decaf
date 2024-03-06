@@ -5,8 +5,6 @@ import static com.bensler.decaf.util.cmp.NopComparator.NOP_COMPARATOR;
 
 import java.awt.Dialog.ModalityType;
 import java.awt.Dimension;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.List;
 
 import javax.swing.JButton;
@@ -32,7 +30,7 @@ import com.jgoodies.forms.layout.FormLayout;
 import com.jgoodies.looks.plastic.Plastic3DLookAndFeel;
 import com.jgoodies.looks.plastic.theme.DesertYellow;
 
-public class SampleTreeDialog implements ActionListener {
+class SampleTreeDialog {
 
   public static void main(String[] args) throws UnsupportedLookAndFeelException {
     new SampleTreeDialog(createFolderData()).dialog_.setVisible(true);
@@ -44,7 +42,7 @@ public class SampleTreeDialog implements ActionListener {
   final EntityTable<Folder> table_;
   final JButton button_;
 
-  public SampleTreeDialog(Hierarchy<Folder> data) throws UnsupportedLookAndFeelException {
+  SampleTreeDialog(Hierarchy<Folder> data) throws UnsupportedLookAndFeelException {
     Plastic3DLookAndFeel.setCurrentTheme(new DesertYellow());
     UIManager.setLookAndFeel(new Plastic3DLookAndFeel());
     dialog_ = new JDialog(null, "Decaf Swing Test", ModalityType.MODELESS);
@@ -83,7 +81,7 @@ public class SampleTreeDialog implements ActionListener {
     panel.add(list_.getScrollPane(), new CellConstraints(2, 4));
     panel.add(table_.getScrollPane(), new CellConstraints(2, 6));
     button_ = new JButton("Close");
-    button_.addActionListener(this);
+    button_.addActionListener(evt -> dialog_.setVisible(false));
     panel.add(button_, new CellConstraints(2, 8, CellConstraints.RIGHT, CellConstraints.CENTER));
     panel.setPreferredSize(new Dimension(500, 750));
 
@@ -101,17 +99,8 @@ public class SampleTreeDialog implements ActionListener {
     final Folder alicesHome = new Folder(home, "alice");
     final Folder winRoot = new Folder(null, "C:");
 
-    tree.add(alicesHome);
-    tree.add(bobsHome);
-    tree.add(home);
-    tree.add(root);
-    tree.add(winRoot);
+    tree.addAll(List.of(alicesHome, bobsHome, home, root, winRoot));
     return tree;
-  }
-
-  @Override
-  public void actionPerformed(ActionEvent evt) {
-    dialog_.setVisible(false);
   }
 
 }
