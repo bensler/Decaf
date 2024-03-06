@@ -9,7 +9,8 @@ import java.io.IOException;
 
 import javax.imageio.ImageIO;
 
-import org.junit.ComparisonFailure;
+import org.opentest4j.AssertionFailedError;
+
 
 class Snapshooter implements Runnable {
 
@@ -51,7 +52,7 @@ class Snapshooter implements Runnable {
         encoder.addFrame(actual);
         encoder.finish();
         ImageIO.write(actual, "png", new File(parent_.getReportsDir(), actualFileName));
-        parent_.addFailure(new ComparisonFailure(
+        parent_.addFailure(new AssertionFailedError(
           "screenshot is different from expected appearance", sampleImage_.getSampleFileName(), failedGifName)
         );
       }

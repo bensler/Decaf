@@ -20,14 +20,6 @@
 			<url>http://www.opensource.org/licenses/bsd-license.html</url>
 		</license>
 	</licenses>
-	<dependencies>
-	    <dependency>
-	    	<groupId>junit</groupId>
-	    	<artifactId>junit</artifactId>
-	    	<version>4.13.1</version>
-	    	<scope>test</scope>
-	    </dependency>
-	</dependencies>
 	<organization>
 		<name>JGoodies Software GmbH</name>
 		<url>http://www.jgoodies.com/</url>

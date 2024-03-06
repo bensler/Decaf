@@ -3,12 +3,12 @@ package com.bensler.decaf.swing.tree;
 import java.awt.AWTException;
 import java.awt.Point;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.bensler.decaf.testutil.Bender;
 import com.bensler.decaf.testutil.TestImageSample;
 
-public class EntityTreeTest {
+class EntityTreeTest {
 
   private final Bender bender_;
 
@@ -17,7 +17,7 @@ public class EntityTreeTest {
   }
 
   @Test
-  public void interactive() throws Exception {
+  void interactive() throws Exception {
     final SampleTreeDialog app = new SampleTreeDialog(SampleTreeDialog.createFolderData());
 
     app.dialog_.setLocation(bender_.getLargestScreensOrigin());

@@ -4,21 +4,18 @@ import java.awt.AWTException;
 
 import javax.swing.UnsupportedLookAndFeelException;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import com.bensler.decaf.testutil.Bender;
-import com.bensler.decaf.testutil.TestImageSample;
-
-public class SimpleTest {
+class SimpleTest {
 
   private final Bender bender_;
 
-  public SimpleTest() throws UnsupportedLookAndFeelException, AWTException {
+  SimpleTest() throws UnsupportedLookAndFeelException, AWTException {
     bender_ = new Bender("target/surefire-reports");
   }
 
   @Test
-  public void interactive() throws Exception {
+  void interactive() throws Exception {
     final SimpleDialog app = new SimpleDialog();
 
     app.dialog_.setLocation(bender_.getLargestScreensOrigin());

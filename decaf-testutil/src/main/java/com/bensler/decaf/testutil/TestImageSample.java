@@ -4,7 +4,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
+
 
 /**
  * Represents an image resource to be compared with an actual screenshot during a test.
@@ -42,7 +43,7 @@ public class TestImageSample {
         + (((name != null) && (!name.isEmpty())) ? (DELEMITER + name) : "");
       sampleFileName = getSampleFileName();
       url_ = callerClass_.getClassLoader().getResource(sampleFileName);
-      Assert.assertNotNull("missing resource " + sampleFileName, url_);
+      Assertions.assertNotNull(url_, "missing resource " + sampleFileName);
     } catch (ClassNotFoundException cnfe) {
       throw new RuntimeException(cnfe);
     }

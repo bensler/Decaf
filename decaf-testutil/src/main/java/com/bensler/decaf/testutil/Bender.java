@@ -19,7 +19,8 @@ import java.util.concurrent.locks.ReentrantLock;
 
 import javax.swing.SwingUtilities;
 
-import org.junit.ComparisonFailure;
+import org.opentest4j.AssertionFailedError;
+
 
 /** A {@link Robot}. */
 public class Bender extends Object {
@@ -29,7 +30,7 @@ public class Bender extends Object {
   private final File reportsDir_;
   private final ReentrantLock lock_;
   private final Condition allTasksDone_;
-  private final List<ComparisonFailure> failures_;
+  private final List<AssertionFailedError> failures_;
   private int taskCount_;
 
   private final ScheduledThreadPoolExecutor scheduler_;
@@ -80,7 +81,7 @@ public class Bender extends Object {
     return reportsDir_;
   }
 
-  void addFailure(ComparisonFailure failure) {
+  void addFailure(AssertionFailedError failure) {
     failures_.add(failure);
   }
 
