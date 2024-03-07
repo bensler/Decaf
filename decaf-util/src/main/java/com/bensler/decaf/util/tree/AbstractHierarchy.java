@@ -327,7 +327,7 @@ public class AbstractHierarchy<H extends Hierarchical<H>, C extends Collection<H
       return true;
     } else {
       return (
-        (obj != null) && (obj instanceof AbstractHierarchy)
+        (obj instanceof AbstractHierarchy)
         && children_.equals(((AbstractHierarchy<?, ?>) obj).children_)
       );
     }
@@ -377,7 +377,7 @@ public class AbstractHierarchy<H extends Hierarchical<H>, C extends Collection<H
 
   private void visitUp_(final Visitor<H> visitor, final H member) throws CanceledException {
     if (member != null) {
-      final Object parent = member.getParent();
+      final H parent = member.getParent();
 
       visitor.visit(member);
       if (parent != null) {

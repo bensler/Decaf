@@ -20,7 +20,7 @@ public interface ChildrenCollectionMaintainer<H extends Hierarchical<?>, C exten
 
     @Override
     public Set<H> createCollection() {
-      return new HashSet<H>(2);
+      return new HashSet<>(2);
     }
 
     @Override
@@ -39,7 +39,7 @@ public interface ChildrenCollectionMaintainer<H extends Hierarchical<?>, C exten
 
     @Override
     public List<H> createCollection() {
-      return new ArrayList<H>(2);
+      return new ArrayList<>(2);
     }
 
     @Override
