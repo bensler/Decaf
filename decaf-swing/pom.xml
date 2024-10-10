@@ -16,11 +16,6 @@
       <version>0.1</version>
     </dependency>
     <dependency>
-      <groupId>com.google.guava</groupId>
-      <artifactId>guava</artifactId>
-      <version>18.0</version>
-    </dependency>
-    <dependency>
       <groupId>com.jgoodies</groupId>
       <artifactId>jgoodies-forms</artifactId>
       <version>1.8.0</version>
