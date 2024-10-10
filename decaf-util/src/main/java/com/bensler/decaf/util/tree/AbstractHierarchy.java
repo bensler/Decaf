@@ -9,10 +9,10 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.Set;
 
 import com.bensler.decaf.util.CanceledException;
-import com.google.common.base.Preconditions;
 
 /**
  * A Hierarchy forms a tree out of a collection of {@link Hierarchical}s. A synthetic root is used if there are more than one
@@ -53,7 +53,7 @@ public class AbstractHierarchy<H extends Hierarchical<H>, C extends Collection<H
     final H oldNode;
     final H parent;
 
-    Preconditions.checkNotNull(newNode, "Cannot add null");
+    Objects.requireNonNull(newNode, "Cannot add null");
     if ((oldNode = resolve(newNode)) != null) {
       // node is allready in this hierarchy
       final H oldParent = oldNode.getParent();
@@ -200,7 +200,7 @@ public class AbstractHierarchy<H extends Hierarchical<H>, C extends Collection<H
   public void remove(final H member, final boolean recursive) {
     final boolean synthRoot = hasSyntheticRoot();
 
-    Preconditions.checkNotNull(member, "Cannot remove null");
+    Objects.requireNonNull(member, "Cannot remove null");
     if (contains(member)) {
       final boolean removingRoot = member.equals(root_);
       final Collection<H> children = getChildrenNoCopy(member);
