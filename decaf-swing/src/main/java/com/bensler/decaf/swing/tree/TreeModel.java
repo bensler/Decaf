@@ -93,7 +93,7 @@ public class TreeModel <H extends Hierarchical<H>> extends DefaultTreeModel {
   }
 
   void setData(Hierarchy<H> data) {
-    final boolean hadSynthRoot  = data_.hasSyntheticRoot();
+//    final boolean hadSynthRoot  = data_.hasSyntheticRoot();
 
     invisibleRoot_ = new Root();
     data_.clear();

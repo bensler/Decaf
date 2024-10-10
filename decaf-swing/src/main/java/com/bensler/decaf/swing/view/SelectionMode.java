@@ -5,6 +5,7 @@ import javax.swing.JTable;
 import javax.swing.JTree;
 import javax.swing.ListSelectionModel;
 import javax.swing.tree.TreeSelectionModel;
+
 /** Just unifying constants from {@link ListSelectionModel} (used in {@link JList} and {@link JTable}) and
  * {@link TreeSelectionModel}. */
 public enum SelectionMode {

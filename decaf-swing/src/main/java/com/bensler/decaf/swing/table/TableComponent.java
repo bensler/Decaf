@@ -63,7 +63,7 @@ public class TableComponent<E> extends JTable {
     backgroundSelectionColorUnfocused_ = ColorHelper.mix(getSelectionBackground(), 2, UIManager.getColor("Table.background"), 1);
     entityTable_ = boTable;
     columnResizeState_ = ColumnResizeState.NONE;
-    rowView_ = new TableRowView.Nop<E>();
+    rowView_ = new TableRowView.Nop<>();
     visibleRows_ = new int[]{10, 10};
     view_ = view;
     sortableTableModel_ = model;
@@ -112,7 +112,7 @@ public class TableComponent<E> extends JTable {
   public void createDefaultColumnsFromModel() {
     if (columnModel.getColumnCount() < 1) {
       for (int i = 0; i < sortableTableModel_.getColumnCount(); i++) {
-        addColumn(new Column<E>(view_.getColumnView(i), i));
+        addColumn(new Column<>(view_.getColumnView(i), i));
       }
     }
   }
@@ -124,7 +124,7 @@ public class TableComponent<E> extends JTable {
 
   @Override
   protected TableColumnModel createDefaultColumnModel() {
-    return new ColumnModel();
+    return new ColumnModel<E>();
   }
 
   private void sortByColumn(Column column) {

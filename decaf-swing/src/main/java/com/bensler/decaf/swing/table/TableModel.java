@@ -30,7 +30,7 @@ public class TableModel<E> extends AbstractTableModel {
     view_ = view;
     entitiesUnfiltered_ = new HashSet<>();
     entityList_ = new ArrayList<>();
-    comparator_ = new ComparatorList<E>();
+    comparator_ = new ComparatorList<>();
   }
 
   @Override
@@ -39,14 +39,14 @@ public class TableModel<E> extends AbstractTableModel {
   }
 
   void fireRowFilterChanged() {
-    setData(new HashSet<E>(entitiesUnfiltered_));
+    setData(new HashSet<>(entitiesUnfiltered_));
   }
 
   E getValueAt(int row) {
     return entityList_.get(row);
   }
 
-  Sorting getSorting(Column column) {
+  Sorting getSorting(Column<?> column) {
     return comparator_.getSorting(column);
   }
 

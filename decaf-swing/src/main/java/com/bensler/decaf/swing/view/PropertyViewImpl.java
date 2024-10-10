@@ -28,7 +28,7 @@ public class PropertyViewImpl<E, P> extends Object implements PropertyView<E, P>
   }
 
   public    final static  PropertyViewImpl<Object, String>  OBJECT    = new PropertyViewImpl<>(
-    new ToStringGetter<Object>()
+    new ToStringGetter<>()
   );
 
   public    final static  PropertyViewImpl<Named, String>  NAMED     = new PropertyViewImpl<>(
@@ -73,7 +73,7 @@ public class PropertyViewImpl<E, P> extends Object implements PropertyView<E, P>
     renderer_ = cellRenderer;
     getter_ = propertyGetter;
     compFactory_ = componentFactory;
-    nullPolicy_ = new DefaultNullPolicy<E>();
+    nullPolicy_ = new DefaultNullPolicy<>();
   }
 //
 //  public PropertyViewImpl(String propertyName, PropertyView propertyView) {
@@ -139,13 +139,6 @@ public class PropertyViewImpl<E, P> extends Object implements PropertyView<E, P>
   }
 
   @Override
-  public String getPropertyString(E viewable) {
-    final P propertyValue = getProperty(viewable);
-
-    return nullPolicy_.getPropertyString(propertyValue);
-  }
-
-  @Override
   public int compare(E v1, E v2) {
     return getter_.getEntityComparator().compare(v1, v2);
   }
@@ -153,11 +146,6 @@ public class PropertyViewImpl<E, P> extends Object implements PropertyView<E, P>
   @Override
   public RenderComponentFactory getRenderComponentFactory() {
     return compFactory_;
-  }
-
-  @Override
-  public PropertyGetter<E, P> getGetter() {
-    return getter_;
   }
 
 }

@@ -95,8 +95,4 @@ public class RendererLabel extends JLabel {
     return !sameOpaqueColor && super.isOpaque();
   }
 
-  public JLabel getComponent() {
-    return this;
-  }
-
 }
