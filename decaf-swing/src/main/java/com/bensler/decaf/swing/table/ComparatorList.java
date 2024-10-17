@@ -13,7 +13,7 @@ final class ComparatorList<E> extends Object implements Comparator<E> {
   private   final         LinkedList<ComparatorWrapper>   sorting_;
 
   ComparatorList() {
-    sorting_ = new LinkedList<ComparatorWrapper>();
+    sorting_ = new LinkedList<>();
   }
 
   private void addCompWrapper(ComparatorWrapper wrapper) {
@@ -40,7 +40,7 @@ final class ComparatorList<E> extends Object implements Comparator<E> {
     return cmpVal;
   }
 
-  Sorting getSorting(Column column) {
+  Sorting getSorting(Column<?> column) {
     if (
       (!sorting_.isEmpty())
       && (sorting_.getFirst().column_ == column)
@@ -52,7 +52,7 @@ final class ComparatorList<E> extends Object implements Comparator<E> {
   }
 
   /**@return if order is just switched */
-  boolean addSorting(Column column, Sorting sorting) {
+  boolean addSorting(Column<?> column, Sorting sorting) {
     if (!sorting_.isEmpty()) {
       final ComparatorWrapper first = sorting_.getFirst();
 
@@ -74,7 +74,7 @@ final class ComparatorList<E> extends Object implements Comparator<E> {
   }
 
   List<String> getSortPrefs() {
-    final List<String> result = new ArrayList<String>(sorting_.size() * 2);
+    final List<String> result = new ArrayList<>(sorting_.size() * 2);
 
     for (int i = 0; i < sorting_.size(); i++) {
       final ComparatorWrapper wrapper = sorting_.get(i);
@@ -115,7 +115,7 @@ final class ComparatorList<E> extends Object implements Comparator<E> {
 //    }
 //  }
 
-  private final class ComparatorWrapper extends Object implements Comparator<E>{
+  private final class ComparatorWrapper extends Object implements Comparator<E> {
 
     private   final         Column      column_;
 

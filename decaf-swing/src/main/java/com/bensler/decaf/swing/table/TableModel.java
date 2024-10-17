@@ -14,7 +14,7 @@ import javax.swing.table.AbstractTableModel;
 public class TableModel<E> extends AbstractTableModel {
 
   /** TODO weg */
-            final         EntityTable         boTable_;
+            final         EntityTable<E>      boTable_;
 
   private   final         TableView<E>        view_;
 
@@ -24,7 +24,7 @@ public class TableModel<E> extends AbstractTableModel {
 
   private   final         ComparatorList<E>   comparator_;
 
-  TableModel(TableView<E> view, EntityTable boTable) {
+  TableModel(TableView<E> view, EntityTable<E> boTable) {
     super();
     boTable_ = boTable;
     view_ = view;
@@ -50,7 +50,7 @@ public class TableModel<E> extends AbstractTableModel {
     return comparator_.getSorting(column);
   }
 
-  void sortByColumn(Column column, Sorting sorting) {
+  void sortByColumn(Column<?> column, Sorting sorting) {
     if (comparator_.addSorting(column, sorting)) {
       final List<E> selectionBefore = boTable_.setSelectionSilent();
 
