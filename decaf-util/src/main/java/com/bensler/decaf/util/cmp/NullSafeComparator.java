@@ -32,7 +32,6 @@ public class NullSafeComparator<T> extends Object implements Comparator<T> {
   private final NullPolicy nullPolicy_;
 
   public NullSafeComparator(NullPolicy nullPolicy, Comparator<? super T> delegate) {
-    super();
     nullPolicy_ = nullPolicy;
     delegate_ = delegate;
   }
