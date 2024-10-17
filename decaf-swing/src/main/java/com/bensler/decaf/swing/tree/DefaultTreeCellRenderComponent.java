@@ -21,24 +21,17 @@ public class DefaultTreeCellRenderComponent implements TreeRenderComponent {
   private   final         boolean       drawsFocusBorderAroundIcon_;
   /** Color to use for the focus indicator when the node has focus. */
   private   final         Color         borderSelectionColor_;
-
-  private   final         Icon          icon_;
   /** Is the value currently selected. */
   protected               boolean       selected_;
-
-  public DefaultTreeCellRenderComponent() {
-    this(null);
-  }
 
   @Override
   public JLabel getComponent() {
     return component_;
   }
 
-  public DefaultTreeCellRenderComponent(Icon icon) {
+  public DefaultTreeCellRenderComponent() {
     final Object drawsFocusBorderAroundIcon = UIManager.get("Tree.drawsFocusBorderAroundIcon");
 
-    icon_ = icon;
     borderSelectionColor_ = UIManager.getColor("Tree.selectionBorderColor");
     drawsFocusBorderAroundIcon_ = (drawsFocusBorderAroundIcon != null && ((Boolean)drawsFocusBorderAroundIcon).booleanValue());
     component_ = new RendererLabel() {
@@ -53,7 +46,7 @@ public class DefaultTreeCellRenderComponent implements TreeRenderComponent {
               );
 
         g.setColor(getBackground());
-        if(getComponentOrientation().isLeftToRight()) {
+        if (getComponentOrientation().isLeftToRight()) {
           g.fillRect(imageOffset, 0, getWidth() - imageOffset, getHeight());
         } else {
           g.fillRect(0, 0, getWidth() - imageOffset, getHeight());
@@ -64,7 +57,7 @@ public class DefaultTreeCellRenderComponent implements TreeRenderComponent {
         }
         if (bsColor != null && selected_) {
           g.setColor(bsColor);
-          if(getComponentOrientation().isLeftToRight()) {
+          if (getComponentOrientation().isLeftToRight()) {
             g.drawRect(imageOffset, 0, getWidth() - imageOffset - 1, getHeight() - 1);
           } else {
             g.drawRect(0, 0, getWidth() - imageOffset - 1, getHeight() - 1);
@@ -90,11 +83,11 @@ public class DefaultTreeCellRenderComponent implements TreeRenderComponent {
     );
     // There needs to be a way to specify disabled icons.
     component_.setEnabled(tree.isEnabled());
-    if (tree.isEnabled()) {
-      component_.setIcon(icon_);
-    } else {
-      component_.setDisabledIcon(icon_);
-    }
+//    if (tree.isEnabled()) {
+//      component_.setIcon(icon_);
+//    } else {
+//      component_.setDisabledIcon(icon_);
+//    }
     component_.setComponentOrientation(tree.getComponentOrientation());
     if (selected_) {
       component_.setBackground(tree.hasFocus() ? tree.getBackgroundSelectionColor() : tree.getBackgroundSelectionColorUnfocused());

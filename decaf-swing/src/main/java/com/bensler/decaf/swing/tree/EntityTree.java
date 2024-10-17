@@ -1,7 +1,6 @@
 package com.bensler.decaf.swing.tree;
 
 import java.awt.Color;
-import java.awt.Component;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.util.ArrayList;
@@ -13,7 +12,6 @@ import java.util.List;
 import java.util.Set;
 
 import javax.swing.JScrollPane;
-import javax.swing.JTree;
 import javax.swing.UIManager;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
@@ -55,13 +53,10 @@ TreeSelectionListener, FocusListener {
 
   protected               boolean             editable_;
 
-  public EntityTree(PropertyView<? super H, ?> propertyView) {
-    final UnwrappingRenderer unwrapper = new UnwrappingRenderer(propertyView);
-
+  public EntityTree(PropertyView<H, ?> view) {
     focusListeners_ = new HashSet<>();
-    model_ = createModel(propertyView);
-    tree_ = new TreeComponent<>(model_, propertyView);
-    tree_.setCellRenderer(unwrapper);
+    model_ = new TreeModel<>(view);
+    tree_ = createCompoent(model_ = new TreeModel<>(view), view);
     // update the selection BEFORE any listener is notified!
     tree_.addTreeSelectionListener(this);
     tree_.setShowsRootHandles(true);
@@ -73,6 +68,10 @@ TreeSelectionListener, FocusListener {
     silentSelectionChange_ = false;
     setSelectionMode(SelectionMode.SINGLE);
     setSelectionListener(null);
+  }
+
+  protected TreeComponent<H> createCompoent(TreeModel<H> model, PropertyView<H, ?> view) {
+    return new TreeComponent<>(model, view);
   }
 
   public void setEditable(boolean editable) {
@@ -90,10 +89,6 @@ TreeSelectionListener, FocusListener {
 
   public boolean isEditable() {
     return editable_;
-  }
-
-  protected TreeModel<H> createModel(PropertyView<? super H, ?> propertyView) {
-    return new TreeModel<>((PropertyView<H, H>)propertyView); // TODO cast
   }
 
   @Override
@@ -427,24 +422,6 @@ TreeSelectionListener, FocusListener {
   @SuppressWarnings("unchecked")
   public TreeModel<H> getModel() {
     return (TreeModel<H>)tree_.getModel();
-  }
-
-  private final class UnwrappingRenderer extends Object implements TreeCellRenderer {
-
-    private UnwrappingRenderer(PropertyView<? super H, ?> view) {
-      view_ = view;
-    }
-
-    private   final         PropertyView<? super H, ?>  view_;
-
-    @Override
-    public Component getTreeCellRendererComponent(
-      JTree tree, Object value, boolean selected, boolean expanded,
-      boolean leaf, int row, boolean hasFocus
-    ) {
-      return view_.getTreeCellRendererComponent(tree, value, selected, expanded, leaf, row, hasFocus);
-    }
-
   }
 
   @Override

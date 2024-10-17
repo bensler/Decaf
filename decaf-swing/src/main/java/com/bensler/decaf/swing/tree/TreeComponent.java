@@ -16,7 +16,7 @@ public class TreeComponent<H extends Hierarchical<H>> extends JTree implements T
   private   final         Color                   backgroundSelectionColorUnfocused_;
   private   final         Color                   foregroundSelectionColor_;
 
-  private   final         PropertyView<? super H, ?> view_;
+  protected final         PropertyView<? super H, ?> view_;
 
   private                 float                   widthFactor_;
 
@@ -31,6 +31,7 @@ public class TreeComponent<H extends Hierarchical<H>> extends JTree implements T
     view_ = view;
     widthFactor_ = -1;
     setRootVisible(false);
+    setCellRenderer(view);
   }
 
   public Color getBackgroundSelectionColor() {
@@ -72,20 +73,14 @@ public class TreeComponent<H extends Hierarchical<H>> extends JTree implements T
     }
   }
 
+  @SuppressWarnings("unchecked")
   @Override
   public String convertValueToText(
     Object value, boolean selected, boolean expanded,
     boolean leaf, int row, boolean hasFocus
   ) {
-    if ((value != null) && (view_ != null)) {
-      @SuppressWarnings("unchecked")
-      final Object cellValue  = view_.getProperty((H)value);
-
-      if (cellValue != null) {
-        return cellValue.toString();
-      }
-    }
-    return "";
+    // during constructor exec --vvvvvvvvvvvvv
+    return (((value != null) && (view_ != null)) ? view_.getPropertyString((H)value) : "");
   }
 
   public Color getBackgroundSelectionColorUnfocused() {
