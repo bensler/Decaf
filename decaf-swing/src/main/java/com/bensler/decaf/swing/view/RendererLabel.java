@@ -26,7 +26,6 @@ public class RendererLabel extends JLabel {
   }
 
   public RendererLabel() {
-    super();
     setOpaque(true);
   }
 

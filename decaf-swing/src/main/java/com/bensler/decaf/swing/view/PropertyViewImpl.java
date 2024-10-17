@@ -128,6 +128,11 @@ public class PropertyViewImpl<E, P> extends Object implements PropertyView<E, P>
   }
 
   @Override
+  public String getPropertyString(E entity) {
+    return getter_.getPropertyString(entity);
+  }
+
+  @Override
   public JLabel renderLabel(JLabel label, E viewable) {
     nullPolicy_.render(viewable, label, renderer_, getter_);
     return label;

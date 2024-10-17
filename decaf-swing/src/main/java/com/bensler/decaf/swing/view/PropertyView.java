@@ -15,6 +15,9 @@ public interface PropertyView<E, P> extends Comparator<E>, ListCellRenderer<E>, 
 
   public P getProperty(E viewable);
 
+  /** for keyboard navigation in trees */
+  public String getPropertyString(E viewable);
+
   public RenderComponentFactory getRenderComponentFactory();
 
   public JLabel renderLabel(JLabel label, E viewable);

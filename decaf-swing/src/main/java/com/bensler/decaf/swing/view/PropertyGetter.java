@@ -1,6 +1,7 @@
 package com.bensler.decaf.swing.view;
 
 import java.util.Comparator;
+import java.util.Optional;
 
 import com.bensler.decaf.util.cmp.NullSafeComparator;
 
@@ -30,6 +31,10 @@ public abstract class PropertyGetter<E, P> {
 
   public Comparator<P> getPropertyComparator() {
     return propertyDelegate_;
+  }
+
+  public String getPropertyString(E entity) {
+    return Optional.of(getProperty(entity)).map(P::toString).orElse("");
   }
 
 }

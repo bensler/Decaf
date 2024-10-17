@@ -33,6 +33,7 @@ public interface EntityComponent<E> {
   public void setToolTipText(String hint);
   public boolean isEnabled();
 
+  @FunctionalInterface
   public interface FocusListener {
 
     public void focusGained(EntityComponent<?> component);
