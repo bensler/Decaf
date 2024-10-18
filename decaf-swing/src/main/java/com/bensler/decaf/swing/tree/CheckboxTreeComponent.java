@@ -3,6 +3,7 @@ package com.bensler.decaf.swing.tree;
 import static java.util.function.Predicate.not;
 
 import java.awt.Component;
+import java.awt.Font;
 import java.awt.Rectangle;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
@@ -92,13 +93,20 @@ public class CheckboxTreeComponent<H extends Hierarchical<H>> extends TreeCompon
     public Component getTreeCellRendererComponent(
       JTree tree, Object value, boolean selected, boolean expanded, boolean leaf, int row, boolean hasFocus
     ) {
-      rendererComponent.setContent(
-        isEnabled(), checkedNodes_.contains(value),
-        delegate_.getTreeCellRendererComponent(tree, value, selected, expanded, leaf, row, hasFocus)
-      );
+      final boolean checked = checkedNodes_.contains(value);
+      final Component delegateComp = delegate_.getTreeCellRendererComponent(tree, value, selected, expanded, leaf, row, hasFocus);
+
+      delegateComp.setFont(delegateComp.getFont().deriveFont(checked ? Font.BOLD : Font.PLAIN));
+      rendererComponent.setContent(isEnabled(), checked,delegateComp);
       return rendererComponent;
     }
 
+  }
+
+  void setCheckedNodes(List<? extends H> toBeChecked) {
+    // TODO test if already checked, fire events
+    checkedNodes_.clear();
+    checkedNodes_.addAll(toBeChecked);
   }
 
 }

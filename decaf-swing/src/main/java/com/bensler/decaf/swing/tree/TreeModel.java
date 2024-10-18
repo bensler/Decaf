@@ -32,6 +32,11 @@ public class TreeModel <H extends Hierarchical<H>> extends DefaultTreeModel {
       public Object getParent() {
           return null;
       }
+
+      @Override
+      public String toString() {
+        return "<SynthRoot>";
+      }
   }
 
   static class ListHierarchy<M extends Hierarchical<M>> extends AbstractHierarchy<M, List<M>> {
@@ -223,8 +228,13 @@ public class TreeModel <H extends Hierarchical<H>> extends DefaultTreeModel {
     return (path.isEmpty() ? new Object[] {invisibleRoot_} : path.toArray(new Object[path.size()]));
   }
 
-  public TreePath getTreePath(Hierarchical<?> node) {
-    return new TreePath(getPath(data_.resolve(node)));
+  TreePath getTreePath(Hierarchical<?> node) {
+    final List<H> path = getPath(data_.resolve(node));
+
+    if (hasSyntheticRoot()) {
+      path.add(0, (H)invisibleRoot_);
+    }
+    return new TreePath(path.toArray());
   }
 
   private void fireRootChanged() {
