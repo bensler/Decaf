@@ -1,10 +1,8 @@
 package com.bensler.decaf.swing.tree;
 
-import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
-import java.awt.Graphics;
 import java.awt.Rectangle;
 
 import javax.swing.JCheckBox;
@@ -17,46 +15,31 @@ import javax.swing.border.EmptyBorder;
  */
 public class CheckboxRendererComponent extends JComponent {
 
-  protected final static  int GAP  = 2;
-
-  private final Color selectionBorderColor;
-  private final Color selectionForeground;
-  private final Color selectionBackground;
-  private final Color textForeground;
-  private final Color textBackground;
+  protected final static  int GAP  = 1;
 
   private final JCheckBox checkbox_;
 
   private Component contentComp_;
 
   public CheckboxRendererComponent() {
-    setOpaque(true);
     final Font fontValue = UIManager.getFont("Tree.font");
-    selectionBorderColor = UIManager.getColor("Tree.selectionBorderColor");
-    selectionForeground = UIManager.getColor("Tree.selectionForeground");
-    selectionBackground = UIManager.getColor("Tree.selectionBackground");
-    textForeground = UIManager.getColor("Tree.textForeground");
-    textBackground = UIManager.getColor("Tree.textBackground");
 
     checkbox_ = new JCheckBox();
     if (fontValue != null) {
       checkbox_.setFont(fontValue);
     }
-    Boolean drawFocusBorder = (Boolean) UIManager.get("Tree.drawsFocusBorderAroundIcon");
-    checkbox_.setFocusPainted((drawFocusBorder != null) && (drawFocusBorder.booleanValue()));
+    checkbox_.setFocusPainted(false);
     checkbox_.setBorder(new EmptyBorder(GAP, GAP, GAP, GAP));
     checkbox_.setOpaque(false);
     add(checkbox_);
   }
 
-  public void setContent(boolean enabled, boolean selected, boolean checked, Component contentComp) {
+  public void setContent(boolean enabled, boolean checked, Component contentComp) {
     if ((contentComp_ != null) && (contentComp_ != contentComp)) {
       remove(contentComp_);
       contentComp_ = null;
     }
     checkbox_.setEnabled(enabled);
-    setForeground(selected ? selectionForeground : textForeground);
-    setBackground(selected ? selectionBackground : textBackground);
     checkbox_.setSelected(checked);
     if (contentComp_ == null) {
       add(contentComp_ = contentComp);
@@ -77,7 +60,7 @@ public class CheckboxRendererComponent extends JComponent {
     final Dimension labelPrefSize = contentComp_.getPreferredSize();
 
     return new Dimension(
-      cbPrefSize.width + labelPrefSize.width + (6 * GAP),
+      cbPrefSize.width + labelPrefSize.width + (3 * GAP),
       Math.max(cbPrefSize.height, labelPrefSize.height) + (2 * GAP)
     );
   }
@@ -108,13 +91,6 @@ public class CheckboxRendererComponent extends JComponent {
 
     checkboxBounds.translate(rendererBounds.x, rendererBounds.y);
     return checkboxBounds.contains(x, y);
-  }
-
-  @Override
-  protected void paintComponent(Graphics g) {
-    final Dimension size = getSize();
-    g.setColor(getBackground());
-    g.fillRect(0, 0, size.width, size.height);
   }
 
   // Override a bunch of (unneeded) methods to improve performance.

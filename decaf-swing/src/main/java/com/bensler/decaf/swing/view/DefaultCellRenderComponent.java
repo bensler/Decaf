@@ -15,7 +15,6 @@ public class DefaultCellRenderComponent implements RenderComponent {
   private final RendererLabel component_;
 
   public DefaultCellRenderComponent() {
-    super();
     component_ = new RendererLabel();
   }
 

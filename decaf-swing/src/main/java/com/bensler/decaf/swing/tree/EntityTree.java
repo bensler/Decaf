@@ -61,6 +61,7 @@ TreeSelectionListener, FocusListener {
     tree_.addTreeSelectionListener(this);
     tree_.setShowsRootHandles(true);
     tree_.addFocusListener(this);
+    tree_.setRowHeight(0); // ask Renderer
 
     editable_ = true;
     scrollPane_ = new JScrollPane(tree_);

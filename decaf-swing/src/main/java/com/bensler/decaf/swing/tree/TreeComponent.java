@@ -17,11 +17,12 @@ public class TreeComponent<H extends Hierarchical<H>> extends JTree implements T
   private   final         Color                   foregroundSelectionColor_;
 
   protected final         PropertyView<? super H, ?> view_;
+  protected final         TreeModel<H>            model_;
 
   private                 float                   widthFactor_;
 
-  public TreeComponent(TreeModel<H> newModel, PropertyView<? super H, ?> view) {
-    super(newModel);
+  public TreeComponent(TreeModel<H> model, PropertyView<? super H, ?> view) {
+    super(model);
     backgroundSelectionColor_ = UIManager.getColor("Tree.selectionBackground");
     foregroundSelectionColor_ = UIManager.getColor("Tree.selectionForeground");
     backgroundSelectionColorUnfocused_ = ColorHelper.mix(
@@ -29,6 +30,7 @@ public class TreeComponent<H extends Hierarchical<H>> extends JTree implements T
       UIManager.getColor("Tree.background"), 1
     );
     view_ = view;
+    model_ = model;
     widthFactor_ = -1;
     setRootVisible(false);
     setCellRenderer(view);

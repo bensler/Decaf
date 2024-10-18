@@ -84,6 +84,7 @@ public class TreeModel <H extends Hierarchical<H>> extends DefaultTreeModel {
     return (getChildCount(node) < 1);
   }
 
+  /** Does not work with custom nodes */
   @Override
   public void valueForPathChanged(TreePath path, Object newValue) {}
 
@@ -197,6 +198,11 @@ public class TreeModel <H extends Hierarchical<H>> extends DefaultTreeModel {
         new int[] {index}, null
       );
     }
+  }
+
+  @SuppressWarnings("unchecked")
+  public H getLastPathComponent(TreePath path) {
+    return (H)path.getLastPathComponent();
   }
 
   public void fireNodeChanged(H element) {
