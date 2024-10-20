@@ -109,9 +109,8 @@ TreeSelectionListener, FocusListener {
 
   @Override
   public void setBackground(Color color) {
-  	// set it for the tree
   	tree_.setBackground(color);
-  	// set it for the viewport
+  	// in case the tree is smaller than the scrollpane
   	scrollPane_.getViewport().setBackground(color);
   }
 

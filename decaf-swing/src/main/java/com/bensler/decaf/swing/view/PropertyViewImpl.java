@@ -27,11 +27,11 @@ public class PropertyViewImpl<E, P> extends Object implements PropertyView<E, P>
 
   }
 
-  public    final static  PropertyViewImpl<Object, String>  OBJECT    = new PropertyViewImpl<>(
+  public    final static  PropertyViewImpl<Object, String> OBJECT = new PropertyViewImpl<>(
     new ToStringGetter<>()
   );
 
-  public    final static  PropertyViewImpl<Named, String>  NAMED     = new PropertyViewImpl<>(
+  public    final static  PropertyViewImpl<Named, String> NAMED = new PropertyViewImpl<>(
     new PropertyGetter<Named, String>(CollatorComparator.COLLATOR_COMPARATOR) {
       @Override
       public String getProperty(Named viewable) {

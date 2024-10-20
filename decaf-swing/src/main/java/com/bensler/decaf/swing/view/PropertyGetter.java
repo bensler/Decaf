@@ -13,14 +13,10 @@ public abstract class PropertyGetter<E, P> {
   private final Comparator<P> propertyDelegate_;
 
   public PropertyGetter(Comparator<? super P> propertyComparator) {
-    super();
     propertyDelegate_ = new NullSafeComparator<>(propertyComparator);
-    entityDelegate_ = new NullSafeComparator<>(new Comparator<E>() {
-      @Override
-      public int compare(E e1, E e2) {
-        return propertyDelegate_.compare(getProperty(e1), getProperty(e2));
-      }
-    });
+    entityDelegate_ = new NullSafeComparator<>(
+      (e1, e2) -> propertyDelegate_.compare(getProperty(e1), getProperty(e2))
+    );
   }
 
   public abstract P getProperty(E viewable);
