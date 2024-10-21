@@ -8,6 +8,4 @@ public interface NullPolicy<E> {
     E value, JLabel label, CellRenderer renderer, PropertyGetter<E, ?> getter
   );
 
-  public String getPropertyString(Object propertyValue);
-
 }

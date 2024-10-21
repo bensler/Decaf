@@ -27,9 +27,4 @@ public class DefaultNullPolicy<E> extends Object implements NullPolicy<E> {
     }
   }
 
-  @Override
-  public String getPropertyString(Object propertyValue) {
-    return ((propertyValue == null) ? " " : propertyValue.toString());
-  }
-
 }
