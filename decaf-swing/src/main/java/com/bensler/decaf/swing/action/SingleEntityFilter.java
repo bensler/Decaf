@@ -5,7 +5,7 @@ import static java.util.Objects.requireNonNull;
 import java.util.List;
 import java.util.function.Function;
 
-public class SingleEntityFilter<E> implements Function<List<E>, ActionState>  {
+public class SingleEntityFilter<E> implements EntityActionFilter<E> {
 
   private final ActionState defaultState_;
   private final Function<E, ActionState> singleFilter_;
@@ -16,7 +16,7 @@ public class SingleEntityFilter<E> implements Function<List<E>, ActionState>  {
   }
 
   @Override
-  public ActionState apply(List<E> entities) {
+  public ActionState getActionState(List<E> entities) {
     return ((entities.size() == 1) ? singleFilter_.apply(entities.get(0)) : defaultState_);
   }
 
