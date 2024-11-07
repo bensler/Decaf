@@ -6,6 +6,13 @@ import java.util.function.Function;
 
 import javax.swing.AbstractAction;
 
+/** A bundle of
+ * <ul>
+ *   <li>an {@link Appearance}, representing this action to the user</li>
+ *   <li>a filter, deciding if this action applicable to given enities or is even visible</li>
+ *   <li>and the action itself performing an operation on the given entities.</li>
+ * </ul>
+ */
 public class EntityAction<E> extends AbstractAction {
 
   private final Appearance appearance_;
