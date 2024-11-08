@@ -16,8 +16,9 @@ import javax.swing.JScrollPane;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
-import com.bensler.decaf.swing.view.EntityComponent;
-import com.bensler.decaf.swing.view.EntitySelectionListener;
+import com.bensler.decaf.swing.EntityComponent;
+import com.bensler.decaf.swing.selection.EntitySelectionListener;
+import com.bensler.decaf.swing.selection.EntitySelectionListener.Nop;
 import com.bensler.decaf.swing.view.NoSelectionModel;
 import com.bensler.decaf.swing.view.PropertyView;
 import com.bensler.decaf.swing.view.SelectionMode;
@@ -37,7 +38,7 @@ public class EntityList<E> extends Object implements ListSelectionListener, Enti
 
   private   final         PropertyView<? super E, ?>  view_;
 
-  private                 EntitySelectionListener<? super E> selectionListener_;
+  private                 EntitySelectionListener<E> selectionListener_;
 
   private   final         List<E>             selection_;
 
@@ -180,8 +181,8 @@ public class EntityList<E> extends Object implements ListSelectionListener, Enti
   }
 
   @Override
-  public void setSelectionListener(EntitySelectionListener<? super E> listener) {
-    selectionListener_ = ((listener != null) ? listener : EntitySelectionListener.NOP);
+  public void setSelectionListener(EntitySelectionListener<E> listener) {
+    selectionListener_ = ((listener != null) ? listener : new Nop<>());
   }
 
   @Override

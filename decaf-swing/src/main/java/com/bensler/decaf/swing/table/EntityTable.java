@@ -26,8 +26,9 @@ import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
-import com.bensler.decaf.swing.view.EntityComponent;
-import com.bensler.decaf.swing.view.EntitySelectionListener;
+import com.bensler.decaf.swing.EntityComponent;
+import com.bensler.decaf.swing.selection.EntitySelectionListener;
+import com.bensler.decaf.swing.selection.EntitySelectionListener.Nop;
 import com.bensler.decaf.swing.view.NoSelectionModel;
 import com.bensler.decaf.swing.view.SelectionMode;
 import com.jgoodies.forms.layout.CellConstraints;
@@ -63,7 +64,7 @@ implements ListSelectionListener, FocusListener, EntityComponent<E> {
 
   private   final         List<E>             savedSelection_;
 
-  private                 EntitySelectionListener<? super E> selectionListener_;
+  private                 EntitySelectionListener<E> selectionListener_;
 
 //  private                 ActionImpl          customizeAction_;
 
@@ -382,8 +383,8 @@ implements ListSelectionListener, FocusListener, EntityComponent<E> {
   }
 
   @Override
-  public void setSelectionListener(EntitySelectionListener<? super E> listener) {
-    selectionListener_ = ((listener != null) ? listener : EntitySelectionListener.NOP);
+  public void setSelectionListener(EntitySelectionListener<E> listener) {
+    selectionListener_ = ((listener != null) ? listener : new Nop<>());
   }
 
   public void addPopupListener(PopupListener listener) {

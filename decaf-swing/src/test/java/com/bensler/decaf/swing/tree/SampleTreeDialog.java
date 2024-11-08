@@ -14,12 +14,12 @@ import javax.swing.JPanel;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
+import com.bensler.decaf.swing.EntityComponent;
 import com.bensler.decaf.swing.list.EntityList;
+import com.bensler.decaf.swing.selection.EntitySelectionListener;
 import com.bensler.decaf.swing.table.EntityTable;
 import com.bensler.decaf.swing.table.TablePropertyView;
 import com.bensler.decaf.swing.table.TableView;
-import com.bensler.decaf.swing.view.EntityComponent;
-import com.bensler.decaf.swing.view.EntitySelectionListener;
 import com.bensler.decaf.swing.view.PropertyViewImpl;
 import com.bensler.decaf.swing.view.QueueGetter;
 import com.bensler.decaf.swing.view.SimplePropertyGetter;
@@ -59,7 +59,7 @@ class SampleTreeDialog {
     ));
     final EntitySelectionListener<Folder> selectionListener = new EntitySelectionListener<Folder>()  {
       @Override
-      public void selectionChanged(EntityComponent<?> source, List<? extends Folder> selection) {
+      public void selectionChanged(EntityComponent<Folder> source, List<Folder> selection) {
         System.out.println(source.getClass().getSimpleName() + ": " + selection);// TODO
       }
     };

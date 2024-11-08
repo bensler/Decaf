@@ -1,5 +1,7 @@
 package com.bensler.decaf.swing.action;
 
+import java.util.List;
+
 /** A bundle of
  * <ul>
  *   <li>an {@link Appearance}, representing this action to the user</li>
@@ -10,15 +12,19 @@ package com.bensler.decaf.swing.action;
 public class EntityAction<E> {
 
   private final Appearance appearance_;
-  private final EntityActionFilter filter_;
-  private final EntityActionListener<E> action_;
+  private final EntityActionFilter<E> filter_;
+//  private final EntityActionListener<E> action_;
 
   public EntityAction(
-    Appearance appearance, EntityActionFilter filter, EntityActionListener<E> action
+    Appearance appearance, EntityActionFilter<E> filter //, EntityActionListener<E> action
   ) {
     appearance_ = appearance;
     filter_ = filter;
-    action_ = action;
+//    action_ = action;
+  }
+
+  public ActionState getActionState(List<E> entities) {
+    return filter_.getActionState(entities);
   }
 
 }

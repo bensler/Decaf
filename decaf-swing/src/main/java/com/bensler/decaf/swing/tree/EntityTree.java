@@ -19,8 +19,9 @@ import javax.swing.tree.TreeCellRenderer;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 
-import com.bensler.decaf.swing.view.EntityComponent;
-import com.bensler.decaf.swing.view.EntitySelectionListener;
+import com.bensler.decaf.swing.EntityComponent;
+import com.bensler.decaf.swing.selection.EntitySelectionListener;
+import com.bensler.decaf.swing.selection.EntitySelectionListener.Nop;
 import com.bensler.decaf.swing.view.NoSelectionModel;
 import com.bensler.decaf.swing.view.PropertyView;
 import com.bensler.decaf.swing.view.SelectionMode;
@@ -41,7 +42,7 @@ TreeSelectionListener, FocusListener {
 
   protected final         TreeComponent<H>    tree_;
 
-  private                 EntitySelectionListener<? super H> selectionListener_;
+  private                 EntitySelectionListener<H> selectionListener_;
 
   private                 boolean             silentSelectionChange_;
 
@@ -253,8 +254,8 @@ TreeSelectionListener, FocusListener {
   }
 
   @Override
-  public void setSelectionListener(EntitySelectionListener<? super H> listener) {
-    selectionListener_ = ((listener != null) ? listener : EntitySelectionListener.NOP);
+  public void setSelectionListener(EntitySelectionListener<H> listener) {
+    selectionListener_ = ((listener != null) ? listener : new Nop());
   }
 
   @Override

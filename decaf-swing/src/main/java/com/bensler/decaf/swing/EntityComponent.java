@@ -1,33 +1,26 @@
-package com.bensler.decaf.swing.view;
+package com.bensler.decaf.swing;
 
 import java.awt.Color;
 import java.util.Collection;
-import java.util.List;
 
 import javax.swing.JComponent;
 import javax.swing.JScrollPane;
 
+import com.bensler.decaf.swing.selection.SelectionHolder;
+
 /**
  */
-public interface EntityComponent<E> {
+public interface EntityComponent<E> extends SelectionHolder<E> {
 
   public JComponent getComponent();
 
   public JScrollPane getScrollPane();
-
-  public List<E> getSelection();
-
-  public E getSingleSelection();
-
-  public void setSelectionListener(EntitySelectionListener<? super E> listener);
 
   public boolean contains(E entity);
 
   public void select(Collection<E> entities);
 
   public void select(E entity);
-
-  public void clearSelection();
 
   public void setBackground(Color c);
   public void setToolTipText(String hint);
