@@ -477,6 +477,13 @@ TreeSelectionListener, FocusListener {
 
   void triggerContextMenu(MouseEvent evt) {
     if (evt.isPopupTrigger()) {
+      final int selRow = tree_.getRowForLocation(evt.getX(), evt.getY());
+
+      if (selRow > -1){
+         tree_.setSelectionRow(selRow);
+      } else {
+        tree_.setSelectionRows(new int[0]);
+      }
       contextActions_.createContextMenu(this).ifPresent(popup -> popup.show(tree_, evt.getX(), evt.getY()));
     }
   }
