@@ -8,18 +8,19 @@ import com.bensler.decaf.swing.selection.SelectionHolder;
 
 public class ActionBinding<E> implements EntitySelectionListener<E> {
 
-  private final SelectionHolder<E> comp_;
   private final EntityAction<E> action_;
+  private List<E> selection_;
 
   public ActionBinding (SelectionHolder<E> comp, EntityAction<E> action) {
-    (comp_ = comp).setSelectionListener(this);
+    selection_ = List.of();
+    comp.setSelectionListener(this);
     action_ = action;
   }
 
   @Override
   public void selectionChanged(EntityComponent<E> source, List<E> selection) {
     // TODO     vvvvvvvvvvv---- what to do with it
-    ActionState actionState = action_.getActionState(selection);
+    ActionState actionState = action_.getActionState(selection_ = List.copyOf(selection));
   }
 
 }

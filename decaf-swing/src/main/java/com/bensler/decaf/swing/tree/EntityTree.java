@@ -3,6 +3,8 @@ package com.bensler.decaf.swing.tree;
 import java.awt.Color;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -20,6 +22,7 @@ import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 
 import com.bensler.decaf.swing.EntityComponent;
+import com.bensler.decaf.swing.action.ActionGroup;
 import com.bensler.decaf.swing.selection.EntitySelectionListener;
 import com.bensler.decaf.swing.selection.EntitySelectionListener.Nop;
 import com.bensler.decaf.swing.view.NoSelectionModel;
@@ -54,6 +57,8 @@ TreeSelectionListener, FocusListener {
 
   protected               boolean             editable_;
 
+  private                 ActionGroup<H>      contextActions_;
+
   public EntityTree(PropertyView<H, ?> view) {
     focusListeners_ = new HashSet<>();
     model_ = new TreeModel<>(view);
@@ -70,6 +75,21 @@ TreeSelectionListener, FocusListener {
     silentSelectionChange_ = false;
     setSelectionMode(SelectionMode.SINGLE);
     setSelectionListener(null);
+    contextActions_ = new ActionGroup<>();
+    tree_.addMouseListener(new MouseAdapter() {
+      @Override
+      public void mouseClicked(MouseEvent evt) {
+        triggerContextMenu(evt);
+      }
+      @Override
+      public void mousePressed(MouseEvent evt) {
+        triggerContextMenu(evt);
+      }
+      @Override
+      public void mouseReleased(MouseEvent evt) {
+        triggerContextMenu(evt);
+      }
+    });
   }
 
   protected TreeComponent<H> createCompoent(TreeModel<H> model, PropertyView<H, ?> view) {
@@ -182,7 +202,6 @@ TreeSelectionListener, FocusListener {
   @Override
   public void valueChanged(TreeSelectionEvent evt) {
     updateSelection();
-    fireSelectionChanged();
   }
 
   public void refireSelectionChanged() {
@@ -255,7 +274,7 @@ TreeSelectionListener, FocusListener {
 
   @Override
   public void setSelectionListener(EntitySelectionListener<H> listener) {
-    selectionListener_ = ((listener != null) ? listener : new Nop());
+    selectionListener_ = ((listener != null) ? listener : new Nop<>());
   }
 
   @Override
@@ -450,6 +469,16 @@ TreeSelectionListener, FocusListener {
 
   public void removeFocusListener(FocusListener listener) {
     focusListeners_.remove(listener);
+  }
+
+  public void setContextActions(ActionGroup<H> contextActions) {
+    contextActions_ = contextActions;
+  }
+
+  void triggerContextMenu(MouseEvent evt) {
+    if (evt.isPopupTrigger()) {
+      contextActions_.createContextMenu(this).ifPresent(popup -> popup.show(tree_, evt.getX(), evt.getY()));
+    }
   }
 
 }

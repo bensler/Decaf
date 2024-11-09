@@ -11,8 +11,6 @@ public interface EntitySelectionListener<E> {
 
   public void selectionChanged(EntityComponent<E> source, List<E> selection);
 
-  public static final Nop<Object> NOP = new Nop<>();
-
   public static class Nop<E> extends Object implements EntitySelectionListener<E> {
 
     @Override

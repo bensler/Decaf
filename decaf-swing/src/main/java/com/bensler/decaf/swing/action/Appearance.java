@@ -4,6 +4,7 @@ import java.util.Optional;
 import java.util.stream.Stream;
 
 import javax.swing.Icon;
+import javax.swing.JMenuItem;
 
 /** Encapsulates all information of an action needed to let an user
  * recognize its function. All properties are optional, but at least
@@ -40,6 +41,10 @@ public class Appearance {
 
   public Optional<String> getDescription() {
     return description_;
+  }
+
+  public JMenuItem createPopupmenuItem() {
+    return new JMenuItem(label_.orElse(null), icon_.orElse(null));
   }
 
 }
