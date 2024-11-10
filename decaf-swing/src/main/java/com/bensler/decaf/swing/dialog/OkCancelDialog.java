@@ -60,6 +60,7 @@ public class OkCancelDialog<IN, OUT> extends JDialog implements ContentPanel.Con
     pack();
     setVisible(true);
     Optional.ofNullable(outData_).ifPresent(action);
+    dispose();
   }
 
   @Override
