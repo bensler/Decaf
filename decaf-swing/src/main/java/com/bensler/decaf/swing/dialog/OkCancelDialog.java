@@ -42,7 +42,7 @@ public class OkCancelDialog<IN, OUT> extends JDialog implements ContentPanel.Con
     final JPanel buttonPanel = new JPanel(buttonLayout);
     final JButton cancelButton = new JButton("Cancel");
 
-    buttonLayout.setColumnGroup(new int[] {3, 5});
+    buttonLayout.setColumnGroup(3, 5);
     buttonPanel.add(cancelButton, cc.xy(3,  1));
     okButton.addActionListener(evt -> {
       outData_ = contentPanel_.getData();
