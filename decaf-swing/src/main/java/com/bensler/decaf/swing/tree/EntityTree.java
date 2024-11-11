@@ -237,8 +237,11 @@ TreeSelectionListener, FocusListener {
     return new ArrayList<>(selection_);
   }
 
-  public void addData(H hierarchical) {
-    model_.addNode(hierarchical);
+  public void addData(H entity, boolean select) {
+    model_.addNode(entity);
+    if (select) {
+      select(entity);
+    }
   }
 
   public void updateData(H hierarchical) {
@@ -262,9 +265,7 @@ TreeSelectionListener, FocusListener {
 
   @Override
   public void select(H subject) {
-    select(
-      ((subject != null) ? Arrays.asList(subject) : Collections.emptyList())
-    );
+    select(((subject != null) ? Arrays.asList(subject) : Collections.emptyList()));
   }
 
   @Override
