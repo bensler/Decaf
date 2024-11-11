@@ -84,7 +84,7 @@ public class EntityList<E> extends Object implements ListSelectionListener, Enti
    *  @see com.bensler.flob.gui.EntityComponent#getComponent()
    */
   @Override
-  public JComponent getComponent() {
+  public JList<E> getComponent() {
     return list_;
   }
 

@@ -20,7 +20,7 @@ public class OkCancelDialog<IN, OUT> extends JDialog implements ContentPanel.Con
   private OUT outData_;
 
   public OkCancelDialog(Window owner, String title, ContentPanel<IN, OUT> contentPanel) {
-    super(owner, title, ModalityType.DOCUMENT_MODAL);
+    super(owner, title, ModalityType.TOOLKIT_MODAL);
 
     final CellConstraints cc = new CellConstraints();
     final JPanel mainPanel = new JPanel(new FormLayout(
