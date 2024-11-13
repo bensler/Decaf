@@ -7,48 +7,53 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.List;
 import java.util.Set;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 
 class HierarchyTest {
 
+  final Folder root = new Folder(null, "/");
+  final Folder home = new Folder(root, "home");
+  final Folder bobsHome = new Folder(home, "bob");
+  final Folder alicesHome = new Folder(home, "alice");
+
+  @Test
+  @Disabled
+  void testIsEmpty() {
+    final Hierarchy<Folder> uut = new Hierarchy<>();
+
+    uut.addAll(List.of(alicesHome, bobsHome, home, root));
+    uut.remove(root, true);
+    assertTrue(uut.isEmpty());
+  }
+
 	@Test
-	void testIsEmpty() {
-    final Hierarchy<Folder> tree = new Hierarchy<>();
+	void testAddRemove() {
+    final Hierarchy<Folder> uut = new Hierarchy<>();
 
-    final Folder root = new Folder(null, "/");
-    final Folder home = new Folder(root, "home");
-    final Folder bobsHome = new Folder(home, "bob");
-    final Folder alicesHome = new Folder(home, "alice");
-
-    assertTrue(tree.isEmpty(), "Freshly created Hierarchy is not empty!");
-
-    tree.add(alicesHome);
-    assertEquals(alicesHome, tree.getRoot(), "'alice' should be root");
-    assertTrue(tree.getChildren(alicesHome).isEmpty(), "'alice' should be a leaf node");
-    tree.add(bobsHome);
-    assertTrue(tree.hasSyntheticRoot(), "syntheticRoot should be root");
-    tree.add(home);
-    assertEquals(home, tree.getRoot(), "'home' should be root");
-    assertEquals(Set.of(alicesHome, bobsHome), tree.getChildren(home), "'alice' and 'bob' should be under 'home'");
-    tree.add(root);
-    assertEquals(List.of(root, home, alicesHome), tree.getPath(alicesHome), "'alice's path should be [/, home, alice]");
-    assertEquals(Set.of(bobsHome,alicesHome), tree.getLeafNodes(), "leaf nodes should be [alice, bob]");
-    tree.remove(home, false);
-    assertTrue(tree.hasSyntheticRoot(), "syntheticRoot should be root");
-    assertEquals(3, tree.getChildren(tree.getRoot()).size(), "there should be [/, alice, bob] under synth root");
-    assertEquals(Set.of(root, bobsHome, alicesHome), tree.getLeafNodes(), "leaf nodes should be [/, alice, bob]");
+    assertTrue(uut.isEmpty(), "Freshly created Hierarchy is not empty!");
+    uut.add(alicesHome);
+    assertEquals(alicesHome, uut.getRoot(), "'alice' should be root");
+    assertTrue(uut.getChildren(alicesHome).isEmpty(), "'alice' should be a leaf node");
+    uut.add(bobsHome);
+    assertTrue(uut.hasSyntheticRoot(), "syntheticRoot should be root");
+    uut.add(home);
+    assertEquals(home, uut.getRoot(), "'home' should be root");
+    assertEquals(Set.of(alicesHome, bobsHome), uut.getChildren(home), "'alice' and 'bob' should be under 'home'");
+    uut.add(root);
+    assertEquals(List.of(root, home, alicesHome), uut.getPath(alicesHome), "'alice's path should be [/, home, alice]");
+    assertEquals(Set.of(bobsHome,alicesHome), uut.getLeafNodes(), "leaf nodes should be [alice, bob]");
+    uut.remove(home, false);
+    assertTrue(uut.hasSyntheticRoot(), "syntheticRoot should be root");
+    assertEquals(3, uut.getChildren(uut.getRoot()).size(), "there should be [/, alice, bob] under synth root");
+    assertEquals(Set.of(root, bobsHome, alicesHome), uut.getLeafNodes(), "leaf nodes should be [/, alice, bob]");
 	}
 
 	@Test
 	void equalsAndHashcode() {
 	  final Hierarchy<Folder> tree1 = new Hierarchy<>();
 	  final Hierarchy<Folder> tree2 = new Hierarchy<>();
-
-	  final Folder root = new Folder(null, "/");
-	  final Folder home = new Folder(root, "home");
-	  final Folder bobsHome = new Folder(home, "bob");
-	  final Folder alicesHome = new Folder(home, "alice");
 
 	  tree1.add(alicesHome);
 	  tree1.add(bobsHome);

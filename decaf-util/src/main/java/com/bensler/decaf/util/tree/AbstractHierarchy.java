@@ -141,7 +141,7 @@ public class AbstractHierarchy<H extends Hierarchical<H>, C extends Collection<H
     C children = children_.get(parent);
 
     if (children == null) {
-      children_.put(parent, (children = nanny_.createCollection()));
+      children_.put(parent, (children = nanny_.createCollection(List.of())));
     } else {
       children.remove(child);
     }
@@ -209,7 +209,7 @@ public class AbstractHierarchy<H extends Hierarchical<H>, C extends Collection<H
       // handle children
       if (hadChildren) {
         if (recursive) {
-          for (H child : children) {
+          for (H child : List.copyOf(children)) {
             remove(child, recursive);
           }
         } else {
@@ -245,17 +245,13 @@ public class AbstractHierarchy<H extends Hierarchical<H>, C extends Collection<H
 
   /** used by TreeModel */
   public C getChildren(final Hierarchical<?> member) {
-    final C children;
-
-    checkMember(member);
-    children = getChildrenNoCopy(member);
-    if (children.isEmpty()) {
-      return children;
+    if ((member == null) && (root_ != null)) {
+      return nanny_.createCollection(List.of(root_));
     } else {
-      final C copyChildren = nanny_.createCollection();
+      checkMember(member);
+      final C children = getChildrenNoCopy(member);
 
-      copyChildren.addAll(children);
-      return copyChildren;
+      return (children.isEmpty() ? children : nanny_.createCollection(children));
     }
   }
 

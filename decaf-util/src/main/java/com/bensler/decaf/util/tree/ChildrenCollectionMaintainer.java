@@ -10,7 +10,7 @@ import java.util.Set;
 
 public interface ChildrenCollectionMaintainer<H extends Hierarchical<?>, C extends Collection<H>> {
 
-  C createCollection();
+  C createCollection(Collection<H> collectionContents);
 
   C createEmptyCollection();
 
@@ -19,8 +19,8 @@ public interface ChildrenCollectionMaintainer<H extends Hierarchical<?>, C exten
   class DefaultCollectionMaintainer<H extends Hierarchical<?>> implements ChildrenCollectionMaintainer<H, Set<H>> {
 
     @Override
-    public Set<H> createCollection() {
-      return new HashSet<>(2);
+    public Set<H> createCollection(Collection<H> collectionContents) {
+      return new HashSet<>(collectionContents);
     }
 
     @Override
@@ -38,8 +38,8 @@ public interface ChildrenCollectionMaintainer<H extends Hierarchical<?>, C exten
   abstract class AbstractListMaintainer<H extends Hierarchical<?>> implements ChildrenCollectionMaintainer<H, List<H>> {
 
     @Override
-    public List<H> createCollection() {
-      return new ArrayList<>(2);
+    public List<H> createCollection(Collection<H> collectionContents) {
+      return new ArrayList<>(collectionContents);
     }
 
     @Override
@@ -55,6 +55,14 @@ public interface ChildrenCollectionMaintainer<H extends Hierarchical<?>, C exten
 
     public SortedListMaintainer(Comparator<? super H> comparator) {
       comparator_ = comparator;
+    }
+
+    @Override
+    public List<H> createCollection(Collection<H> collectionContents) {
+      final List<H> createdCollection = super.createCollection(collectionContents);
+
+      Collections.sort(createdCollection, comparator_);
+      return createdCollection;
     }
 
     @Override
