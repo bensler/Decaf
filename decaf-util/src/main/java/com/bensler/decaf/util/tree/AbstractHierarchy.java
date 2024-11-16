@@ -196,8 +196,15 @@ public class AbstractHierarchy<H extends Hierarchical<H>, C extends Collection<H
     return result;
   }
 
-  /** used by TreeModel */
-  public void remove(final H member, final boolean recursive) {
+  public void removeNode(final H member) {
+    remove(member, false);
+  }
+
+  public void removeTree(final H member) {
+    remove(member, true);
+  }
+
+  protected void remove(final H member, final boolean recursive) {
     final boolean synthRoot = hasNullRoot();
 
     Objects.requireNonNull(member, "Cannot remove null");

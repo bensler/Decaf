@@ -114,14 +114,14 @@ public class TreeModel <H extends Hierarchical<H>> extends DefaultTreeModel {
     return (!data_.hasNullRoot());
   }
 
-  public void addNode(H node) {
+  void addNode(H node) {
     final H         newParent     = data_.resolve(node.getParent());
     final boolean   synthRoot     = data_.hasNullRoot();
 
     if (data_.contains(node)) {
       int oldIndex  = getChildren(newParent).indexOf(node);
 
-      data_.remove(node, false);
+      data_.removeNode(node);
       fireTreeNodesRemoved(
         this, getPathAsObjectArray(newParent),
         new int[] {oldIndex}, null
@@ -149,7 +149,7 @@ public class TreeModel <H extends Hierarchical<H>> extends DefaultTreeModel {
 
   /** Updates a node in this TreeModel. If the TreeModel does not already contain an equal node it is
    * simply added. */
-  public void updateNode(H node) {
+  void updateNode(H node) {
     if (!contains(node)) {
       addNode(node);
     } else {
@@ -190,14 +190,14 @@ public class TreeModel <H extends Hierarchical<H>> extends DefaultTreeModel {
     }
   }
 
-  public void removeNode(H node) {
+  void removeNode(H node) {
 		final H   hierarchical  = data_.resolve(node);
 		final H   parent        = data_.resolve(hierarchical.getParent());
     final int index;
 
 		if (data_.contains(node)) {
       index = getChildren(parent).indexOf(node);
-      data_.remove(node, true);
+      data_.removeTree(node);
       fireTreeNodesRemoved(
         this, getPathAsObjectArray(parent),
         new int[] {index}, null
@@ -248,7 +248,7 @@ public class TreeModel <H extends Hierarchical<H>> extends DefaultTreeModel {
   void removeTree(H subject) {
     final H parent = data_.resolve(subject.getParent());
 
-    data_.remove(subject, true);
+    data_.removeTree(subject);
     if (parent != null) {
       fireStructureChanged(parent);
     }
@@ -260,7 +260,7 @@ public class TreeModel <H extends Hierarchical<H>> extends DefaultTreeModel {
     final H         parent      = data_.resolve(subject.getParent());
     final boolean   hadChildren = !data_.isLeaf(subject);
 
-    data_.remove(subject, false);
+    data_.removeNode(subject);
     if (parent != null) {
       fireStructureChanged(parent);
     }
