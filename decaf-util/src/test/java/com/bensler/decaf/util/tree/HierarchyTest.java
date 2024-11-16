@@ -7,7 +7,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.List;
 import java.util.Set;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 
@@ -19,7 +18,6 @@ class HierarchyTest {
   final Folder alicesHome = new Folder(home, "alice");
 
   @Test
-  @Disabled
   void testIsEmpty() {
     final Hierarchy<Folder> uut = new Hierarchy<>();
 
@@ -46,7 +44,9 @@ class HierarchyTest {
     assertEquals(Set.of(bobsHome,alicesHome), uut.getLeafNodes(), "leaf nodes should be [alice, bob]");
     uut.remove(home, false);
     assertTrue(uut.hasNullRoot(), "syntheticRoot should be root");
-    assertEquals(3, uut.getChildren(uut.getRoot()).size(), "there should be [/, alice, bob] under synth root");
+    Set<Folder> children = uut.getChildren(null);
+    assertEquals(3, children.size(), "there should be [/, alice, bob] under synth root");
+    assertEquals(Set.of(root, bobsHome, alicesHome), children, "there should be [/, alice, bob] under synth root");
     assertEquals(Set.of(root, bobsHome, alicesHome), uut.getLeafNodes(), "leaf nodes should be [/, alice, bob]");
 	}
 

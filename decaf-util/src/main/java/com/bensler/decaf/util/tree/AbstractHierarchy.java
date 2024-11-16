@@ -1,5 +1,7 @@
 package com.bensler.decaf.util.tree;
 
+import static java.util.Objects.requireNonNull;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -9,13 +11,12 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Objects;
 import java.util.Set;
 
 import com.bensler.decaf.util.CanceledException;
 
 /**
- * A Hierarchy forms a tree out of a collection of {@link Hierarchical}s. A synthetic root is used if there are more than one
+ * A Hierarchy forms a tree out of a collection of {@link Hierarchical}s. A null root is used if there are more than one
  * nodes with an unknown or null parent ref. This is to make sure that there is always exactly one root.
  */
 public class AbstractHierarchy<H extends Hierarchical<H>, C extends Collection<H>> extends Object implements Serializable {
@@ -45,15 +46,15 @@ public class AbstractHierarchy<H extends Hierarchical<H>, C extends Collection<H
    * used by TreeModel *
    *
    * Adds a new member to this Hierarchy. If node is already a part of this hierarchy, it will be removed silently
-   * before adding again. If this hierarchy has a synthetic root the new node may be the new parent of formerly
-   * unbound nodes. They will be no longer children of synthetic root. If synthetic root loses all of its children the
-   * new node is the new root. If synthetic root keeps one child that will become the new root.
+   * before adding again. If this hierarchy has a null root the new node may be the new parent of formerly
+   * unbound nodes. They will be no longer children of null root. If null root loses all of its children the
+   * new node is the new root. If null root keeps one child that will become the new root.
    */
   public void add(final H newNode) {
     final H oldNode;
     final H parent;
 
-    Objects.requireNonNull(newNode, "Cannot add null");
+    requireNonNull(newNode, "Cannot add null");
     if ((oldNode = resolve(newNode)) != null) {
       // node is allready in this hierarchy
       final H oldParent = oldNode.getParent();
@@ -78,7 +79,7 @@ public class AbstractHierarchy<H extends Hierarchical<H>, C extends Collection<H
       if (parent != null) {
         addChild(newNode, parent);
         if (hasNullRoot()) {
-          final Collection<H> rootChildren = tryMoveSynthRootChildren(newNode);
+          final Collection<H> rootChildren = tryMoveNullRootChildren(newNode);
 
           if (rootChildren.size() == 1) {
             root_ = rootChildren.iterator().next();
@@ -87,7 +88,17 @@ public class AbstractHierarchy<H extends Hierarchical<H>, C extends Collection<H
         }
       } else {
         // no parent found
-        if (!hasNullRoot()) {
+        if (hasNullRoot()) {
+          final Collection<H> rootChildren = tryMoveNullRootChildren(newNode);
+
+          if (rootChildren.isEmpty()) {
+            children_.remove(null);
+            root_ = newNode;
+          } else {
+            addChild(newNode, root_);
+          }
+        } else {
+          // non null root
           if (newNode.equals(root_.getParent())) {
             addChild(root_, newNode);
             root_ = newNode;
@@ -95,16 +106,6 @@ public class AbstractHierarchy<H extends Hierarchical<H>, C extends Collection<H
             addChild(newNode, null);
             addChild(root_, null);
             root_ = null;
-          }
-        } else {
-          // synthetic root
-          final Collection<H> rootChildren = tryMoveSynthRootChildren(newNode);
-
-          if (rootChildren.isEmpty()) {
-            children_.remove(null);
-            root_ = newNode;
-          } else {
-            addChild(newNode, root_);
           }
         }
       }
@@ -114,9 +115,9 @@ public class AbstractHierarchy<H extends Hierarchical<H>, C extends Collection<H
   /**
    * Should be called only from {@link #add(Hierarchical)}.
    *
-   * @return  all (synth) roots children unable to move to the (im)possible new parent.
+   * @return  all (null) roots children unable to move to the (im)possible new parent.
    */
-  private Collection<H> tryMoveSynthRootChildren(final H possibleParent) {
+  private Collection<H> tryMoveNullRootChildren(final H possibleParent) {
     final Collection<H> rootChildren = getChildrenNoCopy(root_);
 
     for (H node : getChildren(root_)) {
@@ -171,7 +172,7 @@ public class AbstractHierarchy<H extends Hierarchical<H>, C extends Collection<H
 
   /**
    * used by TreeModel *
-   * @return  true if this hierarchies only member is its own synthetic root.
+   * @return  true if this hierarchies only member is its own null root.
    */
   public boolean isEmpty() {
     return (children_.size() == 1) && children_.containsKey(null);
@@ -205,10 +206,10 @@ public class AbstractHierarchy<H extends Hierarchical<H>, C extends Collection<H
   }
 
   protected void remove(final H member, final boolean recursive) {
-    final boolean synthRoot = hasNullRoot();
 
-    Objects.requireNonNull(member, "Cannot remove null");
+    requireNonNull(member, "Cannot remove null");
     if (contains(member)) {
+      final boolean nullRoot = hasNullRoot();
       final boolean removingRoot = member.equals(root_);
       final Collection<H> children = getChildrenNoCopy(member);
       final boolean hadChildren = !children.isEmpty();
@@ -223,7 +224,7 @@ public class AbstractHierarchy<H extends Hierarchical<H>, C extends Collection<H
           for (H child : children) {
             addChild(child, null);
           }
-          if (!synthRoot) {
+          if (!nullRoot) {
             addChild(root_, null);
           }
           root_ = null;
@@ -235,7 +236,7 @@ public class AbstractHierarchy<H extends Hierarchical<H>, C extends Collection<H
       // handle parent
       if (removingRoot) {
         root_ = null;
-        if (!hadChildren) {
+        if (children_.isEmpty()) {
           children_.put(null, null);
         }
       } else {
