@@ -111,12 +111,12 @@ public class TreeModel <H extends Hierarchical<H>> extends DefaultTreeModel {
   }
 
   public boolean showRoot() {
-    return (!data_.hasSyntheticRoot());
+    return (!data_.hasNullRoot());
   }
 
   public void addNode(H node) {
     final H         newParent     = data_.resolve(node.getParent());
-    final boolean   synthRoot     = data_.hasSyntheticRoot();
+    final boolean   synthRoot     = data_.hasNullRoot();
 
     if (data_.contains(node)) {
       int oldIndex  = getChildren(newParent).indexOf(node);
@@ -140,7 +140,7 @@ public class TreeModel <H extends Hierarchical<H>> extends DefaultTreeModel {
   }
 
   private void fireRootMayHaveChanged(boolean hadSynthRoot) {
-    if (hadSynthRoot ^ data_.hasSyntheticRoot()) {
+    if (hadSynthRoot ^ data_.hasNullRoot()) {
       for (RootChangeListener listener : listenerList.getListeners(RootChangeListener.class)) {
         listener.rootChanged(this);
       }
@@ -274,7 +274,7 @@ public class TreeModel <H extends Hierarchical<H>> extends DefaultTreeModel {
   }
 
   public void clear() {
-    final boolean hadSynthRoot  = data_.hasSyntheticRoot();
+    final boolean hadSynthRoot  = data_.hasNullRoot();
 
     data_.clear();
     fireRootChanged();
@@ -282,7 +282,7 @@ public class TreeModel <H extends Hierarchical<H>> extends DefaultTreeModel {
   }
 
   public boolean hasSyntheticRoot() {
-    return data_.hasSyntheticRoot();
+    return data_.hasNullRoot();
   }
 
   public void removeRootChangeListener(RootChangeListener listener) {

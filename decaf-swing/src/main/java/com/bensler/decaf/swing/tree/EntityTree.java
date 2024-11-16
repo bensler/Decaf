@@ -61,7 +61,6 @@ TreeSelectionListener, FocusListener {
 
   public EntityTree(PropertyView<H, ?> view) {
     focusListeners_ = new HashSet<>();
-    model_ = new TreeModel<>(view);
     tree_ = createCompoent(model_ = new TreeModel<>(view), view);
     // update the selection BEFORE any listener is notified!
     tree_.addTreeSelectionListener(this);
@@ -116,12 +115,6 @@ TreeSelectionListener, FocusListener {
   @Override
   public JScrollPane getScrollPane() {
     return scrollPane_;
-  }
-
-  void setModel(TreeModel<H> newModel) {
-    model_ = newModel;
-    tree_.setModel(newModel);
-    tree_.setRootVisible(newModel.showRoot());
   }
 
   public void setShowsRootHandles(boolean visible) {
@@ -254,7 +247,7 @@ TreeSelectionListener, FocusListener {
 
   public void setData(Hierarchy<H> hierarchy) {
     model_.setData(hierarchy);
-    tree_.setRootVisible(!hierarchy.hasSyntheticRoot());
+    tree_.setRootVisible(!hierarchy.hasNullRoot());
     // try to expand the tree in the same manner as before.
 //    applyState();
   }

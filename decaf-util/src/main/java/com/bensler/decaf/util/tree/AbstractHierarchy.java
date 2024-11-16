@@ -77,7 +77,7 @@ public class AbstractHierarchy<H extends Hierarchical<H>, C extends Collection<H
       parent = resolve(newNode.getParent());
       if (parent != null) {
         addChild(newNode, parent);
-        if (hasSyntheticRoot()) {
+        if (hasNullRoot()) {
           final Collection<H> rootChildren = tryMoveSynthRootChildren(newNode);
 
           if (rootChildren.size() == 1) {
@@ -87,7 +87,7 @@ public class AbstractHierarchy<H extends Hierarchical<H>, C extends Collection<H
         }
       } else {
         // no parent found
-        if (!hasSyntheticRoot()) {
+        if (!hasNullRoot()) {
           if (newNode.equals(root_.getParent())) {
             addChild(root_, newNode);
             root_ = newNode;
@@ -190,7 +190,7 @@ public class AbstractHierarchy<H extends Hierarchical<H>, C extends Collection<H
   public Set<H> getMembers() {
     final Set<H> result = (isEmpty() ? Collections.emptySet() : new HashSet<>(children_.keySet()));
 
-    if (hasSyntheticRoot()) {
+    if (hasNullRoot()) {
       result.remove(getRoot());
     }
     return result;
@@ -198,7 +198,7 @@ public class AbstractHierarchy<H extends Hierarchical<H>, C extends Collection<H
 
   /** used by TreeModel */
   public void remove(final H member, final boolean recursive) {
-    final boolean synthRoot = hasSyntheticRoot();
+    final boolean synthRoot = hasNullRoot();
 
     Objects.requireNonNull(member, "Cannot remove null");
     if (contains(member)) {
@@ -290,7 +290,7 @@ public class AbstractHierarchy<H extends Hierarchical<H>, C extends Collection<H
   }
 
   /** used by TreeModel */
-  public boolean hasSyntheticRoot() {
+  public boolean hasNullRoot() {
     return (root_ == null);
   }
 
@@ -394,7 +394,7 @@ public class AbstractHierarchy<H extends Hierarchical<H>, C extends Collection<H
 
     target.add(0, hierarchical);
     if (parent == null) {
-      if (hasSyntheticRoot()) {
+      if (hasNullRoot()) {
         target.add(0, root_);
       }
     } else {
