@@ -2,7 +2,7 @@ package com.bensler.decaf.swing.view;
 
 import javax.swing.JLabel;
 
-import com.bensler.decaf.swing.tree.TreeModel;
+import com.bensler.decaf.swing.tree.SynthRoot;
 
 public class DefaultNullPolicy<E> extends Object implements NullPolicy<E> {
 
@@ -14,7 +14,7 @@ public class DefaultNullPolicy<E> extends Object implements NullPolicy<E> {
   ) {
     if (
       (value == null)
-      || (value instanceof TreeModel.Root)
+      || (value instanceof SynthRoot)
     ) {
       NULL_RENDERER.render(null, " ", label);
     } else {

@@ -8,8 +8,6 @@ import java.util.Set;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
 
-import com.bensler.decaf.util.tree.AbstractHierarchy;
-import com.bensler.decaf.util.tree.ChildrenCollectionMaintainer.SortedListMaintainer;
 import com.bensler.decaf.util.tree.Hierarchical;
 import com.bensler.decaf.util.tree.Hierarchy;
 
@@ -27,40 +25,14 @@ public class TreeModel <H extends Hierarchical<H>> extends DefaultTreeModel {
 
   }
 
-  public static final class Root extends Object implements Hierarchical<Object> {
-      @Override
-      public Object getParent() {
-          return null;
-      }
-
-      @Override
-      public String toString() {
-        return "<SynthRoot>";
-      }
-  }
-
-  static class ListHierarchy<M extends Hierarchical<M>> extends AbstractHierarchy<M, List<M>> {
-
-    public ListHierarchy(Comparator<? super M> comparator) {
-      super(new SortedListMaintainer<>(comparator));
-    }
-
-    /** Widening visibility */
-    @Override
-    protected List<M> getChildrenNoCopy(Hierarchical<?> member) {
-      return super.getChildrenNoCopy(member);
-    }
-
-  }
-
   protected final         ListHierarchy<H>            data_;
 
-  private Hierarchical<?> invisibleRoot_ = new Root();
+  private Hierarchical<?> invisibleRoot_ = new SynthRoot();
 
   TreeModel(Comparator<? super H> comparator) {
     super(null, false);
     data_ = new ListHierarchy<H>(comparator);
-    invisibleRoot_ = new Root();
+    invisibleRoot_ = new SynthRoot();
   }
 
   @Override
@@ -101,7 +73,7 @@ public class TreeModel <H extends Hierarchical<H>> extends DefaultTreeModel {
   void setData(Hierarchy<H> data) {
 //    final boolean hadSynthRoot  = data_.hasSyntheticRoot();
 
-    invisibleRoot_ = new Root();
+    invisibleRoot_ = new SynthRoot();
     data_.clear();
     data_.addAll(data.getMembers());
     fireTreeStructureChanged(this, null,  null, null);

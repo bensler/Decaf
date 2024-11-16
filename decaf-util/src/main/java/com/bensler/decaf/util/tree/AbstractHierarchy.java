@@ -21,7 +21,7 @@ import com.bensler.decaf.util.CanceledException;
  */
 public class AbstractHierarchy<H extends Hierarchical<H>, C extends Collection<H>> extends Object implements Serializable {
 
-  private final ChildrenCollectionMaintainer<H, C> nanny_;
+  private final ChildrenCollectionMaintainer<H, C> childCollectionMaintainer_;
   /**
    * Keys are all members of this hierarchy, values are the child nodes. <code>null</code> values are leaf nodes,
    * <code>null</code> key is used as super root if there is no single root of all members.
@@ -37,7 +37,7 @@ public class AbstractHierarchy<H extends Hierarchical<H>, C extends Collection<H
    * Creates a new empty hierarchy.
    */
   public AbstractHierarchy(ChildrenCollectionMaintainer<H, C> nanny) {
-    nanny_ = nanny;
+    childCollectionMaintainer_ = nanny;
     children_ = new HashMap<>();
     children_.put(root_ = null, null);
   }
@@ -142,11 +142,11 @@ public class AbstractHierarchy<H extends Hierarchical<H>, C extends Collection<H
     C children = children_.get(parent);
 
     if (children == null) {
-      children_.put(parent, (children = nanny_.createCollection(List.of())));
+      children_.put(parent, (children = childCollectionMaintainer_.createCollection(List.of())));
     } else {
       children.remove(child);
     }
-    nanny_.addChild(child, children);
+    childCollectionMaintainer_.addChild(child, children);
   }
 
   public H resolve(final Object ref) {
@@ -254,12 +254,12 @@ public class AbstractHierarchy<H extends Hierarchical<H>, C extends Collection<H
   /** used by TreeModel */
   public C getChildren(final Hierarchical<?> member) {
     if ((member == null) && (root_ != null)) {
-      return nanny_.createCollection(List.of(root_));
+      return childCollectionMaintainer_.createCollection(List.of(root_));
     } else {
       checkMember(member);
       final C children = getChildrenNoCopy(member);
 
-      return (children.isEmpty() ? children : nanny_.createCollection(children));
+      return (children.isEmpty() ? children : childCollectionMaintainer_.createCollection(children));
     }
   }
 
@@ -272,7 +272,7 @@ public class AbstractHierarchy<H extends Hierarchical<H>, C extends Collection<H
   protected C getChildrenNoCopy(final Hierarchical<?> member) {
     final C children = children_.get(member);
 
-    return ((children != null) ? children : nanny_.createEmptyCollection());
+    return ((children != null) ? children : childCollectionMaintainer_.createEmptyCollection());
   }
 
   protected void checkMember(final Hierarchical<?> member) {
