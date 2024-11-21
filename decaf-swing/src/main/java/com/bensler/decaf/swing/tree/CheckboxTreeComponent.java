@@ -1,7 +1,5 @@
 package com.bensler.decaf.swing.tree;
 
-import static java.util.function.Predicate.not;
-
 import java.awt.Component;
 import java.awt.Font;
 import java.awt.Rectangle;
@@ -25,7 +23,7 @@ public class CheckboxTreeComponent<H extends Hierarchical<H>> extends TreeCompon
 
   private final Set<H> checkedNodes_;
 
-  public CheckboxTreeComponent(TreeModel<H> newModel, PropertyView<H, ?> view) {
+  public CheckboxTreeComponent(EntityTreeModel<H> newModel, PropertyView<H, ?> view) {
     super(newModel, view);
     checkedNodes_ = new HashSet<>();
     setCellRenderer(new CheckboxNodeRenderer(view));
@@ -35,17 +33,17 @@ public class CheckboxTreeComponent<H extends Hierarchical<H>> extends TreeCompon
         final TreePath[] paths = getSelectionPaths();
 
         if ((paths != null) && (e.getKeyChar() == ' ')) {
-          final List<H> nodes = Arrays.stream(paths).map(path -> model_.getLastPathComponent(path)).toList();
+          final List<?> nodes = Arrays.stream(paths).map(path -> path.getLastPathComponent()).toList();
 
-          if (checkedNodes_.containsAll(nodes)) {
-            checkedNodes_.removeAll(nodes);
-            nodes.forEach(model_::fireNodeChanged);
-          } else {
-            final List<H> toCheck = nodes.stream().filter(not(checkedNodes_::contains)).toList();
-
-            checkedNodes_.addAll(toCheck);
-            toCheck.forEach(model_::fireNodeChanged);
-          }
+//          if (checkedNodes_.containsAll(nodes)) { TODO
+//            checkedNodes_.removeAll(nodes);
+//            nodes.forEach(model_::fireNodeChanged);
+//          } else {
+//            final List<H> toCheck = nodes.stream().filter(not(checkedNodes_::contains)).toList();
+//
+//            checkedNodes_.addAll(toCheck);
+//            toCheck.forEach(model_::fireNodeChanged);
+//          }
         }
       }
     });
@@ -55,7 +53,7 @@ public class CheckboxTreeComponent<H extends Hierarchical<H>> extends TreeCompon
         final TreePath path = getPathForLocation(e.getX(), e.getY());
 
         if (path != null) {
-          final H node = model_.getLastPathComponent(path);
+          final H node = (H)path.getLastPathComponent();
           final Rectangle bounds = getPathBounds(path);
           final CheckboxRendererComponent rendererComp = (CheckboxRendererComponent)getCellRenderer().getTreeCellRendererComponent(
             CheckboxTreeComponent.this, node, true,
@@ -72,7 +70,7 @@ public class CheckboxTreeComponent<H extends Hierarchical<H>> extends TreeCompon
             } else {
               checkedNodes_.add(node);
             }
-            model_.fireNodeChanged(node);
+//            model_.fireNodeChanged(node); TODO
           };
         }
       }

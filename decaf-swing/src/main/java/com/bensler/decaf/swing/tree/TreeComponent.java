@@ -5,23 +5,24 @@ import java.awt.Dimension;
 
 import javax.swing.JTree;
 import javax.swing.UIManager;
+import javax.swing.tree.TreeModel;
 
 import com.bensler.decaf.swing.awt.ColorHelper;
 import com.bensler.decaf.swing.view.PropertyView;
 import com.bensler.decaf.util.tree.Hierarchical;
 
-public class TreeComponent<H extends Hierarchical<H>> extends JTree implements TreeModel.RootChangeListener {
+public class TreeComponent<H extends Hierarchical<H>> extends JTree implements RootChangeListener {
 
   private   final         Color                   backgroundSelectionColor_;
   private   final         Color                   backgroundSelectionColorUnfocused_;
   private   final         Color                   foregroundSelectionColor_;
 
   protected final         PropertyView<? super H, ?> view_;
-  protected final         TreeModel<H>            model_;
+  protected final         EntityTreeModel<H>      model_;
 
   private                 float                   widthFactor_;
 
-  public TreeComponent(TreeModel<H> model, PropertyView<? super H, ?> view) {
+  public TreeComponent(EntityTreeModel<H> model, PropertyView<? super H, ?> view) {
     super(model);
     backgroundSelectionColor_ = UIManager.getColor("Tree.selectionBackground");
     foregroundSelectionColor_ = UIManager.getColor("Tree.selectionForeground");
@@ -60,16 +61,16 @@ public class TreeComponent<H extends Hierarchical<H>> extends JTree implements T
   }
 
   @Override
-  public void setModel(javax.swing.tree.TreeModel newModel) {
+  public void setModel(TreeModel newModel) {
     if (treeModel != null) {
-      ((TreeModel<?>)treeModel).removeRootChangeListener(this);
+      ((EntityTreeModel<?>)treeModel).removeRootChangeListener(this);
     }
     super.setModel(newModel);
-    ((TreeModel<?>)treeModel).addRootChangeListener(this);
+    ((EntityTreeModel<?>)treeModel).addRootChangeListener(this);
   }
 
   @Override
-  public void rootChanged(TreeModel<?> source) {
+  public void rootChanged(RootProvider source) {
     if (source == treeModel) {
       setRootVisible(!source.hasSyntheticRoot());
     }

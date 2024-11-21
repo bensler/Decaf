@@ -49,7 +49,7 @@ TreeSelectionListener, FocusListener {
 
   private                 boolean             silentSelectionChange_;
 
-  protected               TreeModel<H>        model_;
+  protected               EntityTreeModel<H>  model_;
 
   private                 SelectionMode       selectionMode_;
 
@@ -61,7 +61,7 @@ TreeSelectionListener, FocusListener {
 
   public EntityTree(PropertyView<H, ?> view) {
     focusListeners_ = new HashSet<>();
-    tree_ = createCompoent(model_ = new TreeModel<>(view), view);
+    tree_ = createComponent(model_ = new NewTreeModel<>(view), view);
     // update the selection BEFORE any listener is notified!
     tree_.addTreeSelectionListener(this);
     tree_.setShowsRootHandles(true);
@@ -91,7 +91,7 @@ TreeSelectionListener, FocusListener {
     });
   }
 
-  protected TreeComponent<H> createCompoent(TreeModel<H> model, PropertyView<H, ?> view) {
+  protected TreeComponent<H> createComponent(EntityTreeModel<H> model, PropertyView<H, ?> view) {
     return new TreeComponent<>(model, view);
   }
 
@@ -173,16 +173,16 @@ TreeSelectionListener, FocusListener {
     tree_.clearSelection();
   }
 
-  public void showAll(Collection<H> bosToShow) {
-    for (H item : bosToShow) {
-      final Object[]  path  = model_.getPathAsObjectArray(item);
-
-      if (path.length > 1) {
-        tree_.expandPath(new TreePath(path).getParentPath());
-      }
-    }
-    tree_.clearSelection();
-  }
+//  public void showAll(Collection<H> bosToShow) {
+//    for (H item : bosToShow) {
+//      final Object[]  path  = model_.getPathAsObjectArray(item);
+//
+//      if (path.length > 1) {
+//        tree_.expandPath(new TreePath(path).getParentPath());
+//      }
+//    }
+//    tree_.clearSelection();
+//  }
 
   /** @return the JTable component wrapped by a JScrollpane
    * @see com.bensler.flob.gui.EntityComponent#getComponent()
@@ -230,20 +230,20 @@ TreeSelectionListener, FocusListener {
     return new ArrayList<>(selection_);
   }
 
-  public void addData(H entity, boolean select) {
-    model_.addNode(entity);
-    if (select) {
-      select(entity);
-    }
-  }
-
-  public void updateData(H hierarchical) {
-    model_.updateNode(hierarchical);
-  }
-
-  public void removeData(H ref) {
-    model_.removeNode(ref);
-  }
+//  public void addData(H entity, boolean select) {
+//    model_.addNode(entity);
+//    if (select) {
+//      select(entity);
+//    }
+//  }
+//
+//  public void updateData(H hierarchical) {
+//    model_.updateNode(hierarchical);
+//  }
+//
+//  public void removeData(H ref) {
+//    model_.removeNode(ref);
+//  }
 
   public void setData(Hierarchy<H> hierarchy) {
     model_.setData(hierarchy);
@@ -252,8 +252,8 @@ TreeSelectionListener, FocusListener {
 //    applyState();
   }
 
-  public Set<H> getData() {
-    return new HashSet<>(model_.data_.getMembers());
+  public Hierarchy<H> getData() {
+    return model_.getData();
   }
 
   @Override
@@ -396,25 +396,25 @@ TreeSelectionListener, FocusListener {
     }
   }
 
-  /** making node visible by expanding its parent path */
-  public void makeVisible(H node) {
-    final Object[] path = model_.getPathAsObjectArray(node);
+//  /** making node visible by expanding its parent path */
+//  public void makeVisible(H node) {
+//    final Object[] path = model_.getPathAsObjectArray(node);
+//
+//    if (path.length > 1) {
+//      tree_.expandPath(new TreePath(path).getParentPath());
+//    }
+//  }
 
-    if (path.length > 1) {
-      tree_.expandPath(new TreePath(path).getParentPath());
-    }
-  }
-
-  public TreeState<H> getState() {
-    if (!model_.data_.isEmpty()) {
-      return new TreeState<>(
-        tree_.getExpandedDescendants(new TreePath(model_.getRoot())),
-        getSingleSelection()
-      );
-    } else {
-      return null;
-    }
-  }
+//  public TreeState<H> getState() {
+//    if (!model_.data_.isEmpty()) {
+//      return new TreeState<>(
+//        tree_.getExpandedDescendants(new TreePath(model_.getRoot())),
+//        getSingleSelection()
+//      );
+//    } else {
+//      return null;
+//    }
+//  }
 
   /** repaints the whole tree. Should be called when the SingleView
    * has modified its behavior

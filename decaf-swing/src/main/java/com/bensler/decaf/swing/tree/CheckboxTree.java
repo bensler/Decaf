@@ -18,7 +18,7 @@ public class CheckboxTree<H extends Hierarchical<H>> extends EntityTree<H> {
   }
 
   @Override
-  protected TreeComponent<H> createCompoent(TreeModel<H> model, PropertyView<H, ?> view) {
+  protected TreeComponent<H> createComponent(EntityTreeModel<H> model, PropertyView<H, ?> view) {
     return new CheckboxTreeComponent<>(model, view);
   }
 
