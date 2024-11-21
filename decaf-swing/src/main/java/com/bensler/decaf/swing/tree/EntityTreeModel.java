@@ -23,4 +23,6 @@ public interface EntityTreeModel<H extends Hierarchical<H>> extends TreeModel {
 
   void removeRootChangeListener(RootChangeListener listenerToRemove);
 
+  void addNode(H node);
+
 }

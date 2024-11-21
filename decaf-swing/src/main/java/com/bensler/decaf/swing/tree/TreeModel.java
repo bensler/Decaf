@@ -76,7 +76,8 @@ public class TreeModel <H extends Hierarchical<H>> extends DefaultTreeModel impl
     return (!data_.hasNullRoot());
   }
 
-  void addNode(H node) {
+  @Override
+  public void addNode(H node) {
     final H         newParent     = data_.resolve(node.getParent());
     final boolean   synthRoot     = data_.hasNullRoot();
 
@@ -250,10 +251,12 @@ public class TreeModel <H extends Hierarchical<H>> extends DefaultTreeModel impl
     return data_.hasNullRoot();
   }
 
+  @Override
   public void removeRootChangeListener(RootChangeListener listener) {
     listenerList.remove(RootChangeListener.class, listener);
   }
 
+  @Override
   public void addRootChangeListener(RootChangeListener listener) {
     listenerList.add(RootChangeListener.class, listener);
   }

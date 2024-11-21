@@ -76,10 +76,49 @@ public class NewTreeModel<H extends Hierarchical<H>> implements TreeModel, RootP
     invisibleRoot_ = new SynthRoot<>();
     data_.clear();
     data_.addAll(data.getMembers());
-    fireStructureChanged(new TreeModelEvent(this, (TreePath)null, null, null));
+//    fireStructureChanged(new TreeModelEvent(this, (TreePath)null, null, null));
   //  fireRootChanged();
   //  fireRootMayHaveChanged(hadSynthRoot);
-    fireStructureChanged(new TreeModelEvent(this, new Object[] {getRoot()},  null, null));
+    fireStructureChanged(new TreeModelEvent(this, new TreePath(getRoot()),  null, null));
+  }
+
+  protected List<H> getChildren(Hierarchical<?> parent) {
+    return data_.getChildrenNoCopy((parent == invisibleRoot_) ? null : parent);
+  }
+
+  @Override
+  public void addNode(H node) {
+    final H         newParent     = data_.resolve(node.getParent());
+    final boolean   synthRoot     = data_.hasNullRoot();
+
+    if (data_.contains(node)) {
+      int oldIndex  = getChildren(newParent).indexOf(node);
+
+      data_.removeNode(node);
+      fireNodeRemoved(new TreeModelEvent(
+        this, getPathAsObjectArray(newParent),
+        new int[] {oldIndex}, null
+      ));
+    }
+    data_.add(node);
+    if (node == data_.getRoot()) {
+      fireStructureChanged(node);
+    } else {
+      fireNodeInserted(new TreeModelEvent(
+        this, getPathAsObjectArray(newParent),
+        new int[] {getChildren(newParent).indexOf(node)}, null
+      ));
+    }
+    fireRootMayHaveChanged(synthRoot);
+  }
+
+  Object[] getPathAsObjectArray(H node) {
+    final List<Object> path = new ArrayList<>(data_.getPath(node));
+
+    if (data_.hasNullRoot()) {
+      path.add(0, invisibleRoot_);
+    }
+    return path.toArray(new Object[path.size()]);
   }
 
   @Override
@@ -97,20 +136,24 @@ public class NewTreeModel<H extends Hierarchical<H>> implements TreeModel, RootP
     return new TreePath(path.toArray());
   }
 
-  private void fireNodesChanged(TreeModelEvent evt) {
+  private void fireNodeChanged(TreeModelEvent evt) {
     fireTreeModelEvent(listener -> listener.treeNodesChanged(evt));
   }
 
-  private void fireNodesInserted(TreeModelEvent evt) {
+  private void fireNodeInserted(TreeModelEvent evt) {
     fireTreeModelEvent(listener -> listener.treeNodesInserted(evt));
   }
 
-  private void fireNodesRemoved(TreeModelEvent evt) {
+  private void fireNodeRemoved(TreeModelEvent evt) {
     fireTreeModelEvent(listener -> listener.treeNodesRemoved(evt));
   }
 
   private void fireStructureChanged(TreeModelEvent evt) {
     fireTreeModelEvent(listener -> listener.treeStructureChanged(evt));
+  }
+
+  private void fireStructureChanged(H node) {
+    fireStructureChanged(new TreeModelEvent(this, getPathAsObjectArray(node), null, null));
   }
 
   @Override
@@ -129,12 +172,14 @@ public class NewTreeModel<H extends Hierarchical<H>> implements TreeModel, RootP
     modelListeners_.remove(listenerToRemove);
   }
 
+  @Override
   public void addRootChangeListener(RootChangeListener listenerToAdd) {
     if (!rootChangeListeners_.contains(listenerToAdd)) {
       rootChangeListeners_.add(listenerToAdd);
     }
   }
 
+  @Override
   public void removeRootChangeListener(RootChangeListener listenerToRemove) {
     rootChangeListeners_.remove(listenerToRemove);
   }

@@ -230,13 +230,13 @@ TreeSelectionListener, FocusListener {
     return new ArrayList<>(selection_);
   }
 
-//  public void addData(H entity, boolean select) {
-//    model_.addNode(entity);
-//    if (select) {
-//      select(entity);
-//    }
-//  }
-//
+  public void addData(H entity, boolean select) {
+    model_.addNode(entity);
+    if (select) {
+      select(entity);
+    }
+  }
+
 //  public void updateData(H hierarchical) {
 //    model_.updateNode(hierarchical);
 //  }
