@@ -10,16 +10,16 @@ import java.util.Set;
 
 public interface ChildrenCollectionMaintainer<H extends Hierarchical<?>, C extends Collection<H>> {
 
-  C createCollection(Collection<H> collectionContents);
+  C createCopy(Collection<H> collectionContents);
 
   C createEmptyCollection();
 
-  void addChild(H child, Collection<H> target);
+  C addChild(H child, C target);
 
   class DefaultCollectionMaintainer<H extends Hierarchical<?>> implements ChildrenCollectionMaintainer<H, Set<H>> {
 
     @Override
-    public Set<H> createCollection(Collection<H> collectionContents) {
+    public Set<H> createCopy(Collection<H> collectionContents) {
       return new HashSet<>(collectionContents);
     }
 
@@ -29,8 +29,12 @@ public interface ChildrenCollectionMaintainer<H extends Hierarchical<?>, C exten
     }
 
     @Override
-    public void addChild(H child, Collection<H> target) {
+    public Set<H> addChild(H child, Set<H> target) {
+      if (target.isEmpty()) {
+        target = new HashSet<>();
+      }
       target.add(child);
+      return target;
     }
 
   }
@@ -38,7 +42,7 @@ public interface ChildrenCollectionMaintainer<H extends Hierarchical<?>, C exten
   abstract class AbstractListMaintainer<H extends Hierarchical<?>> implements ChildrenCollectionMaintainer<H, List<H>> {
 
     @Override
-    public List<H> createCollection(Collection<H> collectionContents) {
+    public List<H> createCopy(Collection<H> collectionContents) {
       return new ArrayList<>(collectionContents);
     }
 
@@ -58,19 +62,21 @@ public interface ChildrenCollectionMaintainer<H extends Hierarchical<?>, C exten
     }
 
     @Override
-    public List<H> createCollection(Collection<H> collectionContents) {
-      final List<H> createdCollection = super.createCollection(collectionContents);
+    public List<H> createCopy(Collection<H> collectionContents) {
+      final List<H> createdCollection = super.createCopy(collectionContents);
 
       Collections.sort(createdCollection, comparator_);
       return createdCollection;
     }
 
     @Override
-    public void addChild(H child, Collection<H> target) {
-      final List<H> list = (List<H>) target;
-
-      list.add(child);
-      Collections.sort(list, comparator_);
+    public List<H> addChild(H child, List<H> target) {
+      if (target.isEmpty()) {
+        target = new ArrayList<>(1);
+      }
+      target.add(child);
+      Collections.sort(target, comparator_);
+      return target;
     }
 
   }

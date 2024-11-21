@@ -6,17 +6,16 @@ import java.util.List;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
 
-import com.bensler.decaf.swing.tree.RootChangeListener.RootProvider;
 import com.bensler.decaf.util.tree.Hierarchical;
 import com.bensler.decaf.util.tree.Hierarchy;
 
 /**
  */
-public class TreeModel <H extends Hierarchical<H>> extends DefaultTreeModel implements RootProvider, EntityTreeModel<H> {
+public class TreeModel <H extends Hierarchical<H>> extends DefaultTreeModel implements EntityTreeModel<H> {
 
-  protected final         ListHierarchy<H>            data_;
+  protected final         ListHierarchy<H>   data_;
 
-  private SynthRoot<H> invisibleRoot_;
+  private   final         SynthRoot<H>       invisibleRoot_;
 
   TreeModel(Comparator<? super H> comparator) {
     super(null, false);
@@ -26,9 +25,7 @@ public class TreeModel <H extends Hierarchical<H>> extends DefaultTreeModel impl
 
   @Override
   public Hierarchical<H> getRoot() {
-    final H dataRoot = data_.getRoot();
-
-    return ((dataRoot == null) ? invisibleRoot_ : dataRoot);
+    return invisibleRoot_;
   }
 
   @Override
@@ -63,7 +60,6 @@ public class TreeModel <H extends Hierarchical<H>> extends DefaultTreeModel impl
   public void setData(Hierarchy<H> data) {
 //    final boolean hadSynthRoot  = data_.hasSyntheticRoot();
 
-    invisibleRoot_ = new SynthRoot<>();
     data_.clear();
     data_.addAll(data.getMembers());
     fireTreeStructureChanged(this, null,  null, null);
@@ -72,14 +68,9 @@ public class TreeModel <H extends Hierarchical<H>> extends DefaultTreeModel impl
     fireTreeStructureChanged(this, new Object[] {getRoot()},  null, null);
   }
 
-  public boolean showRoot() {
-    return (!data_.hasNullRoot());
-  }
-
   @Override
   public void addNode(H node) {
     final H         newParent     = data_.resolve(node.getParent());
-    final boolean   synthRoot     = data_.hasNullRoot();
 
     if (data_.contains(node)) {
       int oldIndex  = getChildren(newParent).indexOf(node);
@@ -91,23 +82,14 @@ public class TreeModel <H extends Hierarchical<H>> extends DefaultTreeModel impl
       );
     }
     data_.add(node);
-    if (node == data_.getRoot()) {
-      fireStructureChanged(node);
-    } else {
+//    if (node == data_.getRoot()) {
+//      fireStructureChanged(node);
+//    } else {
       fireTreeNodesInserted(
         this, getPathAsObjectArray(newParent),
         new int[] {getChildren(newParent).indexOf(node)}, null
       );
-    }
-    fireRootMayHaveChanged(synthRoot);
-  }
-
-  private void fireRootMayHaveChanged(boolean hadSynthRoot) {
-    if (hadSynthRoot ^ data_.hasNullRoot()) {
-      for (RootChangeListener listener : listenerList.getListeners(RootChangeListener.class)) {
-        listener.rootChanged(this);
-      }
-    }
+//    }
   }
 
   /** Updates a node in this TreeModel. If the TreeModel does not already contain an equal node it is
@@ -195,9 +177,7 @@ public class TreeModel <H extends Hierarchical<H>> extends DefaultTreeModel impl
   public TreePath getTreePath(H node) {
     final List<H> path = data_.getPath(data_.resolve(node));
 
-    if (hasSyntheticRoot()) {
-      path.add(0, (H)invisibleRoot_);
-    }
+    path.add(0, (H)invisibleRoot_);
     return new TreePath(path.toArray());
   }
 
@@ -239,26 +219,8 @@ public class TreeModel <H extends Hierarchical<H>> extends DefaultTreeModel impl
   }
 
   public void clear() {
-    final boolean hadSynthRoot  = data_.hasNullRoot();
-
     data_.clear();
     fireRootChanged();
-    fireRootMayHaveChanged(hadSynthRoot);
-  }
-
-  @Override
-  public boolean hasSyntheticRoot() {
-    return data_.hasNullRoot();
-  }
-
-  @Override
-  public void removeRootChangeListener(RootChangeListener listener) {
-    listenerList.remove(RootChangeListener.class, listener);
-  }
-
-  @Override
-  public void addRootChangeListener(RootChangeListener listener) {
-    listenerList.add(RootChangeListener.class, listener);
   }
 
   public H resolve(Object hierarchical) {

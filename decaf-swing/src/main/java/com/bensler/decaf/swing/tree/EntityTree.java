@@ -247,7 +247,7 @@ TreeSelectionListener, FocusListener {
 
   public void setData(Hierarchy<H> hierarchy) {
     model_.setData(hierarchy);
-    tree_.setRootVisible(!hierarchy.hasNullRoot());
+//    tree_.setRootVisible(!hierarchy.hasNullRoot());
     // try to expand the tree in the same manner as before.
 //    applyState();
   }

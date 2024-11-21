@@ -10,20 +10,17 @@ import javax.swing.event.TreeModelListener;
 import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
 
-import com.bensler.decaf.swing.tree.RootChangeListener.RootProvider;
 import com.bensler.decaf.util.tree.Hierarchical;
 import com.bensler.decaf.util.tree.Hierarchy;
 
-public class NewTreeModel<H extends Hierarchical<H>> implements TreeModel, RootProvider, EntityTreeModel<H> {
+public class NewTreeModel<H extends Hierarchical<H>> implements TreeModel, EntityTreeModel<H> {
 
-  private final List<RootChangeListener> rootChangeListeners_;
   private final List<TreeModelListener> modelListeners_;
 
   private final ListHierarchy<H> data_;
-  private SynthRoot<H> invisibleRoot_;
+  private final SynthRoot<H> invisibleRoot_;
 
   public NewTreeModel(Comparator<? super H> comparator) {
-    rootChangeListeners_ = new ArrayList<>(1);
     modelListeners_ = new ArrayList<>();
     data_ = new ListHierarchy<H>(comparator);
     invisibleRoot_ = new SynthRoot<>();
@@ -31,7 +28,7 @@ public class NewTreeModel<H extends Hierarchical<H>> implements TreeModel, RootP
 
   @Override
   public Hierarchical<H> getRoot() {
-    return data_.hasNullRoot() ? invisibleRoot_ : data_.getRoot();
+    return invisibleRoot_;
   }
 
   @Override
@@ -60,11 +57,6 @@ public class NewTreeModel<H extends Hierarchical<H>> implements TreeModel, RootP
   }
 
   @Override
-  public boolean hasSyntheticRoot() {
-    return data_.hasNullRoot();
-  }
-
-  @Override
   public boolean contains(H entity) {
     return data_.contains(entity);
   }
@@ -73,7 +65,6 @@ public class NewTreeModel<H extends Hierarchical<H>> implements TreeModel, RootP
   public void setData(Hierarchy<H> data) {
 //  final boolean hadSynthRoot  = data_.hasSyntheticRoot();
 
-    invisibleRoot_ = new SynthRoot<>();
     data_.clear();
     data_.addAll(data.getMembers());
 //    fireStructureChanged(new TreeModelEvent(this, (TreePath)null, null, null));
@@ -89,7 +80,6 @@ public class NewTreeModel<H extends Hierarchical<H>> implements TreeModel, RootP
   @Override
   public void addNode(H node) {
     final H         newParent     = data_.resolve(node.getParent());
-    final boolean   synthRoot     = data_.hasNullRoot();
 
     if (data_.contains(node)) {
       int oldIndex  = getChildren(newParent).indexOf(node);
@@ -101,23 +91,20 @@ public class NewTreeModel<H extends Hierarchical<H>> implements TreeModel, RootP
       ));
     }
     data_.add(node);
-    if (node == data_.getRoot()) {
-      fireStructureChanged(node);
-    } else {
+//    if (node == data_.getRoot()) {
+//      fireStructureChanged(node);
+//    } else {
       fireNodeInserted(new TreeModelEvent(
         this, getPathAsObjectArray(newParent),
         new int[] {getChildren(newParent).indexOf(node)}, null
       ));
-    }
-    fireRootMayHaveChanged(synthRoot);
+//    }
   }
 
   Object[] getPathAsObjectArray(H node) {
     final List<Object> path = new ArrayList<>(data_.getPath(node));
 
-    if (data_.hasNullRoot()) {
-      path.add(0, invisibleRoot_);
-    }
+    path.add(0, invisibleRoot_);
     return path.toArray(new Object[path.size()]);
   }
 
@@ -130,9 +117,7 @@ public class NewTreeModel<H extends Hierarchical<H>> implements TreeModel, RootP
   public TreePath getTreePath(H node) {
     final List<H> path = data_.getPath(data_.resolve(node));
 
-    if (hasSyntheticRoot()) {
-      path.add(0, (H)invisibleRoot_);
-    }
+    path.add(0, (H)invisibleRoot_);
     return new TreePath(path.toArray());
   }
 
@@ -170,24 +155,6 @@ public class NewTreeModel<H extends Hierarchical<H>> implements TreeModel, RootP
   @Override
   public void removeTreeModelListener(TreeModelListener listenerToRemove) {
     modelListeners_.remove(listenerToRemove);
-  }
-
-  @Override
-  public void addRootChangeListener(RootChangeListener listenerToAdd) {
-    if (!rootChangeListeners_.contains(listenerToAdd)) {
-      rootChangeListeners_.add(listenerToAdd);
-    }
-  }
-
-  @Override
-  public void removeRootChangeListener(RootChangeListener listenerToRemove) {
-    rootChangeListeners_.remove(listenerToRemove);
-  }
-
-  private void fireRootMayHaveChanged(boolean hadSynthRoot) {
-    if (hadSynthRoot ^ data_.hasNullRoot()) {
-      rootChangeListeners_.forEach(listener -> listener.rootChanged(this));
-    }
   }
 
 }

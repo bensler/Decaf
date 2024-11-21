@@ -5,13 +5,12 @@ import java.awt.Dimension;
 
 import javax.swing.JTree;
 import javax.swing.UIManager;
-import javax.swing.tree.TreeModel;
 
 import com.bensler.decaf.swing.awt.ColorHelper;
 import com.bensler.decaf.swing.view.PropertyView;
 import com.bensler.decaf.util.tree.Hierarchical;
 
-public class TreeComponent<H extends Hierarchical<H>> extends JTree implements RootChangeListener {
+public class TreeComponent<H extends Hierarchical<H>> extends JTree {
 
   private   final         Color                   backgroundSelectionColor_;
   private   final         Color                   backgroundSelectionColorUnfocused_;
@@ -58,22 +57,6 @@ public class TreeComponent<H extends Hierarchical<H>> extends JTree implements R
       size.width = Math.round(size.height * widthFactor_);
     }
     return size;
-  }
-
-  @Override
-  public void setModel(TreeModel newModel) {
-    if (treeModel != null) {
-      ((EntityTreeModel<?>)treeModel).removeRootChangeListener(this);
-    }
-    super.setModel(newModel);
-    ((EntityTreeModel<?>)treeModel).addRootChangeListener(this);
-  }
-
-  @Override
-  public void rootChanged(RootProvider source) {
-    if (source == treeModel) {
-      setRootVisible(!source.hasSyntheticRoot());
-    }
   }
 
   @SuppressWarnings("unchecked")

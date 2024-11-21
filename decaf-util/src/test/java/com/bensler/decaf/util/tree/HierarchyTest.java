@@ -32,18 +32,18 @@ class HierarchyTest {
 
     assertTrue(uut.isEmpty(), "Freshly created Hierarchy is not empty!");
     uut.add(alicesHome);
-    assertEquals(alicesHome, uut.getRoot(), "'alice' should be root");
+    assertEquals(alicesHome, uut.getSingleRoot(), "'alice' should be root");
     assertTrue(uut.getChildren(alicesHome).isEmpty(), "'alice' should be a leaf node");
     uut.add(bobsHome);
-    assertTrue(uut.hasNullRoot(), "syntheticRoot should be root");
+    assertTrue(!uut.hasSingleRoot(), "syntheticRoot should be root");
     uut.add(home);
-    assertEquals(home, uut.getRoot(), "'home' should be root");
+    assertEquals(home, uut.getSingleRoot(), "'home' should be root");
     assertEquals(Set.of(alicesHome, bobsHome), uut.getChildren(home), "'alice' and 'bob' should be under 'home'");
     uut.add(root);
     assertEquals(List.of(root, home, alicesHome), uut.getPath(alicesHome), "'alice's path should be [/, home, alice]");
-    assertEquals(Set.of(bobsHome,alicesHome), uut.getLeafNodes(), "leaf nodes should be [alice, bob]");
+    assertEquals(Set.of(bobsHome, alicesHome), uut.getLeafNodes(), "leaf nodes should be [alice, bob]");
     uut.remove(home, false);
-    assertTrue(uut.hasNullRoot(), "syntheticRoot should be root");
+    assertTrue(!uut.hasSingleRoot(), "syntheticRoot should be root");
     Set<Folder> children = uut.getChildren(null);
     assertEquals(3, children.size(), "there should be [/, alice, bob] under synth root");
     assertEquals(Set.of(root, bobsHome, alicesHome), children, "there should be [/, alice, bob] under synth root");

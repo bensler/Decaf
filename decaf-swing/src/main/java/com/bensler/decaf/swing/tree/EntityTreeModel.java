@@ -19,10 +19,6 @@ public interface EntityTreeModel<H extends Hierarchical<H>> extends TreeModel {
 
   TreePath getTreePath(H node);
 
-  void addRootChangeListener(RootChangeListener listenerToAdd);
-
-  void removeRootChangeListener(RootChangeListener listenerToRemove);
-
   void addNode(H node);
 
 }
