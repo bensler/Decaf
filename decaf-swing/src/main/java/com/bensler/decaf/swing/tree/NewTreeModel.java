@@ -63,13 +63,8 @@ public class NewTreeModel<H extends Hierarchical<H>> implements TreeModel, Entit
 
   @Override
   public void setData(Hierarchy<H> data) {
-//  final boolean hadSynthRoot  = data_.hasSyntheticRoot();
-
     data_.clear();
     data_.addAll(data.getMembers());
-//    fireStructureChanged(new TreeModelEvent(this, (TreePath)null, null, null));
-  //  fireRootChanged();
-  //  fireRootMayHaveChanged(hadSynthRoot);
     fireStructureChanged(new TreeModelEvent(this, new TreePath(getRoot()),  null, null));
   }
 
@@ -79,7 +74,7 @@ public class NewTreeModel<H extends Hierarchical<H>> implements TreeModel, Entit
 
   @Override
   public void addNode(H node) {
-    final H         newParent     = data_.resolve(node.getParent());
+    final H newParent = data_.resolve(node.getParent());
 
     if (data_.contains(node)) {
       int oldIndex  = getChildren(newParent).indexOf(node);
@@ -91,14 +86,10 @@ public class NewTreeModel<H extends Hierarchical<H>> implements TreeModel, Entit
       ));
     }
     data_.add(node);
-//    if (node == data_.getRoot()) {
-//      fireStructureChanged(node);
-//    } else {
-      fireNodeInserted(new TreeModelEvent(
-        this, getPathAsObjectArray(newParent),
-        new int[] {getChildren(newParent).indexOf(node)}, null
-      ));
-//    }
+    fireNodeInserted(new TreeModelEvent(
+      this, getPathAsObjectArray(newParent),
+      new int[] {getChildren(newParent).indexOf(node)}, null
+    ));
   }
 
   Object[] getPathAsObjectArray(H node) {
@@ -121,7 +112,10 @@ public class NewTreeModel<H extends Hierarchical<H>> implements TreeModel, Entit
     return new TreePath(path.toArray());
   }
 
-  private void fireNodeChanged(TreeModelEvent evt) {
+  @Override
+  public void fireNodeChanged(H node) {
+    TreeModelEvent evt = new TreeModelEvent(this, getPathAsObjectArray(node));
+
     fireTreeModelEvent(listener -> listener.treeNodesChanged(evt));
   }
 

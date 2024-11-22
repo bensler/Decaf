@@ -21,4 +21,6 @@ public interface EntityTreeModel<H extends Hierarchical<H>> extends TreeModel {
 
   void addNode(H node);
 
+  void fireNodeChanged(H node);
+
 }

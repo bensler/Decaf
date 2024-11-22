@@ -3,6 +3,7 @@ package com.bensler.decaf.swing.tree;
 import static com.bensler.decaf.swing.view.SelectionMode.MULTIPLE_INTERVAL;
 
 import java.util.Collection;
+import java.util.Set;
 
 import com.bensler.decaf.swing.view.PropertyView;
 import com.bensler.decaf.util.tree.Hierarchical;
@@ -25,4 +26,19 @@ public class CheckboxTree<H extends Hierarchical<H>> extends EntityTree<H> {
   public void setCheckedNodes(Collection<? extends H> nodesToBeChecked) {
     ((CheckboxTreeComponent<H>)tree_).setCheckedNodes(nodesToBeChecked.stream().filter(this::contains).toList());
   }
+
+  public Set<H> getCheckedNodes() {
+    return ((CheckboxTreeComponent<H>)tree_).getCheckedNodes();
+  }
+
+  public void addCheckedListener(CheckedListener<H> listener) {
+    ((CheckboxTreeComponent<H>)tree_).addCheckedListener(listener);
+  }
+
+  public interface CheckedListener<H extends Hierarchical<H>> {
+
+    void nodesChecked(Set<H> checkedNodes);
+
+  }
+
 }

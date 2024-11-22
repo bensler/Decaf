@@ -18,7 +18,7 @@ class EntityTreeTest {
 
   @Test
   void interactive() throws Exception {
-    final SampleTreeDialog app = new SampleTreeDialog(SampleTreeDialog.createFolderData());
+    final SampleTreeDialog app = new SampleTreeDialog();
 
     app.dialog_.setLocation(bender_.getLargestScreensOrigin());
     app.dialog_.setVisible(true);

@@ -1,5 +1,7 @@
 package com.bensler.decaf.swing.tree;
 
+import static java.util.function.Predicate.not;
+
 import java.awt.Component;
 import java.awt.Font;
 import java.awt.Rectangle;
@@ -8,6 +10,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -16,15 +19,18 @@ import javax.swing.JTree;
 import javax.swing.tree.TreeCellRenderer;
 import javax.swing.tree.TreePath;
 
+import com.bensler.decaf.swing.tree.CheckboxTree.CheckedListener;
 import com.bensler.decaf.swing.view.PropertyView;
 import com.bensler.decaf.util.tree.Hierarchical;
 
 public class CheckboxTreeComponent<H extends Hierarchical<H>> extends TreeComponent<H> {
 
   private final Set<H> checkedNodes_;
+  private final Set<CheckedListener<H>> listeners_;
 
   public CheckboxTreeComponent(EntityTreeModel<H> newModel, PropertyView<H, ?> view) {
     super(newModel, view);
+    listeners_ = new HashSet<>();
     checkedNodes_ = new HashSet<>();
     setCellRenderer(new CheckboxNodeRenderer(view));
     addKeyListener(new KeyAdapter() {
@@ -33,17 +39,18 @@ public class CheckboxTreeComponent<H extends Hierarchical<H>> extends TreeCompon
         final TreePath[] paths = getSelectionPaths();
 
         if ((paths != null) && (e.getKeyChar() == ' ')) {
-          final List<?> nodes = Arrays.stream(paths).map(path -> path.getLastPathComponent()).toList();
+          final List<H> nodes = Arrays.stream(paths).map(path -> (H)path.getLastPathComponent()).toList();
+          alterCheckedNodes(() -> {
+            if (checkedNodes_.containsAll(nodes)) {
+              checkedNodes_.removeAll(nodes);
+              nodes.forEach(model_::fireNodeChanged);
+            } else {
+              final List<H> toCheck = nodes.stream().filter(not(checkedNodes_::contains)).toList();
 
-//          if (checkedNodes_.containsAll(nodes)) { TODO
-//            checkedNodes_.removeAll(nodes);
-//            nodes.forEach(model_::fireNodeChanged);
-//          } else {
-//            final List<H> toCheck = nodes.stream().filter(not(checkedNodes_::contains)).toList();
-//
-//            checkedNodes_.addAll(toCheck);
-//            toCheck.forEach(model_::fireNodeChanged);
-//          }
+              checkedNodes_.addAll(toCheck);
+              toCheck.forEach(model_::fireNodeChanged);
+            }
+          });
         }
       }
     });
@@ -65,12 +72,14 @@ public class CheckboxTreeComponent<H extends Hierarchical<H>> extends TreeCompon
 
           rendererComp.setBounds(bounds);
           if (rendererComp.checkboxHit(e.getX(), e.getY())) {
-            if (checkedNodes_.contains(node)) {
-              checkedNodes_.remove(node);
-            } else {
-              checkedNodes_.add(node);
-            }
-//            model_.fireNodeChanged(node); TODO
+            alterCheckedNodes(() -> {
+              if (checkedNodes_.contains(node)) {
+                checkedNodes_.remove(node);
+              } else {
+                checkedNodes_.add(node);
+              }
+            });
+            model_.fireNodeChanged(node);
           };
         }
       }
@@ -101,10 +110,31 @@ public class CheckboxTreeComponent<H extends Hierarchical<H>> extends TreeCompon
 
   }
 
-  void setCheckedNodes(List<? extends H> toBeChecked) {
+  void setCheckedNodes(Collection<? extends H> toBeChecked) {
     // TODO test if already checked, fire events
     checkedNodes_.clear();
     checkedNodes_.addAll(toBeChecked);
+  }
+
+  Set<H> getCheckedNodes() {
+    return Set.copyOf(checkedNodes_);
+  }
+
+  private void alterCheckedNodes(Runnable runnable) {
+    final Set<H> oldState = Set.copyOf(checkedNodes_);
+
+    runnable.run();
+    if (!checkedNodes_.equals(oldState)) {
+      listeners_.forEach(listener -> {
+        final Set<H> copyOfCheckedNodes = Set.copyOf(checkedNodes_);
+
+        listener.nodesChecked(copyOfCheckedNodes);
+      });
+    }
+  }
+
+  void addCheckedListener(CheckedListener<H> listener) {
+    listeners_.add(listener);
   }
 
 }
