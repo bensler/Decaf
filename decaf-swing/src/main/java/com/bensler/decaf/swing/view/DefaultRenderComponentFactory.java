@@ -21,9 +21,7 @@ public class DefaultRenderComponentFactory implements RenderComponentFactory {
   }
 
   @Override
-  public TreeRenderComponent getTreeComponent() {
-    // TODO shared single treeComp_ did not work with more than one tree visible at once
-    // but avoid creating new components all the time as it is atm ...
+  public TreeRenderComponent createTreeComponent() {
     return new DefaultTreeCellRenderComponent();
   }
 

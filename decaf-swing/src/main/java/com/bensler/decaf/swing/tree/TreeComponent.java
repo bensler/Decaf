@@ -33,7 +33,7 @@ public class TreeComponent<H extends Hierarchical<H>> extends JTree {
     model_ = model;
     widthFactor_ = -1;
     setRootVisible(false);
-    setCellRenderer(view);
+    setCellRenderer(view.createTreeCellRenderer());
   }
 
   public Color getBackgroundSelectionColor() {

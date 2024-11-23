@@ -7,6 +7,7 @@ import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JTable;
 import javax.swing.JTree;
+import javax.swing.tree.TreeCellRenderer;
 
 import com.bensler.decaf.util.Named;
 import com.bensler.decaf.util.cmp.CollatorComparator;
@@ -75,28 +76,31 @@ public class PropertyViewImpl<E, P> extends Object implements PropertyView<E, P>
     compFactory_ = componentFactory;
     nullPolicy_ = new DefaultNullPolicy<>();
   }
-//
-//  public PropertyViewImpl(String propertyName, PropertyView propertyView) {
-//    this(propertyView.getRenderer(), new QueueGetter(propertyName, propertyView.getGetter()), propertyView.getRenderComponentFactory());
-//  }
-//
-//  public PropertyViewImpl(PropertyGetter getter, PropertyView propertyView) {
-//    this(propertyView.getRenderer(), new QueueGetter(getter, propertyView.getGetter()), propertyView.getRenderComponentFactory());
-//  }
 
-  @SuppressWarnings("unchecked")
   @Override
-  public Component getTreeCellRendererComponent(
-    JTree tree, Object value, boolean selected,
-    boolean expanded, boolean leaf, int row, boolean hasFocus
-  ) {
-    final TreeRenderComponent   treeComponent = compFactory_.getTreeComponent();
-    final JLabel                label;
+  public TreeCellRenderer createTreeCellRenderer() {
+    return new PropertyTreeCellRenderer();
+  }
 
-    treeComponent.prepareForTree(tree, selected, expanded, leaf, row, hasFocus);
-    label = treeComponent.getComponent();
-    nullPolicy_.render((E)value, label, renderer_, getter_);
-    return label;
+  class PropertyTreeCellRenderer implements TreeCellRenderer {
+
+    private final TreeRenderComponent treeRenderComponent_;
+
+    PropertyTreeCellRenderer() {
+      treeRenderComponent_ = compFactory_.createTreeComponent();
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public Component getTreeCellRendererComponent(
+      JTree tree, Object value, boolean selected,
+      boolean expanded, boolean leaf, int row, boolean hasFocus
+    ) {
+      final JLabel label = treeRenderComponent_.prepareForTree(tree, selected, expanded, leaf, row, hasFocus);
+
+      nullPolicy_.render((E)value, label, renderer_, getter_);
+      return label;
+    }
   }
 
   @Override

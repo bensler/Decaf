@@ -17,7 +17,6 @@ import javax.swing.JScrollPane;
 import javax.swing.UIManager;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
-import javax.swing.tree.TreeCellRenderer;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 
@@ -162,10 +161,6 @@ TreeSelectionListener, FocusListener {
       }
       selectionMode_ = mode;
     }
-  }
-
-  public void setCellRenderer(TreeCellRenderer renderer) {
-    tree_.setCellRenderer(renderer);
   }
 
   @Override

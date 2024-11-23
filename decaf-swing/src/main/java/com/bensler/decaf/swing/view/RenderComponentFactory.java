@@ -5,7 +5,7 @@ public interface RenderComponentFactory {
 
   public    final static  RenderComponentFactory    DEFAULT_INSTANCE = new DefaultRenderComponentFactory();
 
-  public TreeRenderComponent getTreeComponent();
+  public TreeRenderComponent createTreeComponent();
 
   public RenderComponent getListTableComponent();
 

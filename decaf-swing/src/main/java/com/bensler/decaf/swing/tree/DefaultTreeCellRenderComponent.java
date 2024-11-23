@@ -4,7 +4,6 @@ import java.awt.Color;
 import java.awt.Graphics;
 
 import javax.swing.Icon;
-import javax.swing.JLabel;
 import javax.swing.JTree;
 import javax.swing.UIManager;
 import javax.swing.border.EmptyBorder;
@@ -23,11 +22,6 @@ public class DefaultTreeCellRenderComponent implements TreeRenderComponent {
   private   final         Color         borderSelectionColor_;
   /** Is the value currently selected. */
   protected               boolean       selected_;
-
-  @Override
-  public JLabel getComponent() {
-    return component_;
-  }
 
   public DefaultTreeCellRenderComponent() {
     final Object drawsFocusBorderAroundIcon = UIManager.get("Tree.drawsFocusBorderAroundIcon");
@@ -70,7 +64,7 @@ public class DefaultTreeCellRenderComponent implements TreeRenderComponent {
   }
 
   @Override
-  public void prepareForTree(
+  public RendererLabel prepareForTree(
     JTree aTree, boolean selected, boolean expanded,
     boolean leaf, int row, boolean hasFocus
   ) {
@@ -94,6 +88,7 @@ public class DefaultTreeCellRenderComponent implements TreeRenderComponent {
     } else {
       component_.setBackground(tree.getBackground());
     }
+    return component_;
   }
 
 }

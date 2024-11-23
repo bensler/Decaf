@@ -32,7 +32,7 @@ public class CheckboxTreeComponent<H extends Hierarchical<H>> extends TreeCompon
     super(newModel, view);
     listeners_ = new HashSet<>();
     checkedNodes_ = new HashSet<>();
-    setCellRenderer(new CheckboxNodeRenderer(view));
+    setCellRenderer(new CheckboxNodeRenderer(view.createTreeCellRenderer()));
     addKeyListener(new KeyAdapter() {
       @Override
       public void keyTyped(KeyEvent e) {
