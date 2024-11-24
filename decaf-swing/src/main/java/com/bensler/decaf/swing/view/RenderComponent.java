@@ -6,11 +6,9 @@ import javax.swing.JTable;
 
 public interface RenderComponent {
 
-  public JLabel getComponent();
+  JLabel prepareForList(JList<?> list, boolean selected, int index, boolean hasFocus);
 
-  void prepareForList(JList<?> list, boolean selected, int index, boolean hasFocus);
-
-  void prepareForTable(
+  JLabel prepareForTable(
     JTable table, boolean selected, int row, int column, boolean hasFocus
   );
 

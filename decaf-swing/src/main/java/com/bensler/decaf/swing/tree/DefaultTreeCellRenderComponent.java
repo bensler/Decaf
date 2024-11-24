@@ -15,7 +15,7 @@ import com.bensler.decaf.swing.view.TreeRenderComponent;
  */
 public class DefaultTreeCellRenderComponent implements TreeRenderComponent {
 
-  private   final         RendererLabel component_;
+  private   final         RendererLabel compTree_;
   /** True if draws focus border around icon as well. */
   private   final         boolean       drawsFocusBorderAroundIcon_;
   /** Color to use for the focus indicator when the node has focus. */
@@ -28,7 +28,7 @@ public class DefaultTreeCellRenderComponent implements TreeRenderComponent {
 
     borderSelectionColor_ = UIManager.getColor("Tree.selectionBorderColor");
     drawsFocusBorderAroundIcon_ = (drawsFocusBorderAroundIcon != null && ((Boolean)drawsFocusBorderAroundIcon).booleanValue());
-    component_ = new RendererLabel() {
+    compTree_ = new RendererLabel() {
       @Override
       public void paint(Graphics g) {
         final Color   bsColor     = borderSelectionColor_;
@@ -59,8 +59,8 @@ public class DefaultTreeCellRenderComponent implements TreeRenderComponent {
         }
       }
     };
-    component_.setOpaque(false);
-    component_.setBorder(new EmptyBorder(0, 2, 0, 3));
+    compTree_.setOpaque(false);
+    compTree_.setBorder(new EmptyBorder(0, 2, 0, 3));
   }
 
   @Override
@@ -71,24 +71,24 @@ public class DefaultTreeCellRenderComponent implements TreeRenderComponent {
     final TreeComponent<?> tree = (TreeComponent<?>)aTree;
 
     selected_ = selected;
-    component_.setFont(tree.getFont());
-    component_.setForeground(
+    compTree_.setFont(tree.getFont());
+    compTree_.setForeground(
       selected_ ? tree.getForegroundSelectionColor() : tree.getForeground()
     );
     // There needs to be a way to specify disabled icons.
-    component_.setEnabled(tree.isEnabled());
+    compTree_.setEnabled(tree.isEnabled());
 //    if (tree.isEnabled()) {
 //      component_.setIcon(icon_);
 //    } else {
 //      component_.setDisabledIcon(icon_);
 //    }
-    component_.setComponentOrientation(tree.getComponentOrientation());
+    compTree_.setComponentOrientation(tree.getComponentOrientation());
     if (selected_) {
-      component_.setBackground(tree.hasFocus() ? tree.getBackgroundSelectionColor() : tree.getBackgroundSelectionColorUnfocused());
+      compTree_.setBackground(tree.hasFocus() ? tree.getBackgroundSelectionColor() : tree.getBackgroundSelectionColorUnfocused());
     } else {
-      component_.setBackground(tree.getBackground());
+      compTree_.setBackground(tree.getBackground());
     }
-    return component_;
+    return compTree_;
   }
 
 }
