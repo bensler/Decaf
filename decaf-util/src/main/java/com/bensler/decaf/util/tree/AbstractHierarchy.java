@@ -337,7 +337,7 @@ public class AbstractHierarchy<H extends Hierarchical<H>, C extends Collection<H
   }
 
   public boolean isLeaf(final Hierarchical<?> node) {
-    return ((!isEmpty()) && children_.containsKey(node) && (children_.get(node) == null));
+    return children_.get(node).isEmpty();
   }
 
 }
