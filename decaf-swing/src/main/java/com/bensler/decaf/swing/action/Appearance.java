@@ -4,6 +4,7 @@ import java.util.Optional;
 import java.util.stream.Stream;
 
 import javax.swing.Icon;
+import javax.swing.JButton;
 import javax.swing.JMenuItem;
 
 /** Encapsulates all information of an action needed to let an user
@@ -45,6 +46,13 @@ public class Appearance {
 
   public JMenuItem createPopupmenuItem() {
     return new JMenuItem(label_.orElse(null), icon_.orElse(null));
+  }
+
+  public JButton createToolbarButton() {
+    final JButton button = new JButton(iconLarge_.orElseGet(icon_::get));
+
+    button.setToolTipText(description_.orElseGet(() -> label_.orElse(null)));
+    return button;
   }
 
 }
