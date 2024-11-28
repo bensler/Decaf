@@ -272,10 +272,7 @@ public class AbstractHierarchy<H extends Hierarchical<H>, C extends Collection<H
     final H member = resolve(startNode);
 
     if (member != null) {
-      try {
-        visitDown_(visitor, member);
-      } catch (CanceledException ce) { /* flow control */ }
-
+      visitDown_(visitor, member);
       return visitor;
     } else {
       throw new IllegalArgumentException(member + " is not part of this hierarchy.");
@@ -293,7 +290,7 @@ public class AbstractHierarchy<H extends Hierarchical<H>, C extends Collection<H
     }
   }
 
-  private void visitDown_(final Visitor<H> visitor, final H member) throws CanceledException {
+  private void visitDown_(final Visitor<H> visitor, final H member) {
     visitor.visit(member);
     for (H child : getChildrenNoCopy(member)) {
       visitDown_(visitor, child);
@@ -314,16 +311,16 @@ public class AbstractHierarchy<H extends Hierarchical<H>, C extends Collection<H
     return ((!child.equals(parent)) && getPath(child).contains(parent));
   }
 
-    /**
-     * @return  a sub tree of a given node.
-     */
-    public List<H> getSubHierarchyMembers(final H subRoot) {
-      if (contains(subRoot)) {
-        return visitDown(new Collector<H>(), subRoot).getList();
-      } else {
-        throw new IllegalArgumentException(subRoot + " is not member of this Hierarchy");
-      }
+  /**
+   * @return  a sub tree of a given node.
+   */
+  public List<H> getSubHierarchyMembers(final H subRoot) {
+    if (contains(subRoot)) {
+      return visitDown(new Collector<H>(), subRoot).getList();
+    } else {
+      throw new IllegalArgumentException(subRoot + " is not member of this Hierarchy");
     }
+  }
 
   /**
    * @return  all leaf nodes of this hierarchy (nodes having no child nodes in <b>this</b> hierarchy).
