@@ -537,9 +537,10 @@ implements ListSelectionListener, FocusListener, EntityComponent<E> {
     table_.setSelectionBackground(color);
   }
 
-  @Override
-  public void setBackground(Color background) {
-  	table_.setBackground(background);
+  public void setBackground(Color color) {
+  	table_.setBackground(color);
+    // in case the tree is smaller than the scrollpane
+    scrollPane_.getViewport().setBackground(color);
   }
 
   public void requestFocus() {
@@ -593,11 +594,6 @@ implements ListSelectionListener, FocusListener, EntityComponent<E> {
     if (!isEmpty()) {
       select(model_.getValueAt(0));
     }
-  }
-
-  @Override
-  public void setToolTipText(String hint) {
-    table_.setToolTipText(hint);
   }
 
   public int getIndexOf(Object object) {

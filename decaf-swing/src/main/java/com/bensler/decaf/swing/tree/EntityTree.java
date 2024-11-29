@@ -120,7 +120,6 @@ TreeSelectionListener, FocusListener {
     tree_.setShowsRootHandles(visible);
   }
 
-  @Override
   public void setBackground(Color color) {
   	tree_.setBackground(color);
   	// in case the tree is smaller than the scrollpane
@@ -421,11 +420,6 @@ TreeSelectionListener, FocusListener {
   @Override
   public boolean isEnabled() {
     return tree_.isEnabled();
-  }
-
-  @Override
-  public void setToolTipText(String hint) {
-    tree_.setToolTipText(hint);
   }
 
   @SuppressWarnings("unchecked")

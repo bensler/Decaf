@@ -1,6 +1,5 @@
 package com.bensler.decaf.swing;
 
-import java.awt.Color;
 import java.util.Collection;
 
 import javax.swing.JComponent;
@@ -22,8 +21,6 @@ public interface EntityComponent<E> extends SelectionHolder<E> {
 
   public void select(E entity);
 
-  public void setBackground(Color c);
-  public void setToolTipText(String hint);
   public boolean isEnabled();
 
   @FunctionalInterface

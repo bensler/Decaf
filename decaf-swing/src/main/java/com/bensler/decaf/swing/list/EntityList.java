@@ -283,16 +283,6 @@ public class EntityList<E> extends Object implements ListSelectionListener, Enti
     list_.setSelectionBackground(color);
   }
 
-  /**
-   * sets the background of this Bo-List
-   * @param c
-   */
-  @Override
-  public void setBackground(Color c) {
-  	// set it for the listComponen
-  	list_.setBackground(c);
-  }
-
   public void requestFocus() {
     list_.requestFocus();
   }
@@ -340,11 +330,6 @@ public class EntityList<E> extends Object implements ListSelectionListener, Enti
     if (!isEmpty()) {
       list_.setSelectedIndex(0);
     }
-  }
-
-  @Override
-  public void setToolTipText(String hint) {
-    list_.setToolTipText(hint);
   }
 
 }
