@@ -1,6 +1,6 @@
 package com.bensler.decaf.swing.tree;
 
-import static com.bensler.decaf.swing.view.SelectionMode.MULTIPLE_INTERVAL;
+import static com.bensler.decaf.swing.selection.SelectionMode.MULTIPLE_INTERVAL;
 
 import java.util.Collection;
 import java.util.Set;

@@ -23,10 +23,10 @@ import javax.swing.tree.TreeSelectionModel;
 import com.bensler.decaf.swing.EntityComponent;
 import com.bensler.decaf.swing.action.ActionGroup;
 import com.bensler.decaf.swing.selection.EntitySelectionListener;
+import com.bensler.decaf.swing.selection.SelectionMode;
 import com.bensler.decaf.swing.selection.EntitySelectionListener.Nop;
 import com.bensler.decaf.swing.view.NoSelectionModel;
 import com.bensler.decaf.swing.view.PropertyView;
-import com.bensler.decaf.swing.view.SelectionMode;
 import com.bensler.decaf.util.tree.Hierarchical;
 import com.bensler.decaf.util.tree.Hierarchy;
 

@@ -28,9 +28,9 @@ import javax.swing.event.ListSelectionListener;
 
 import com.bensler.decaf.swing.EntityComponent;
 import com.bensler.decaf.swing.selection.EntitySelectionListener;
+import com.bensler.decaf.swing.selection.SelectionMode;
 import com.bensler.decaf.swing.selection.EntitySelectionListener.Nop;
 import com.bensler.decaf.swing.view.NoSelectionModel;
-import com.bensler.decaf.swing.view.SelectionMode;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 

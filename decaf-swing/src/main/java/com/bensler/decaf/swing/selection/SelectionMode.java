@@ -1,4 +1,4 @@
-package com.bensler.decaf.swing.view;
+package com.bensler.decaf.swing.selection;
 
 import javax.swing.JList;
 import javax.swing.JTable;
