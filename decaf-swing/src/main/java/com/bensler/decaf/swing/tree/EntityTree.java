@@ -24,7 +24,6 @@ import com.bensler.decaf.swing.EntityComponent;
 import com.bensler.decaf.swing.action.ActionGroup;
 import com.bensler.decaf.swing.selection.EntitySelectionListener;
 import com.bensler.decaf.swing.selection.SelectionMode;
-import com.bensler.decaf.swing.selection.EntitySelectionListener.Nop;
 import com.bensler.decaf.swing.view.NoSelectionModel;
 import com.bensler.decaf.swing.view.PropertyView;
 import com.bensler.decaf.util.tree.Hierarchical;
@@ -262,7 +261,7 @@ TreeSelectionListener, FocusListener {
 
   @Override
   public void setSelectionListener(EntitySelectionListener<H> listener) {
-    selectionListener_ = ((listener != null) ? listener : new Nop<>());
+    selectionListener_ = ((listener != null) ? listener : EntitySelectionListener.getNopInstance());
   }
 
   @Override

@@ -19,7 +19,6 @@ import javax.swing.event.ListSelectionListener;
 import com.bensler.decaf.swing.EntityComponent;
 import com.bensler.decaf.swing.selection.EntitySelectionListener;
 import com.bensler.decaf.swing.selection.SelectionMode;
-import com.bensler.decaf.swing.selection.EntitySelectionListener.Nop;
 import com.bensler.decaf.swing.view.NoSelectionModel;
 import com.bensler.decaf.swing.view.PropertyView;
 
@@ -182,7 +181,7 @@ public class EntityList<E> extends Object implements ListSelectionListener, Enti
 
   @Override
   public void setSelectionListener(EntitySelectionListener<E> listener) {
-    selectionListener_ = ((listener != null) ? listener : new Nop<>());
+    selectionListener_ = ((listener != null) ? listener : EntitySelectionListener.getNopInstance());
   }
 
   @Override

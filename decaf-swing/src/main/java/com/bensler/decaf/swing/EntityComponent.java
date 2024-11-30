@@ -1,7 +1,5 @@
 package com.bensler.decaf.swing;
 
-import java.util.Collection;
-
 import javax.swing.JComponent;
 import javax.swing.JScrollPane;
 
@@ -16,10 +14,6 @@ public interface EntityComponent<E> extends SelectionHolder<E> {
   public JScrollPane getScrollPane();
 
   public boolean contains(E entity);
-
-  public void select(Collection<E> entities);
-
-  public void select(E entity);
 
   public boolean isEnabled();
 

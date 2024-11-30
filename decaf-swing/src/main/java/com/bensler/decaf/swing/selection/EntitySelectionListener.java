@@ -11,11 +11,8 @@ public interface EntitySelectionListener<E> {
 
   public void selectionChanged(EntityComponent<E> source, List<E> selection);
 
-  public static class Nop<E> extends Object implements EntitySelectionListener<E> {
-
-    @Override
-    public void selectionChanged(EntityComponent<E> source, List<E> selection) {}
-
+  public static <E> EntitySelectionListener<E> getNopInstance() {
+    return (source, selection) -> {};
   }
 
   public static class Multiplexer<E> extends Object implements EntitySelectionListener<E> {
