@@ -2,14 +2,12 @@ package com.bensler.decaf.swing.selection;
 
 import java.util.List;
 
-import com.bensler.decaf.swing.EntityComponent;
-
 
 /**
  */
 public interface EntitySelectionListener<E> {
 
-  public void selectionChanged(EntityComponent<E> source, List<E> selection);
+  public void selectionChanged(SelectionHolder<E> source, List<E> selection);
 
   public static <E> EntitySelectionListener<E> getNopInstance() {
     return (source, selection) -> {};
@@ -26,7 +24,7 @@ public interface EntitySelectionListener<E> {
     }
 
     @Override
-    public void selectionChanged(EntityComponent<E> source, List<E> selection) {
+    public void selectionChanged(SelectionHolder<E> source, List<E> selection) {
       delegate1_.selectionChanged(source, selection);
       delegate2_.selectionChanged(source, selection);
     }
