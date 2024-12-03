@@ -26,7 +26,7 @@ public abstract class BasicContentPanel<IN, OUT> extends JPanel implements Conte
   protected abstract void setData(IN inData);
 
   @Override
-  public void setInData(IN inData) {
+  public final void setInData(IN inData) {
     setData(inData_ = inData);
   }
 
