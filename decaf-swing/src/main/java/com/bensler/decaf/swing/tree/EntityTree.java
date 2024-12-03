@@ -3,7 +3,6 @@ package com.bensler.decaf.swing.tree;
 import java.awt.Color;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
-import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -22,6 +21,7 @@ import javax.swing.tree.TreeSelectionModel;
 
 import com.bensler.decaf.swing.EntityComponent;
 import com.bensler.decaf.swing.action.ActionGroup;
+import com.bensler.decaf.swing.action.ContextMenuMouseAdapter;
 import com.bensler.decaf.swing.selection.EntitySelectionListener;
 import com.bensler.decaf.swing.selection.SelectionMode;
 import com.bensler.decaf.swing.view.NoSelectionModel;
@@ -73,20 +73,7 @@ TreeSelectionListener, FocusListener {
     setSelectionMode(SelectionMode.SINGLE);
     setSelectionListener(null);
     contextActions_ = new ActionGroup<>();
-    tree_.addMouseListener(new MouseAdapter() {
-      @Override
-      public void mouseClicked(MouseEvent evt) {
-        triggerContextMenu(evt);
-      }
-      @Override
-      public void mousePressed(MouseEvent evt) {
-        triggerContextMenu(evt);
-      }
-      @Override
-      public void mouseReleased(MouseEvent evt) {
-        triggerContextMenu(evt);
-      }
-    });
+    tree_.addMouseListener(new ContextMenuMouseAdapter(this::triggerContextMenu));
   }
 
   protected TreeComponent<H> createComponent(EntityTreeModel<H> model, PropertyView<H, ?> view) {
@@ -458,12 +445,10 @@ TreeSelectionListener, FocusListener {
   }
 
   void triggerContextMenu(MouseEvent evt) {
-    if (evt.isPopupTrigger()) {
-      final int selRow = tree_.getRowForLocation(evt.getX(), evt.getY());
+    final int selRow = tree_.getRowForLocation(evt.getX(), evt.getY());
 
-      tree_.setSelectionRows((selRow > -1) ? new int[] {selRow} : new int[0]);
-      contextActions_.createContextMenu(this).ifPresent(popup -> popup.show(tree_, evt.getX(), evt.getY()));
-    }
+    tree_.setSelectionRows((selRow > -1) ? new int[] {selRow} : new int[0]);
+    contextActions_.createContextMenu(this).ifPresent(popup -> popup.show(tree_, evt.getX(), evt.getY()));
   }
 
 }
