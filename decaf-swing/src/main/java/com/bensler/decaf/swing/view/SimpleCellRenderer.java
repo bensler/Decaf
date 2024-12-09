@@ -5,6 +5,8 @@ import javax.swing.JLabel;
 
 public class SimpleCellRenderer extends Object implements CellRenderer {
 
+  private static final int TEXT_ICON_GAP = 5;
+
   private   final         Icon      icon_;
 
   public SimpleCellRenderer() {
@@ -12,7 +14,6 @@ public class SimpleCellRenderer extends Object implements CellRenderer {
   }
 
   public SimpleCellRenderer(Icon icon) {
-    super();
     icon_ = icon;
   }
 
@@ -23,7 +24,7 @@ public class SimpleCellRenderer extends Object implements CellRenderer {
     final String text = renderString_(cellValue);
 
     comp.setText(text);
-    return ((text.length() > 0) && (!text.equals(" ")));
+    return !text.trim().isEmpty();
   }
 
   private String renderString_(Object cellValue) {
@@ -36,11 +37,13 @@ public class SimpleCellRenderer extends Object implements CellRenderer {
 
   @Override
   public void render(Object viewable, Object cellValue, JLabel comp) {
+    Icon icon = null;
+
     if (setText(comp, cellValue)) {
-      comp.setIcon(getIcon(viewable, cellValue));
-    } else {
-      comp.setIcon(null);
+      icon = getIcon(viewable, cellValue);
     }
+    comp.setIcon(icon);
+    comp.setIconTextGap((icon != null) ? TEXT_ICON_GAP : 0);
     comp.setHorizontalAlignment(JLabel.LEFT);
   }
 
