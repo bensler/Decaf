@@ -2,6 +2,7 @@ package com.bensler.decaf.swing.awt;
 
 import java.awt.Component;
 import java.awt.Graphics;
+import java.util.Arrays;
 import java.util.LinkedHashMap;
 
 import javax.swing.Icon;
@@ -13,51 +14,51 @@ import javax.swing.Icon;
  */
 public class OverlayIcon extends Object implements Icon {
 
-  private   final         LinkedHashMap<Icon, Alignment2D>   iconAlignmentMap_;
-  private   final         Icon                             baseIcon_;
+  private final LinkedHashMap<Icon, Alignment2D> iconAlignmentMap_;
+  private final Icon baseIcon_;
 
-  private                 int             width_;
-  private                 int             height_;
+  private  int width_;
+  private  int height_;
 
-  public OverlayIcon(Icon baseIcon) {
-    iconAlignmentMap_ = new LinkedHashMap<Icon, Alignment2D>();
-    addIcon(baseIcon_ = baseIcon, Alignment2D.C);
+  public OverlayIcon(Icon baseIcon, Overlay... overlays) {
+    iconAlignmentMap_ = new LinkedHashMap<>();
+    baseIcon_ = baseIcon;
+    clear();
+    Arrays.stream(overlays).forEach(this::addOverlay);
   }
 
-  public void addIcon(Icon icon, Alignment2D alignment) {
-    if (iconAlignmentMap_.containsKey(icon)) {
-      iconAlignmentMap_.remove(icon);
+  public void addOverlay(Overlay overlay) {
+    if (iconAlignmentMap_.containsKey(overlay.icon_)) {
+      iconAlignmentMap_.remove(overlay.icon_);
     }
-    iconAlignmentMap_.put(icon, alignment);
+    iconAlignmentMap_.put(overlay.icon_, overlay.alignment_);
     width_ = -1;
     height_ = -1;
   }
 
   public void clear() {
     iconAlignmentMap_.clear();
-    addIcon(baseIcon_, Alignment2D.C);
+    iconAlignmentMap_.put(baseIcon_, Alignment2D.C);
   }
 
   @Override
   public void paintIcon(Component c, Graphics g, int x, int y) {
-    for (Icon icon : iconAlignmentMap_.keySet()) {
-      final Alignment2D alignment = iconAlignmentMap_.get(icon);
+    iconAlignmentMap_.entrySet().forEach(entry -> {
+      final Icon icon = entry.getKey();
+      final Alignment2D alignment = entry.getValue();
 
       icon.paintIcon(
         c, g,
         (x + alignment.alignHoriz(getIconWidth(), icon.getIconWidth())),
         (y + alignment.alignVert(getIconHeight(), icon.getIconHeight()))
       );
-    }
+    });
   }
 
   @Override
   public int getIconWidth() {
     if (width_ < 0) {
-      width_ = 0;
-      for (Icon icon : iconAlignmentMap_.keySet()) {
-        width_ = Math.max(width_, icon.getIconWidth());
-      }
+      width_ = iconAlignmentMap_.keySet().stream().mapToInt(Icon::getIconWidth).max().orElse(0);
     }
     return width_;
   }
@@ -65,15 +66,12 @@ public class OverlayIcon extends Object implements Icon {
   @Override
   public int getIconHeight() {
     if (height_ < 0) {
-      height_ = 0;
-      for (Icon icon : iconAlignmentMap_.keySet()) {
-        height_ = Math.max(height_, icon.getIconHeight());
-      }
+      height_ = iconAlignmentMap_.keySet().stream().mapToInt(Icon::getIconHeight).max().orElse(0);
     }
     return height_;
   }
 
-  private static enum Alignment {
+  private enum Alignment {
 
     LO(0),
     C (1),
@@ -91,7 +89,19 @@ public class OverlayIcon extends Object implements Icon {
 
   }
 
-  public static enum Alignment2D {
+  public static class Overlay {
+
+    final Icon icon_;
+    final Alignment2D alignment_;
+
+    public Overlay(Icon icon, Alignment2D alignment) {
+      icon_ = icon;
+      alignment_ = alignment;
+    }
+
+  }
+
+  public enum Alignment2D {
 
     N (Alignment.C,  Alignment.LO),
     NE(Alignment.HI, Alignment.LO),
