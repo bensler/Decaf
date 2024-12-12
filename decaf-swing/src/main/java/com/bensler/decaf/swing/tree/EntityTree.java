@@ -59,7 +59,7 @@ TreeSelectionListener, FocusListener {
 
   public EntityTree(PropertyView<H, ?> view) {
     focusListeners_ = new HashSet<>();
-    tree_ = createComponent(model_ = new NewTreeModel<>(view), view);
+    tree_ = createComponent(model_ = new EntityTreeModel<>(view), view);
     // update the selection BEFORE any listener is notified!
     tree_.addTreeSelectionListener(this);
     tree_.setShowsRootHandles(true);
@@ -409,8 +409,8 @@ TreeSelectionListener, FocusListener {
   }
 
   @SuppressWarnings("unchecked")
-  public TreeModel<H> getModel() {
-    return (TreeModel<H>)tree_.getModel();
+  public EntityTreeModel<H> getModel() {
+    return (EntityTreeModel<H>)tree_.getModel();
   }
 
   @Override
