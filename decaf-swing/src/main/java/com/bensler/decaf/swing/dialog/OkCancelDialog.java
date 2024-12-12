@@ -1,5 +1,6 @@
 package com.bensler.decaf.swing.dialog;
 
+import java.awt.Component;
 import java.awt.Window;
 import java.util.Optional;
 import java.util.function.Consumer;
@@ -7,6 +8,7 @@ import java.util.function.Consumer;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
@@ -19,8 +21,8 @@ public class OkCancelDialog<IN, OUT> extends JDialog implements ContentPanel.Con
 
   private OUT outData_;
 
-  public OkCancelDialog(Window owner, String title, ContentPanel<IN, OUT> contentPanel) {
-    super(owner, title, ModalityType.TOOLKIT_MODAL);
+  public OkCancelDialog(Component ownerComponent, DialogAppearance appearance, ContentPanel<IN, OUT> contentPanel) {
+    super((Window)SwingUtilities.getRoot(ownerComponent), appearance.getWindowTitle(), ModalityType.TOOLKIT_MODAL);
 
     final CellConstraints cc = new CellConstraints();
     final JPanel mainPanel = new JPanel(new FormLayout(

@@ -12,7 +12,7 @@ import com.bensler.decaf.swing.EntityComponent;
 
 /** A bundle of
  * <ul>
- *   <li>an {@link Appearance}, representing this action to the user</li>
+ *   <li>an {@link ActionAppearance}, representing this action to the user</li>
  *   <li>a filter, deciding if this action applicable to given entities or is even visible</li>
  *   <li>and the action itself performing an operation on the given entities.</li>
  * </ul>
@@ -23,13 +23,13 @@ public class EntityAction<E> {
     return (x -> ActionState.ENABLED);
   }
 
-  private final Appearance appearance_;
+  private final ActionAppearance appearance_;
   private final EntityActionFilter<E> filter_;
   private final EntityActionListener<E> action_;
 
   /** @param filter <code>null</code> means always on */
   public EntityAction(
-    Appearance appearance, EntityActionFilter<E> filter, EntityActionListener<E> action
+    ActionAppearance appearance, EntityActionFilter<E> filter, EntityActionListener<E> action
   ) {
     appearance_ = requireNonNull(appearance);
     filter_ = Optional.ofNullable(filter).orElseGet(EntityAction::allwaysOnFilter);

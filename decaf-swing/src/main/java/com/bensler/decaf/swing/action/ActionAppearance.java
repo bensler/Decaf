@@ -10,14 +10,14 @@ import javax.swing.JMenuItem;
 /** Encapsulates all information of an action needed to let an user
  * recognize its function. All properties are optional, but at least
  * one must be set. */
-public class Appearance {
+public class ActionAppearance {
 
   private final Optional<Icon> icon_;
   private final Optional<Icon> iconLarge_;
   private final Optional<String> label_;
   private final Optional<String> description_;
 
-  public Appearance(Icon icon, Icon iconLarge, String label, String description) {
+  public ActionAppearance(Icon icon, Icon iconLarge, String label, String description) {
     Stream.of(
       icon_ = Optional.ofNullable(icon),
       iconLarge_ = Optional.ofNullable(iconLarge),

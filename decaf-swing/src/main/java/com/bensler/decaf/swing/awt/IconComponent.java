@@ -6,6 +6,8 @@ import java.awt.Graphics;
 import javax.swing.Icon;
 import javax.swing.JComponent;
 
+/** Adapter class to let an {@link Icon} appear as a {@link JComponent} which has a preferred size of
+ * the icon.*/
 public class IconComponent extends JComponent {
 
   private final Icon icon_;
