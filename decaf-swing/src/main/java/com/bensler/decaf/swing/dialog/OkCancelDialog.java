@@ -1,5 +1,7 @@
 package com.bensler.decaf.swing.dialog;
 
+import static java.awt.Dialog.ModalityType.TOOLKIT_MODAL;
+
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Font;
@@ -27,8 +29,8 @@ public class OkCancelDialog<IN, OUT> extends JDialog implements ContentPanel.Con
 
   private OUT outData_;
 
-  public OkCancelDialog(Component ownerComponent, DialogAppearance appearance, ContentPanel<IN, OUT> contentPanel) {
-    super((Window)SwingUtilities.getRoot(ownerComponent), appearance.getWindowTitle(), ModalityType.TOOLKIT_MODAL);
+  public OkCancelDialog(Component ownerComponent, ContentPanel<IN, OUT> contentPanel) {
+    super((Window)SwingUtilities.getRoot(ownerComponent), contentPanel.getAppearance().getWindowTitle(), TOOLKIT_MODAL);
 
     final CellConstraints cc = new CellConstraints();
     final JPanel mainPanel = new JPanel(new FormLayout(
@@ -36,7 +38,7 @@ public class OkCancelDialog<IN, OUT> extends JDialog implements ContentPanel.Con
       "3dlu, f:p, 3dlu, f:p:g, 3dlu, f:p, 3dlu"
     ));
 
-    mainPanel.add((headerPanel_ = createHeaderPanel(appearance)), cc.xy(2, 2));
+    mainPanel.add((headerPanel_ = createHeaderPanel(contentPanel.getAppearance())), cc.xy(2, 2));
     mainPanel.add((contentPanel_ = contentPanel).getComponent(this), cc.xy(2, 4));
     mainPanel.add(createButtonPanel(okButton_ = new JButton("Ok")), cc.xy(2, 6));
     setContentPane(mainPanel);

@@ -4,6 +4,8 @@ import javax.swing.JComponent;
 
 public interface ContentPanel<IN, OUT> {
 
+  DialogAppearance getAppearance();
+
   JComponent getComponent(Context ctx);
 
   void setInData(IN inData);
