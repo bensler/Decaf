@@ -111,9 +111,9 @@ public class CheckboxTreeComponent<H extends Hierarchical<H>> extends TreeCompon
   }
 
   void setCheckedNodes(Collection<? extends H> toBeChecked) {
-    // TODO test if already checked, fire events
     checkedNodes_.clear();
     checkedNodes_.addAll(toBeChecked);
+    repaint();
   }
 
   Set<H> getCheckedNodes() {
