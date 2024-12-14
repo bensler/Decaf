@@ -95,4 +95,9 @@ public class OkCancelDialog<IN, OUT> extends JDialog implements ContentPanel.Con
     okButton_.setEnabled(valid);
   }
 
+  @Override
+  public JDialog getDialog() {
+    return this;
+  }
+
 }

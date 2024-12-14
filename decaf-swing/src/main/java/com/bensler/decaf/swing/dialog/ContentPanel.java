@@ -1,6 +1,7 @@
 package com.bensler.decaf.swing.dialog;
 
 import javax.swing.JComponent;
+import javax.swing.JDialog;
 
 public interface ContentPanel<IN, OUT> {
 
@@ -13,6 +14,8 @@ public interface ContentPanel<IN, OUT> {
   OUT getData();
 
   interface Context {
+
+    JDialog getDialog();
 
     void setValid(boolean valid);
 
