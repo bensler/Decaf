@@ -24,6 +24,7 @@ import javax.xml.transform.stream.StreamResult;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.EntityResolver;
 import org.xml.sax.ErrorHandler;
@@ -71,7 +72,7 @@ public class Prefs {
       builder.setEntityResolver(ENTITY_RESOLVER);
       builder.setErrorHandler(ERROR_HANDLER);
       Document document = builder.parse(new File(new File(System.getProperty("user.dir")), "x.xml"));
-      readElement(PrefKey.ROOT, document.getDocumentElement().getElementsByTagName(NODE_ELEMENT_NAME));
+      readElement(PrefKey.ROOT, document.getDocumentElement().getChildNodes());
     } catch (FileNotFoundException fnfe) {
       throw fnfe;
     } catch (ParserConfigurationException | SAXException | IOException | RuntimeException e) {
@@ -81,14 +82,21 @@ public class Prefs {
 
   private void readElement(PrefKey parent, NodeList nodes) {
     for (int i = 0; i < nodes.getLength(); i++) {
-      final Element node = (Element) nodes.item(i);
-      final PrefKey prefKey = new PrefKey(parent, node.getAttribute(NODE_ELEMENT_ATTRIBUTE_NAME));
-      final String value = node.getAttribute(NODE_ELEMENT_ATTRIBUTE_VALUE);
+      final Node node = nodes.item(i);
 
-      if (!value.isEmpty()) {
-        put(prefKey, value);
+      if (node.getNodeType() == Node.ELEMENT_NODE) {
+        final Element element = (Element) node;
+
+        if (element.getTagName().equals(NODE_ELEMENT_NAME)) {
+          final PrefKey prefKey = new PrefKey(parent, element.getAttribute(NODE_ELEMENT_ATTRIBUTE_NAME));
+          final String value = element.getAttribute(NODE_ELEMENT_ATTRIBUTE_VALUE);
+
+          if (!value.isEmpty()) {
+            put(prefKey, value);
+          }
+          readElement(prefKey, element.getChildNodes());
+        }
       }
-      readElement(prefKey, node.getElementsByTagName(NODE_ELEMENT_NAME));
     }
   }
 
