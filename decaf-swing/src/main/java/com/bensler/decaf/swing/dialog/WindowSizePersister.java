@@ -3,6 +3,8 @@ package com.bensler.decaf.swing.dialog;
 import java.awt.Window;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowStateListener;
 
 public class WindowSizePersister {
 
@@ -12,6 +14,12 @@ public class WindowSizePersister {
 
   public void listenTo(Window window, String name) {
     window.addComponentListener(new WindowListenerContext(name));
+    window.addWindowStateListener(new WindowStateListener() {
+      @Override
+      public void windowStateChanged(WindowEvent e) {
+        System.out.println(name + " " + e.getOldState() + "->" + e.getNewState());
+      }
+    });
   }
 
   public void listenTo(Window window) {
