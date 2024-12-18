@@ -71,7 +71,7 @@ public class Prefs {
       final DocumentBuilder builder = builderFactory.newDocumentBuilder();
       builder.setEntityResolver(ENTITY_RESOLVER);
       builder.setErrorHandler(ERROR_HANDLER);
-      Document document = builder.parse(new File(new File(System.getProperty("user.dir")), "x.xml"));
+      Document document = builder.parse(storageLocation_);
       readElement(PrefKey.ROOT, document.getDocumentElement().getChildNodes());
     } catch (FileNotFoundException fnfe) {
       throw fnfe;

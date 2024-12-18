@@ -1,54 +1,53 @@
 package com.bensler.decaf.swing.dialog;
 
+import java.awt.Rectangle;
 import java.awt.Window;
-import java.awt.event.ComponentEvent;
-import java.awt.event.ComponentListener;
+import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.awt.event.WindowStateListener;
+import java.util.Optional;
+
+import com.bensler.decaf.util.prefs.PrefKey;
+import com.bensler.decaf.util.prefs.Prefs;
 
 public class WindowSizePersister {
 
-  public WindowSizePersister() {
-    // TODO Auto-generated constructor stub
-  }
+  private final PrefKey prefKeyX_;
+  private final PrefKey prefKeyY_;
+  private final PrefKey prefKeyW_;
+  private final PrefKey prefKeyH_;
 
-  public void listenTo(Window window, String name) {
-    window.addComponentListener(new WindowListenerContext(name));
-    window.addWindowStateListener(new WindowStateListener() {
+  public WindowSizePersister(Prefs prefs, PrefKey prefKey, Window window) {
+    prefKeyX_ = new PrefKey(prefKey, "x");
+    prefKeyY_ = new PrefKey(prefKey, "y");
+    prefKeyW_ = new PrefKey(prefKey, "w");
+    prefKeyH_ = new PrefKey(prefKey, "h");
+    window.addWindowListener(new WindowAdapter() {
       @Override
-      public void windowStateChanged(WindowEvent e) {
-        System.out.println(name + " " + e.getOldState() + "->" + e.getNewState());
+      public void windowClosing(WindowEvent e) {
+        final Rectangle bounds = window.getBounds();
+
+        prefs.put(prefKeyX_, String.valueOf(bounds.x));
+        prefs.put(prefKeyY_, String.valueOf(bounds.y));
+        prefs.put(prefKeyW_, String.valueOf(bounds.width));
+        prefs.put(prefKeyH_, String.valueOf(bounds.height));
       }
     });
+    final Optional<Integer> x = prefs.get(prefKeyX_).flatMap(this::tryParseInt);
+    final Optional<Integer> y = prefs.get(prefKeyY_).flatMap(this::tryParseInt);
+    final Optional<Integer> w = prefs.get(prefKeyW_).flatMap(this::tryParseInt);
+    final Optional<Integer> h = prefs.get(prefKeyH_).flatMap(this::tryParseInt);
+
+    if (x.flatMap(none -> y).flatMap(none -> w).flatMap(none -> h).isPresent()) {
+      window.setBounds(new Rectangle(x.get(), y.get(), w.get(), h.get()));
+    };
   }
 
-  public void listenTo(Window window) {
-    listenTo(window, window.getClass().getSimpleName());
-  }
-
-  static class WindowListenerContext implements ComponentListener {
-
-    private final String name_;
-
-    public WindowListenerContext(String name) {
-      name_ = name;
+  private Optional<Integer> tryParseInt(String value) {
+    try {
+        return Optional.of(Integer.parseInt(value));
+    } catch (NumberFormatException nfe) {
+        return Optional.empty();
     }
-
-    @Override
-    public void componentResized(ComponentEvent e) {
-      System.out.println(name_ + " " + e.getComponent().getBounds());
-    }
-
-    @Override
-    public void componentMoved(ComponentEvent e) {
-      System.out.println(name_ + " " + e.getComponent().getBounds());
-    }
-
-    @Override
-    public void componentShown(ComponentEvent e) { }
-
-    @Override
-    public void componentHidden(ComponentEvent e) { }
   }
 
 }
