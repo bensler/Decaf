@@ -11,12 +11,16 @@ import com.bensler.decaf.util.prefs.Prefs;
 
 public class WindowSizePersister {
 
+  private final Window window_;
+  private final Prefs prefs_;
   private final PrefKey prefKeyX_;
   private final PrefKey prefKeyY_;
   private final PrefKey prefKeyW_;
   private final PrefKey prefKeyH_;
 
   public WindowSizePersister(Prefs prefs, PrefKey prefKey, Window window) {
+    window_ = window;
+    prefs_ = prefs;
     prefKeyX_ = new PrefKey(prefKey, "x");
     prefKeyY_ = new PrefKey(prefKey, "y");
     prefKeyW_ = new PrefKey(prefKey, "w");
@@ -24,12 +28,7 @@ public class WindowSizePersister {
     window.addWindowListener(new WindowAdapter() {
       @Override
       public void windowClosing(WindowEvent e) {
-        final Rectangle bounds = window.getBounds();
-
-        prefs.put(prefKeyX_, String.valueOf(bounds.x));
-        prefs.put(prefKeyY_, String.valueOf(bounds.y));
-        prefs.put(prefKeyW_, String.valueOf(bounds.width));
-        prefs.put(prefKeyH_, String.valueOf(bounds.height));
+        save();
       }
     });
     final Optional<Integer> x = prefs.get(prefKeyX_).flatMap(this::tryParseInt);
@@ -40,6 +39,15 @@ public class WindowSizePersister {
     if (x.flatMap(none -> y).flatMap(none -> w).flatMap(none -> h).isPresent()) {
       window.setBounds(new Rectangle(x.get(), y.get(), w.get(), h.get()));
     };
+  }
+
+  public void save() {
+    final Rectangle bounds = window_.getBounds();
+
+    prefs_.put(prefKeyX_, String.valueOf(bounds.x));
+    prefs_.put(prefKeyY_, String.valueOf(bounds.y));
+    prefs_.put(prefKeyW_, String.valueOf(bounds.width));
+    prefs_.put(prefKeyH_, String.valueOf(bounds.height));
   }
 
   private Optional<Integer> tryParseInt(String value) {
