@@ -5,26 +5,35 @@ import java.awt.Window;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.Optional;
+import java.util.function.Consumer;
 
 import com.bensler.decaf.util.prefs.PrefKey;
 import com.bensler.decaf.util.prefs.Prefs;
 
-public class WindowSizePersister {
+public class WindowPrefsPersister {
 
   private final Window window_;
   private final Prefs prefs_;
+  private final PrefKey baseKey_;
+  private final Consumer<Prefs> additionalSaveAction_;
   private final PrefKey prefKeyX_;
   private final PrefKey prefKeyY_;
   private final PrefKey prefKeyW_;
   private final PrefKey prefKeyH_;
 
-  public WindowSizePersister(Prefs prefs, PrefKey prefKey, Window window) {
+  public WindowPrefsPersister(Prefs prefs, PrefKey baseKey, Window window) {
+    this(prefs, new PrefKey(baseKey, window.getClass().getSimpleName()), window, none -> {});
+  }
+
+  public WindowPrefsPersister(Prefs prefs, PrefKey baseKey, Window window, Consumer<Prefs> additionalSaveAction) {
     window_ = window;
     prefs_ = prefs;
-    prefKeyX_ = new PrefKey(prefKey, "x");
-    prefKeyY_ = new PrefKey(prefKey, "y");
-    prefKeyW_ = new PrefKey(prefKey, "w");
-    prefKeyH_ = new PrefKey(prefKey, "h");
+    baseKey_ = baseKey;
+    additionalSaveAction_ = Optional.ofNullable(additionalSaveAction).orElse(none -> {});
+    prefKeyX_ = new PrefKey(baseKey, "x");
+    prefKeyY_ = new PrefKey(baseKey, "y");
+    prefKeyW_ = new PrefKey(baseKey, "w");
+    prefKeyH_ = new PrefKey(baseKey, "h");
     window.addWindowListener(new WindowAdapter() {
       @Override
       public void windowClosing(WindowEvent e) {
@@ -48,6 +57,7 @@ public class WindowSizePersister {
     prefs_.put(prefKeyY_, String.valueOf(bounds.y));
     prefs_.put(prefKeyW_, String.valueOf(bounds.width));
     prefs_.put(prefKeyH_, String.valueOf(bounds.height));
+    additionalSaveAction_.accept(prefs_);
   }
 
   private Optional<Integer> tryParseInt(String value) {
