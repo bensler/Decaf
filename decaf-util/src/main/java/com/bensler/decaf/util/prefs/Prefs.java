@@ -125,6 +125,14 @@ public class Prefs {
     }
   }
 
+  public static Optional<Integer> tryParseInt(String value) {
+    try {
+        return Optional.of(Integer.parseInt(value));
+    } catch (NumberFormatException nfe) {
+        return Optional.empty();
+    }
+  }
+
   private Stream<PrefKey> getParentPath(PrefKey prefKey) {
     final LinkedList<PrefKey> path = new LinkedList<>();
 
