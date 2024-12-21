@@ -18,6 +18,10 @@ public final class PrefKey implements Hierarchical<PrefKey>, Named {
     parent_ = null;
   }
 
+  public PrefKey(PrefKey parent, Class<?> clazz) {
+    this(parent, clazz.getSimpleName());
+  }
+
   public PrefKey(PrefKey parent, String name) {
     requireNonNull(name);
     if (name.isEmpty()) {
