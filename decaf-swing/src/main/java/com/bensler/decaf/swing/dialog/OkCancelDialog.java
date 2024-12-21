@@ -29,6 +29,8 @@ public class OkCancelDialog<IN, OUT> extends JDialog implements ContentPanel.Con
 
   private OUT outData_;
 
+  private boolean canceled_;
+
   public OkCancelDialog(Component ownerComponent, ContentPanel<IN, OUT> contentPanel) {
     super((Window)SwingUtilities.getRoot(ownerComponent), contentPanel.getAppearance().getWindowTitle(), TOOLKIT_MODAL);
 
@@ -78,6 +80,11 @@ public class OkCancelDialog<IN, OUT> extends JDialog implements ContentPanel.Con
     cancelButton.addActionListener(evt -> setVisible(false));
     buttonPanel.add(okButton, cc.xy(5,  1));
     return buttonPanel;
+  }
+
+  public Optional<OUT> show(IN input) {
+    show(input, none -> {});
+    return Optional.ofNullable(outData_);
   }
 
   public void show(IN input, Consumer<OUT> action) {
