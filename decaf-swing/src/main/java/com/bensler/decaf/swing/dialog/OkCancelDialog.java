@@ -41,9 +41,11 @@ public class OkCancelDialog<IN, OUT> extends JDialog implements ContentPanel.Con
     ));
 
     mainPanel.add((headerPanel_ = createHeaderPanel(contentPanel.getAppearance())), cc.xy(2, 2));
-    mainPanel.add((contentPanel_ = contentPanel).getComponent(this), cc.xy(2, 4));
+    mainPanel.add((contentPanel_ = contentPanel).getComponent(), cc.xy(2, 4));
     mainPanel.add(createButtonPanel(okButton_ = new JButton("Ok")), cc.xy(2, 6));
     setContentPane(mainPanel);
+    pack();
+    contentPanel_.setContext(this);
   }
 
   private JPanel createHeaderPanel(DialogAppearance appearance) {
@@ -91,7 +93,6 @@ public class OkCancelDialog<IN, OUT> extends JDialog implements ContentPanel.Con
     setValid(false);
     outData_ = null;
     contentPanel_.setInData(input);
-    pack();
     setVisible(true);
     Optional.ofNullable(outData_).ifPresent(action);
     dispose();

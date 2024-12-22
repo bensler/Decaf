@@ -7,7 +7,9 @@ public interface ContentPanel<IN, OUT> {
 
   DialogAppearance getAppearance();
 
-  JComponent getComponent(Context ctx);
+  JComponent getComponent();
+
+  void setContext(Context ctx);
 
   void setInData(IN inData);
 

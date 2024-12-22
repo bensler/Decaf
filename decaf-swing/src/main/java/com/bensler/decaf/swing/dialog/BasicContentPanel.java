@@ -22,12 +22,17 @@ public abstract class BasicContentPanel<IN, OUT> extends JPanel implements Conte
   }
 
   @Override
-  public JComponent getComponent(Context ctx) {
-    setContext(ctx_ = ctx);
+  public JComponent getComponent() {
     return this;
   }
 
-  protected void setContext(Context ctx) { /* nop */ }
+  @Override
+  public final void setContext(Context ctx) {
+    ctx_ = ctx;
+    contextSet();
+  }
+
+  protected void contextSet() { /* noop */ }
 
   protected abstract void setData(IN inData);
 
