@@ -1,6 +1,8 @@
 package com.bensler.decaf.swing.dialog;
 
 import static java.awt.Dialog.ModalityType.TOOLKIT_MODAL;
+import static java.awt.event.KeyEvent.VK_ESCAPE;
+import static javax.swing.JComponent.WHEN_IN_FOCUSED_WINDOW;
 
 import java.awt.Color;
 import java.awt.Component;
@@ -13,6 +15,7 @@ import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
 
 import com.bensler.decaf.swing.awt.IconComponent;
@@ -50,6 +53,8 @@ public class OkCancelDialog<IN, OUT> extends JDialog implements ContentPanel.Con
     setContentPane(mainPanel);
     pack();
     contentPanel_.setContext(this);
+    rootPane.setDefaultButton(okButton_);
+    rootPane.registerKeyboardAction(evt -> setVisible(false), KeyStroke.getKeyStroke(VK_ESCAPE, 0), WHEN_IN_FOCUSED_WINDOW);
   }
 
   private JPanel createHeaderPanel(DialogAppearance appearance) {
