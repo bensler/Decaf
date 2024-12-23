@@ -3,6 +3,8 @@ package com.bensler.decaf.swing.dialog;
 import javax.swing.JComponent;
 import javax.swing.JDialog;
 
+import com.bensler.decaf.util.prefs.BulkPrefPersister;
+
 public interface ContentPanel<IN, OUT> {
 
   DialogAppearance getAppearance();
@@ -18,6 +20,8 @@ public interface ContentPanel<IN, OUT> {
   interface Context {
 
     JDialog getDialog();
+
+    void setPrefs(BulkPrefPersister prefs);
 
     void setValid(boolean valid);
 

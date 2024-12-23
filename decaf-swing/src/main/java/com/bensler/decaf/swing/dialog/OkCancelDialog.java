@@ -16,6 +16,7 @@ import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
 import com.bensler.decaf.swing.awt.IconComponent;
+import com.bensler.decaf.util.prefs.BulkPrefPersister;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
@@ -31,6 +32,8 @@ public class OkCancelDialog<IN, OUT> extends JDialog implements ContentPanel.Con
 
   private boolean canceled_;
 
+  private Optional<BulkPrefPersister> prefs_;
+
   public OkCancelDialog(Component ownerComponent, ContentPanel<IN, OUT> contentPanel) {
     super((Window)SwingUtilities.getRoot(ownerComponent), contentPanel.getAppearance().getWindowTitle(), TOOLKIT_MODAL);
 
@@ -40,6 +43,7 @@ public class OkCancelDialog<IN, OUT> extends JDialog implements ContentPanel.Con
       "3dlu, f:p, 3dlu, f:p:g, 3dlu, f:p, 3dlu"
     ));
 
+    prefs_ = Optional.empty();
     mainPanel.add((headerPanel_ = createHeaderPanel(contentPanel.getAppearance())), cc.xy(2, 2));
     mainPanel.add((contentPanel_ = contentPanel).getComponent(), cc.xy(2, 4));
     mainPanel.add(createButtonPanel(okButton_ = new JButton("Ok")), cc.xy(2, 6));
@@ -94,6 +98,7 @@ public class OkCancelDialog<IN, OUT> extends JDialog implements ContentPanel.Con
     outData_ = null;
     contentPanel_.setInData(input);
     setVisible(true);
+    prefs_.ifPresent(BulkPrefPersister::store);
     Optional.ofNullable(outData_).ifPresent(action);
     dispose();
   }
@@ -106,6 +111,11 @@ public class OkCancelDialog<IN, OUT> extends JDialog implements ContentPanel.Con
   @Override
   public JDialog getDialog() {
     return this;
+  }
+
+  @Override
+  public void setPrefs(BulkPrefPersister prefs) {
+    prefs_ = Optional.ofNullable(prefs);
   }
 
 }
