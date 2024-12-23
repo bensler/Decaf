@@ -55,6 +55,7 @@ public class OkCancelDialog<IN, OUT> extends JDialog implements ContentPanel.Con
     contentPanel_.setContext(this);
     rootPane.setDefaultButton(okButton_);
     rootPane.registerKeyboardAction(evt -> setVisible(false), KeyStroke.getKeyStroke(VK_ESCAPE, 0), WHEN_IN_FOCUSED_WINDOW);
+    setMinimumSize(getPreferredSize());
   }
 
   private JPanel createHeaderPanel(DialogAppearance appearance) {
