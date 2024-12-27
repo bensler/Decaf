@@ -1,5 +1,6 @@
 package com.bensler.decaf.swing.action;
 
+import java.awt.Font;
 import java.util.Optional;
 import java.util.stream.Stream;
 
@@ -44,8 +45,13 @@ public class ActionAppearance {
     return description_;
   }
 
-  public JMenuItem createPopupmenuItem() {
-    return new JMenuItem(label_.orElse(null), icon_.orElse(null));
+  public JMenuItem createPopupmenuItem(boolean primary) {
+    final JMenuItem menuItem = new JMenuItem(label_.orElse(null), icon_.orElse(null));
+
+    if (primary) {
+      menuItem.setFont(menuItem.getFont().deriveFont(Font.BOLD));
+    }
+    return menuItem;
   }
 
   public JButton createToolbarButton() {

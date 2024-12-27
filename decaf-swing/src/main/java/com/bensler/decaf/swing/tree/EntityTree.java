@@ -448,7 +448,7 @@ TreeSelectionListener, FocusListener {
     final int selRow = tree_.getRowForLocation(evt.getX(), evt.getY());
 
     tree_.setSelectionRows((selRow > -1) ? new int[] {selRow} : new int[0]);
-    contextActions_.createContextMenu(this).ifPresent(popup -> popup.show(tree_, evt.getX(), evt.getY()));
+    contextActions_.createContextMenu(this).showPopupMenu(evt);
   }
 
 }

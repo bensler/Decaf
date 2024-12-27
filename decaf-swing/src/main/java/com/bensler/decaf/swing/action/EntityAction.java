@@ -40,8 +40,8 @@ public class EntityAction<E> {
     return filter_.getActionState(entities);
   }
 
-  public JMenuItem createPopupmenuItem(EntityComponent<E> comp, List<E> selection) {
-    final JMenuItem menuitem = appearance_.createPopupmenuItem();
+  public JMenuItem createPopupmenuItem(EntityComponent<E> comp, List<E> selection, boolean primary) {
+    final JMenuItem menuitem = appearance_.createPopupmenuItem(primary);
 
     menuitem.addActionListener(evt -> action_.doAction(comp, selection));
     return menuitem;
