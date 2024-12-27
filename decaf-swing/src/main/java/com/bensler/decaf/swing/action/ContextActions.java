@@ -28,6 +28,10 @@ public class ContextActions<E> {
     primaryAction_ = actions_.stream().filter(pair -> pair.getRight() == ActionState.ENABLED).map(Pair::getLeft).findFirst();
   }
 
+  public void triggerPrimaryAction() {
+    primaryAction_.ifPresent(action -> action.doAction(comp_, selection_));
+  }
+
   public void showPopupMenu(MouseEvent evt) {
     final Optional<JPopupMenu> popupMenu = actions_.isEmpty() ? Optional.empty() : Optional.of(addItems(new JPopupMenu()));
 
