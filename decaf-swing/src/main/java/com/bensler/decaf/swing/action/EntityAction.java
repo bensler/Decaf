@@ -19,8 +19,12 @@ import com.bensler.decaf.swing.EntityComponent;
  */
 public class EntityAction<E> {
 
-  private static <X> EntityActionFilter<X> allwaysOnFilter() {
+  public static <X> EntityActionFilter<X> allwaysOnFilter() {
     return (x -> ActionState.ENABLED);
+  }
+
+  public static <X> EntityActionFilter<X> atLeastOneFilter(ActionState zeroElementsState) {
+    return (x -> ((x.size() < 1) ? zeroElementsState : ActionState.ENABLED));
   }
 
   private final ActionAppearance appearance_;

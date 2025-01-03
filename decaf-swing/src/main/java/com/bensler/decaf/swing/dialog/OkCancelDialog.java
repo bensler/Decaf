@@ -35,8 +35,6 @@ public class OkCancelDialog<IN, OUT> extends JDialog implements ContentPanel.Con
 
   private OUT outData_;
 
-  private boolean canceled_;
-
   private Optional<BulkPrefPersister> prefs_;
 
   public OkCancelDialog(Component ownerComponent, ContentPanel<IN, OUT> contentPanel) {
