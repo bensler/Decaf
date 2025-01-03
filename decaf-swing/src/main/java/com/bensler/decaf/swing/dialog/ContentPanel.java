@@ -25,6 +25,10 @@ public interface ContentPanel<IN, OUT> {
 
     void setValid(boolean valid);
 
+    void setOkButtonText(String okButtonText);
+
+    void setCancelButtonText(String cancelButtonText);
+
   }
 
 }

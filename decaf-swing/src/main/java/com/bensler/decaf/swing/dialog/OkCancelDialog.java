@@ -27,6 +27,8 @@ public class OkCancelDialog<IN, OUT> extends JDialog implements ContentPanel.Con
 
   private final JButton okButton_;
 
+  private final JButton cancelButton_;
+
   private final JPanel headerPanel_;
 
   private final ContentPanel<IN, OUT> contentPanel_;
@@ -49,7 +51,7 @@ public class OkCancelDialog<IN, OUT> extends JDialog implements ContentPanel.Con
     prefs_ = Optional.empty();
     mainPanel.add((headerPanel_ = createHeaderPanel(contentPanel.getAppearance())), cc.xy(2, 2));
     mainPanel.add((contentPanel_ = contentPanel).getComponent(), cc.xy(2, 4));
-    mainPanel.add(createButtonPanel(okButton_ = new JButton("Ok")), cc.xy(2, 6));
+    mainPanel.add(createButtonPanel(okButton_ = new JButton("Ok"), cancelButton_ = new JButton("Cancel")), cc.xy(2, 6));
     setContentPane(mainPanel);
     pack();
     contentPanel_.setContext(this);
@@ -74,14 +76,13 @@ public class OkCancelDialog<IN, OUT> extends JDialog implements ContentPanel.Con
     return headerPanel;
   }
 
-  private JPanel createButtonPanel(JButton okButton) {
+  private JPanel createButtonPanel(JButton okButton, JButton cancelButton) {
     final CellConstraints cc = new CellConstraints();
     final FormLayout buttonLayout = new FormLayout(
       "f:p:g, 3dlu, f:p, 3dlu, f:p",
       "f:p:g"
     );
     final JPanel buttonPanel = new JPanel(buttonLayout);
-    final JButton cancelButton = new JButton("Cancel");
 
     buttonLayout.setColumnGroup(3, 5);
     buttonPanel.add(cancelButton, cc.xy(3,  1));
@@ -107,6 +108,16 @@ public class OkCancelDialog<IN, OUT> extends JDialog implements ContentPanel.Con
     prefs_.ifPresent(BulkPrefPersister::store);
     Optional.ofNullable(outData_).ifPresent(action);
     dispose();
+  }
+
+  @Override
+  public void setOkButtonText(String okButtonText) {
+    okButton_.setText(okButtonText);
+  }
+
+  @Override
+  public void setCancelButtonText(String cancelButtonText) {
+    cancelButton_.setText(cancelButtonText);
   }
 
   @Override
