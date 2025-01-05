@@ -89,6 +89,10 @@ public class EntityTreeModel<H extends Hierarchical<H>> implements TreeModel {
     ));
   }
 
+  public void removeNode(H node) {
+    throw new UnsupportedOperationException("TODO");
+  }
+
   Object[] getPathAsObjectArray(H node) {
     final List<Object> path = new ArrayList<>(data_.getPath(node));
 
