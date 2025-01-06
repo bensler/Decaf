@@ -7,6 +7,7 @@ import static javax.swing.JComponent.WHEN_IN_FOCUSED_WINDOW;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Font;
+import java.awt.Rectangle;
 import java.awt.Window;
 import java.util.Optional;
 import java.util.function.Consumer;
@@ -52,10 +53,20 @@ public class OkCancelDialog<IN, OUT> extends JDialog implements ContentPanel.Con
     mainPanel.add(createButtonPanel(okButton_ = new JButton("Ok"), cancelButton_ = new JButton("Cancel")), cc.xy(2, 6));
     setContentPane(mainPanel);
     pack();
+    centerOnParent();
     contentPanel_.setContext(this);
     rootPane.setDefaultButton(okButton_);
     rootPane.registerKeyboardAction(evt -> setVisible(false), KeyStroke.getKeyStroke(VK_ESCAPE, 0), WHEN_IN_FOCUSED_WINDOW);
     setMinimumSize(getPreferredSize());
+  }
+
+  private void centerOnParent() {
+    final Rectangle dialogBounds = getBounds();
+    final Rectangle parentBounds = getParent().getBounds();
+
+    dialogBounds.x = (int)(parentBounds.getCenterX() - (dialogBounds.width / 2.0));
+    dialogBounds.y = (int)(parentBounds.getCenterY() - (dialogBounds.height / 2.0));
+    setBounds(dialogBounds);
   }
 
   private JPanel createHeaderPanel(DialogAppearance appearance) {
