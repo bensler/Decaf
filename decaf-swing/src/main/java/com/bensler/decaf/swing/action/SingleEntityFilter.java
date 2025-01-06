@@ -13,6 +13,7 @@ public class SingleEntityFilter<E> implements EntityActionFilter<E> {
   public SingleEntityFilter(ActionState defaultState) {
     this(defaultState, E -> ActionState.ENABLED);
   }
+
   public SingleEntityFilter(ActionState defaultState, Function<E, ActionState> singleFilter) {
     defaultState_ = requireNonNull(defaultState);
     singleFilter_ = requireNonNull(singleFilter);
