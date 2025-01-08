@@ -89,8 +89,15 @@ public class EntityTreeModel<H extends Hierarchical<H>> implements TreeModel {
     ));
   }
 
+  /** Removes leaf nodes only! */
   public void removeNode(H node) {
-    throw new UnsupportedOperationException("TODO");
+    if (contains(node) && isLeaf(node)) {
+      final TreePath parentPath = getTreePath(node).getParentPath();
+      final int removedIndex = getIndexOfChild(parentPath.getLastPathComponent(), node);
+
+      data_.removeNode(node);
+      fireNodeRemoved(new TreeModelEvent(this, parentPath, new int[] {removedIndex}, null));
+    }
   }
 
   Object[] getPathAsObjectArray(H node) {
@@ -112,7 +119,7 @@ public class EntityTreeModel<H extends Hierarchical<H>> implements TreeModel {
   }
 
   public void fireNodeChanged(H node) {
-    TreeModelEvent evt = new TreeModelEvent(this, getPathAsObjectArray(node));
+    final TreeModelEvent evt = new TreeModelEvent(this, getPathAsObjectArray(node));
 
     fireTreeModelEvent(listener -> listener.treeNodesChanged(evt));
   }
@@ -140,8 +147,8 @@ public class EntityTreeModel<H extends Hierarchical<H>> implements TreeModel {
     }
   }
 
-  private void fireTreeModelEvent(Consumer<TreeModelListener> x) {
-    modelListeners_.forEach(x);
+  private void fireTreeModelEvent(Consumer<TreeModelListener> eventFirer) {
+    modelListeners_.forEach(eventFirer);
   }
 
   @Override
