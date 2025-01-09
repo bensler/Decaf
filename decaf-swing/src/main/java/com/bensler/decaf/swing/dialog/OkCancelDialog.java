@@ -13,6 +13,7 @@ import java.util.Optional;
 import java.util.function.Consumer;
 
 import javax.swing.JButton;
+import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -33,6 +34,8 @@ public class OkCancelDialog<IN, OUT> extends JDialog implements ContentPanel.Con
   private final JPanel headerPanel_;
 
   private final ContentPanel<IN, OUT> contentPanel_;
+
+  private Optional<JComponent> compToFocus_;
 
   private OUT outData_;
 
@@ -113,10 +116,16 @@ public class OkCancelDialog<IN, OUT> extends JDialog implements ContentPanel.Con
     setValid(false);
     outData_ = null;
     contentPanel_.setInData(input);
+    SwingUtilities.invokeLater(() -> compToFocus_.ifPresent(JComponent::requestFocusInWindow));
     setVisible(true);
     prefs_.ifPresent(BulkPrefPersister::store);
     Optional.ofNullable(outData_).ifPresent(action);
     dispose();
+  }
+
+  @Override
+  public void setComponentToFocus(JComponent comp) {
+    compToFocus_ = Optional.ofNullable(comp);
   }
 
   @Override

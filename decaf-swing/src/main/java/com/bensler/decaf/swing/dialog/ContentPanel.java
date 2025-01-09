@@ -21,6 +21,8 @@ public interface ContentPanel<IN, OUT> {
 
     JDialog getDialog();
 
+    void setComponentToFocus(JComponent comp);
+
     void setPrefs(BulkPrefPersister prefs);
 
     void setValid(boolean valid);
