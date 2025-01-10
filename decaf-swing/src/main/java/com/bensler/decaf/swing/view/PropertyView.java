@@ -23,7 +23,7 @@ public interface PropertyView<E, P> extends Comparator<E>, ListCellRenderer<E> {
   public JLabel renderLabel(JLabel label, E viewable);
 
   public Component getCellRendererComponent(
-    JTable table, E viewable, Object cellValue, boolean isSelected, boolean hasFocus, int row, int column
+    JTable table, E viewable, P cellValue, boolean isSelected, boolean hasFocus, int row, int column
   );
 
   TreeCellRenderer createTreeCellRenderer();

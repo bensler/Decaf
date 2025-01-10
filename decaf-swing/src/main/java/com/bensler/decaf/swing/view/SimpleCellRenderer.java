@@ -5,7 +5,7 @@ import java.util.Optional;
 import javax.swing.Icon;
 import javax.swing.JLabel;
 
-public class SimpleCellRenderer extends Object implements CellRenderer {
+public class SimpleCellRenderer<E, P> extends Object implements CellRenderer<E, P> {
 
   private static final int TEXT_ICON_GAP = 5;
 
@@ -22,20 +22,20 @@ public class SimpleCellRenderer extends Object implements CellRenderer {
   /** Sets the text to <code>value.toString()</code>.
    * @param cellValue <code>null</code> allowed.
    */
-  public void setText(JLabel comp, Object cellValue) {
+  public void setText(JLabel comp, P cellValue) {
     comp.setText(renderString_(cellValue));
   }
 
-  private String renderString_(Object cellValue) {
+  private String renderString_(P cellValue) {
     return Optional.ofNullable(cellValue).map(this::renderString).orElse(" ");
   }
 
-  protected String renderString(Object cellValue) {
+  protected String renderString(P cellValue) {
     return cellValue.toString();
   }
 
   @Override
-  public void render(Object viewable, Object cellValue, JLabel comp) {
+  public void render(E viewable, P cellValue, JLabel comp) {
     final Icon icon = getIcon(viewable, cellValue);
 
     setText(comp, cellValue);
@@ -48,7 +48,7 @@ public class SimpleCellRenderer extends Object implements CellRenderer {
     return icon_;
   }
 
-  public Icon getIcon(Object viewable, Object cellValue) {
+  public Icon getIcon(E viewable, P cellValue) {
     return getIcon();
   }
 

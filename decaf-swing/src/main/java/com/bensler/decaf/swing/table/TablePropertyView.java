@@ -56,7 +56,7 @@ implements TableCellRenderer, Named, Comparator<E> {
   }
 
   public Component getCellRendererComponent(
-    JTable table, E viewable, Object cellValue,
+    JTable table, E viewable, P cellValue,
     int row, int column, boolean selected, boolean focused
   ) {
     return propertyView_.getCellRendererComponent(

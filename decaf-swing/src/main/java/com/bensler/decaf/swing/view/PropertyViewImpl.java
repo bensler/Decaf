@@ -43,7 +43,7 @@ public class PropertyViewImpl<E, P> extends Object implements PropertyView<E, P>
 
   private   final         RenderComponentFactory  compFactory_;
 
-  private   final         CellRenderer            renderer_;
+  private   final         CellRenderer<E, P>      renderer_;
 
   private   final         PropertyGetter<E, P>    getter_;
 
@@ -52,23 +52,23 @@ public class PropertyViewImpl<E, P> extends Object implements PropertyView<E, P>
   public PropertyViewImpl(
     PropertyGetter<E, P> getter
   ) {
-    this(new SimpleCellRenderer(), getter);
+    this(new SimpleCellRenderer<>(), getter);
   }
 
   public PropertyViewImpl(
     Icon icon, PropertyGetter<E, P> getter
   ) {
-    this(new SimpleCellRenderer(icon), getter);
+    this(new SimpleCellRenderer<>(icon), getter);
   }
 
   public PropertyViewImpl(
-    CellRenderer cellRenderer, PropertyGetter<E, P> propertyGetter
+    CellRenderer<E, P> cellRenderer, PropertyGetter<E, P> propertyGetter
   ) {
     this(cellRenderer, propertyGetter, RenderComponentFactory.DEFAULT_INSTANCE);
   }
 
   public PropertyViewImpl(
-    CellRenderer cellRenderer,
+    CellRenderer<E, P> cellRenderer,
     PropertyGetter<E, P> propertyGetter, RenderComponentFactory componentFactory
   ) {
     renderer_ = cellRenderer;
@@ -105,7 +105,7 @@ public class PropertyViewImpl<E, P> extends Object implements PropertyView<E, P>
 
   @Override
   public Component getCellRendererComponent(
-    JTable table, E viewable, Object cellValue, boolean selected,
+    JTable table, E viewable, P cellValue, boolean selected,
     boolean hasFocus, int row, int column
   ) {
     final RenderComponent tableComponent = compFactory_.getListTableComponent();

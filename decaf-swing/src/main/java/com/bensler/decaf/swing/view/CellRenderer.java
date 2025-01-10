@@ -3,8 +3,8 @@ package com.bensler.decaf.swing.view;
 import javax.swing.JLabel;
 
 
-public interface CellRenderer {
+public interface CellRenderer<E, P> {
 
-  public void render(Object viewable, Object cellValue, JLabel comp);
+  public void render(E viewable, P cellValue, JLabel comp);
 
 }
