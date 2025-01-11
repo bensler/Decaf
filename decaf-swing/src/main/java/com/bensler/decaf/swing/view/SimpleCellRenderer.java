@@ -1,7 +1,5 @@
 package com.bensler.decaf.swing.view;
 
-import java.util.Optional;
-
 import javax.swing.Icon;
 import javax.swing.JLabel;
 
@@ -9,7 +7,7 @@ public class SimpleCellRenderer<E, P> extends Object implements CellRenderer<E, 
 
   private static final int TEXT_ICON_GAP = 5;
 
-  private   final         Icon      icon_;
+  protected final Icon icon_;
 
   public SimpleCellRenderer() {
     this(null);
@@ -19,37 +17,22 @@ public class SimpleCellRenderer<E, P> extends Object implements CellRenderer<E, 
     icon_ = icon;
   }
 
-  /** Sets the text to <code>value.toString()</code>.
-   * @param cellValue <code>null</code> allowed.
-   */
-  public void setText(JLabel comp, P cellValue) {
-    comp.setText(renderString_(cellValue));
-  }
-
-  private String renderString_(P cellValue) {
-    return Optional.ofNullable(cellValue).map(this::renderString).orElse(" ");
-  }
-
-  protected String renderString(P cellValue) {
-    return cellValue.toString();
+  protected String getText(E entity, P property) {
+    return (property != null) ? property.toString() : " ";
   }
 
   @Override
-  public void render(E viewable, P cellValue, JLabel comp) {
-    final Icon icon = getIcon(viewable, cellValue);
+  public void render(E entity, P property, JLabel comp) {
+    final Icon icon = getIcon(entity, property);
 
-    setText(comp, cellValue);
+    comp.setText(getText(entity, property));
     comp.setIcon(icon);
     comp.setIconTextGap((icon != null) ? TEXT_ICON_GAP : 0);
     comp.setHorizontalAlignment(JLabel.LEFT);
   }
 
-  public Icon getIcon() {
+  protected Icon getIcon(E entity, P property) {
     return icon_;
-  }
-
-  public Icon getIcon(E viewable, P cellValue) {
-    return getIcon();
   }
 
 }
