@@ -50,6 +50,7 @@ public class OkCancelDialog<IN, OUT> extends JDialog implements ContentPanel.Con
       "3dlu, f:p, 3dlu, f:p:g, 3dlu, f:p, 3dlu"
     ));
 
+    compToFocus_ = Optional.empty();
     prefs_ = Optional.empty();
     mainPanel.add((headerPanel_ = createHeaderPanel(contentPanel.getAppearance())), cc.xy(2, 2));
     mainPanel.add((contentPanel_ = contentPanel).getComponent(), cc.xy(2, 4));
