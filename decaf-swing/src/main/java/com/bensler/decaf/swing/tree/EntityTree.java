@@ -10,6 +10,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 import javax.swing.JScrollPane;
@@ -242,8 +243,8 @@ TreeSelectionListener, FocusListener {
   }
 
   @Override
-  public boolean contains(H entity) {
-    return model_.contains(entity);
+  public Optional<H> contains(Object entity) {
+    return (model_.contains(entity) ? Optional.of((H)entity) : Optional.empty());
   }
 
   @Override

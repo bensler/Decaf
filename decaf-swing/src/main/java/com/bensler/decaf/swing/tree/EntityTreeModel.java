@@ -56,7 +56,7 @@ public class EntityTreeModel<H extends Hierarchical<H>> implements TreeModel {
     // (TODO) there is currently no in-place-editing of nodes ...
   }
 
-  public boolean contains(H entity) {
+  public boolean contains(Object entity) {
     return data_.contains(entity);
   }
 

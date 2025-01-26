@@ -8,6 +8,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 import javax.swing.DefaultListSelectionModel;
 import javax.swing.JComponent;
@@ -314,8 +315,8 @@ public class EntityList<E> extends Object implements ListSelectionListener, Enti
   }
 
   @Override
-  public boolean contains(Object entity) {
-    return model_.contains(entity);
+  public Optional<E> contains(Object entity) {
+    return (model_.contains(entity) ? Optional.of((E)entity) : Optional.empty());
   }
 
   public boolean isEmpty() {

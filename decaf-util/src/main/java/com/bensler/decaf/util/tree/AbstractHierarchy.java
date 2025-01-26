@@ -193,7 +193,7 @@ public class AbstractHierarchy<H extends Hierarchical<H>, C extends Collection<H
    * used by TreeModel <p>
    * Checks if a node is a member of this hierarchy.
    */
-  public boolean contains(final H node) {
+  public boolean contains(final Object node) {
     return children_.containsKey(node);
   }
 

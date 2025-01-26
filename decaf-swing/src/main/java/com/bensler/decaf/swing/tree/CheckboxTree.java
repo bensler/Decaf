@@ -24,7 +24,7 @@ public class CheckboxTree<H extends Hierarchical<H>> extends EntityTree<H> {
   }
 
   public void setCheckedNodes(Collection<? extends H> nodesToBeChecked) {
-    ((CheckboxTreeComponent<H>)tree_).setCheckedNodes(nodesToBeChecked.stream().filter(this::contains).toList());
+    ((CheckboxTreeComponent<H>)tree_).setCheckedNodes(nodesToBeChecked.stream().filter(h -> contains(h).isPresent()).toList());
   }
 
   public Set<H> getCheckedNodes() {

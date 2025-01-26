@@ -14,6 +14,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.prefs.Preferences;
 
@@ -578,8 +579,8 @@ implements ListSelectionListener, FocusListener, EntityComponent<E> {
   }
 
   @Override
-  public boolean contains(Object entity) {
-    return model_.contains(entity);
+  public Optional<E> contains(Object entity) {
+    return (model_.contains(entity) ? Optional.of((E)entity) : Optional.empty());
   }
 
   public boolean isEmpty() {
