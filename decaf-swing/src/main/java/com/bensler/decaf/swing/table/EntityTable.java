@@ -339,6 +339,7 @@ implements ListSelectionListener, FocusListener, EntityComponent<E> {
     saveSelection();
     model_.updateData(subject);
     applySavedSelection();
+    table_.repaint(); // TODO fire change event in model instead
   }
 
   public void updateData(Collection<E> bos) {
