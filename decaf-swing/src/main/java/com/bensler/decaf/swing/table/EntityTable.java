@@ -326,15 +326,6 @@ implements ListSelectionListener, FocusListener, EntityComponent<E> {
     }
   }
 
-  /**
-   * Refilters the entries in the table by the current filter.
-   */
-  public void fireRowFilterChanged() {
-    saveSelection();
-    model_.fireRowFilterChanged();
-    applySavedSelection();
-  }
-
   public void updateData(E subject) {
     saveSelection();
     model_.updateData(subject);

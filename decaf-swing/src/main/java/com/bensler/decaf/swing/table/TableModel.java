@@ -3,9 +3,7 @@ package com.bensler.decaf.swing.table;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import javax.swing.table.AbstractTableModel;
 
@@ -18,8 +16,6 @@ public class TableModel<E> extends AbstractTableModel {
 
   private   final         TableView<E>        view_;
 
-  private   final         Set<E>              entitiesUnfiltered_;
-
   private   final         List<E>             entityList_;
 
   private   final         ComparatorList<E>   comparator_;
@@ -28,7 +24,6 @@ public class TableModel<E> extends AbstractTableModel {
     super();
     boTable_ = boTable;
     view_ = view;
-    entitiesUnfiltered_ = new HashSet<>();
     entityList_ = new ArrayList<>();
     comparator_ = new ComparatorList<>();
   }
@@ -36,10 +31,6 @@ public class TableModel<E> extends AbstractTableModel {
   @Override
   public Object getValueAt(int row, int col) {
     return view_.getCellValue(col, getValueAt(row));
-  }
-
-  void fireRowFilterChanged() {
-    setData(new HashSet<>(entitiesUnfiltered_));
   }
 
   E getValueAt(int row) {
@@ -70,9 +61,6 @@ public class TableModel<E> extends AbstractTableModel {
   }
 
   void setData(Collection<E> newData) {
-    entitiesUnfiltered_.clear();
-    entitiesUnfiltered_.addAll(newData);
-
     final int oldSize = entityList_.size();
     entityList_.clear();
     for (final E subject : newData) {
@@ -113,8 +101,6 @@ public class TableModel<E> extends AbstractTableModel {
   void addData(Collection<? extends E> data) {
     final int oldSize = entityList_.size();
 
-    entitiesUnfiltered_.removeAll(data);
-    entitiesUnfiltered_.addAll(data);
     for (E subject : data) {
       final int       index   = indexOf(subject);
 
@@ -131,9 +117,6 @@ public class TableModel<E> extends AbstractTableModel {
   }
 
   void updateData(Collection<? extends E> subjects) {
-    entitiesUnfiltered_.removeAll(subjects);
-    entitiesUnfiltered_.addAll(subjects);
-
     final int     oldSize = entityList_.size();
           boolean resort  = false;
 
@@ -156,8 +139,6 @@ public class TableModel<E> extends AbstractTableModel {
   }
 
   void removeData(Collection<?> bos) {
-    entitiesUnfiltered_.removeAll(bos);
-
     final int     oldSize = entityList_.size();
           boolean resort  = false;
 
