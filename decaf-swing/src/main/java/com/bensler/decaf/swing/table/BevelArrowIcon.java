@@ -12,9 +12,6 @@ import javax.swing.UIManager;
  */
 public class BevelArrowIcon implements Icon {
 
-  public static final int UP    = 0;         // direction
-  public static final int DOWN  = 1;
-
   private   final         Color                 edge1_;
   private   final         Color                 edge2_;
   private   final         Color                 fill_;

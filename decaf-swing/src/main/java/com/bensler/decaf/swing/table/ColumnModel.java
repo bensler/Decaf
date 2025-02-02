@@ -17,25 +17,18 @@ import javax.swing.table.TableColumn;
  */
 public class ColumnModel<E> extends DefaultTableColumnModel {
 
-  private   final         Map<TablePropertyView, Column>  allPropertiesColumnMap_;
+  private final Map<TablePropertyView<E, ?>, Column<E>> allPropertiesColumnMap_;
 
-  private   final         Map<TablePropertyView, Column>  propertyColumnMap_;
+  private final Map<TablePropertyView<E, ?>, Column<E>> propertyColumnMap_;
 
-  private                 Column                          pressedColumn_;
+  private Column<E> pressedColumn_;
 
-  private                 Column                          sortedColumn_;
-
-  private                 Sorting                         sorting_;
-
-  private                 int[]                           prefSizes_;
+  private int[] prefSizes_;
 
   ColumnModel() {
-    super();
-    allPropertiesColumnMap_ = new HashMap<TablePropertyView, Column>();
-    propertyColumnMap_ = new HashMap<TablePropertyView, Column>();
+    allPropertiesColumnMap_ = new HashMap<>();
+    propertyColumnMap_ = new HashMap<>();
     pressedColumn_ = null;
-    sortedColumn_ = null;
-    sorting_ = Sorting.NONE;
     prefSizes_ = null;
   }
 
@@ -43,12 +36,12 @@ public class ColumnModel<E> extends DefaultTableColumnModel {
     allPropertiesColumnMap_.putAll(propertyColumnMap_);
   }
 
-  Set<TablePropertyView> getShownProperties() {
-    return new HashSet<TablePropertyView>(propertyColumnMap_.keySet());
+  Set<TablePropertyView<E, ?>> getShownProperties() {
+    return new HashSet<>(propertyColumnMap_.keySet());
   }
 
   List<String> getPropertyKeyList() {
-    final List<String> returnValue    = new ArrayList<String>(tableColumns.size());
+    final List<String> returnValue    = new ArrayList<>(tableColumns.size());
 
     for (int i = 0; i < tableColumns.size(); i++) {
       final TablePropertyView view = ((Column)tableColumns.get(i)).getView();
@@ -59,7 +52,7 @@ public class ColumnModel<E> extends DefaultTableColumnModel {
   }
 
   List<String> getSizeList() {
-    final List<String> returnValue    = new ArrayList<String>(tableColumns.size());
+    final List<String> returnValue    = new ArrayList<>(tableColumns.size());
 
     for (int i = 0; i < tableColumns.size(); i++) {
       returnValue.add(Integer.toString(((Column)tableColumns.get(i)).getWidth()));
@@ -124,27 +117,17 @@ public class ColumnModel<E> extends DefaultTableColumnModel {
 
   void setProperties(List<TablePropertyView> properties) {
     if (!properties.isEmpty()) {
-      setShownProperties(new HashSet<TablePropertyView>(0));
+      setShownProperties(new HashSet<>(0));
       for (int i = 0; i < properties.size(); i++) {
         addColumn(allPropertiesColumnMap_.get(properties.get(i)));
       }
     }
   }
 
-  void setSorting(Column column, Sorting sorting) {
-    for (int i = 0; i < getColumnCount(); i++) {
-      if (getColumn(i) == column) {
-        sortedColumn_ = column;
-        sorting_ = sorting;
-        break;
-      }
-    }
-  }
-
   void setShownProperties(Collection<TablePropertyView> newProperties) {
-    final Set<TablePropertyView>   shownProperties   = getShownProperties();
-    final Set<TablePropertyView>   toRemove          = new HashSet<TablePropertyView>(shownProperties);
-    final Set<TablePropertyView>   toAdd             = new HashSet<TablePropertyView>(newProperties);
+    final Set<TablePropertyView<E, ?>>   shownProperties   = getShownProperties();
+    final Set<TablePropertyView>   toRemove          = new HashSet<>(shownProperties);
+    final Set<TablePropertyView>   toAdd             = new HashSet<>(newProperties);
 
     toRemove.removeAll(newProperties);
     toAdd.removeAll(shownProperties);
@@ -208,9 +191,6 @@ public class ColumnModel<E> extends DefaultTableColumnModel {
     if (column == pressedColumn_) {
       pressedColumn_ = null;
     }
-    if (column == sortedColumn_) {
-      sortedColumn_ = null;
-    }
     super.removeColumn(column);
   }
 
@@ -231,13 +211,6 @@ public class ColumnModel<E> extends DefaultTableColumnModel {
   @Override
   public Column getColumn(int columnIndex) {
     return (Column)super.getColumn(columnIndex);
-  }
-
-  Sorting getSorting(int columnIndex) {
-    return (
-      (tableColumns.get(columnIndex) == sortedColumn_)
-      ? sorting_ : Sorting.NONE
-    );
   }
 
   public Column resolveColumn(Ref tablePropertyViewRef) {

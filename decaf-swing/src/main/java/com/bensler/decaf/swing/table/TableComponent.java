@@ -69,7 +69,7 @@ public class TableComponent<E> extends JTable {
     sortableTableModel_ = model;
     columnModel_ = (ColumnModel)columnModel;
     createDefaultColumnsFromModel();
-    headerRenderer_ = new HeaderRenderer((ColumnModel)getColumnModel());
+    headerRenderer_ = new HeaderRenderer(sortableTableModel_, (ColumnModel)getColumnModel());
     tableHeader.setDefaultRenderer(headerRenderer_);
     gapBorder_ = BorderFactory.createEmptyBorder(0, 3, 0, 3);
     tableHeader.addMouseListener(new HeaderListener());
@@ -127,18 +127,13 @@ public class TableComponent<E> extends JTable {
     return new ColumnModel<E>();
   }
 
-  private void sortByColumn(Column column) {
-    sortByColumn(column, sortableTableModel_.getSorting(column));
+  private void sortByColumn(Column<E> column) {
+    sortableTableModel_.sortByColumn(column);
   }
 
-  void sortByColumn(int column, boolean ascending) {
-    sortByColumn(columnModel_.getColumn(column), (ascending ? Sorting.ASCENDING : Sorting.DESCENDING));
-  }
-
-  private void sortByColumn(Column column, Sorting sorting) {
+  private void sortByColumn(Column<E> column, Sorting sorting) {
     if (column.isSortable()) {
       sortableTableModel_.sortByColumn(column, sorting);
-      columnModel_.setSorting(column, sorting);
       entityTable_.saveSortState();
       tableHeader.repaint();
     }

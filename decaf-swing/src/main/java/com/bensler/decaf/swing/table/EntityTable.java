@@ -503,16 +503,11 @@ implements ListSelectionListener, FocusListener, EntityComponent<E> {
     }
   }
 
-  public void sortByColumn(int column, boolean ascending) {
-    table_.sortByColumn(column, ascending);
-  }
-
   /** Set if this table should be sortable (default) or not by
    * clicking on the table headers. */
   public void setSortable(boolean flag) {
     if (sortable_ != flag) {
-      sortable_ = flag;
-      if (!sortable_) {
+      if (!(sortable_ = flag)) {
         model_.clearSorting();
         table_.getTableHeader().repaint();
       }

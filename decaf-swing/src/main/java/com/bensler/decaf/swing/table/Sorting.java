@@ -7,13 +7,11 @@ import java.util.Map;
 public enum Sorting {
 
   ASCENDING("ascending", true, 1),
-  DESCENDING("descending", false, -1),
-  NONE("none", false, 0);
+  DESCENDING("descending", false, -1);
 
   public final static Map<Sorting, Sorting> OPPOSITES = Map.of(
     ASCENDING,  DESCENDING,
-    DESCENDING, ASCENDING,
-    NONE,       NONE
+    DESCENDING, ASCENDING
   );
 
   private final         String    id_;

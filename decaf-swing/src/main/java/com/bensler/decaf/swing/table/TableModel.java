@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.IntStream;
 
 import javax.swing.table.AbstractTableModel;
 
@@ -11,14 +13,14 @@ import javax.swing.table.AbstractTableModel;
  */
 public class TableModel<E> extends AbstractTableModel {
 
-  /** TODO weg */
+  /** TODO rm */
             final         EntityTable<E>      boTable_;
 
-  private   final         TableView<E>        view_;
+  private final TableView<E> view_;
 
-  private   final         List<E>             entityList_;
+  private final List<E> entityList_;
 
-  private   final         ComparatorList<E>   comparator_;
+  private final ComparatorList<E> comparator_;
 
   TableModel(TableView<E> view, EntityTable<E> boTable) {
     super();
@@ -37,23 +39,23 @@ public class TableModel<E> extends AbstractTableModel {
     return entityList_.get(row);
   }
 
-  Sorting getSorting(Column<?> column) {
+  Optional<Sorting> getSorting(Column<E> column) {
     return comparator_.getSorting(column);
   }
 
-  void sortByColumn(Column<?> column, Sorting sorting) {
-    if (comparator_.addSorting(column, sorting)) {
-      final List<E> selectionBefore = boTable_.setSelectionSilent();
-
-      try {
-        Collections.reverse(entityList_);
-        fireTableDataChanged();
-      } finally {
-        boTable_.setSelectionUnsilent(selectionBefore);
-      }
-    } else {
-      resort();
+  Sorting sortByColumn(Column<E> column) {
+    try {
+      return comparator_.sortByColumn(column);
+    } finally {
+      Collections.sort(entityList_, comparator_);
+      fireTableDataChanged();
     }
+  }
+
+  void sortByColumn(Column<E> column, Sorting sorting) {
+    comparator_.sortByColumn(column, sorting);
+    Collections.sort(entityList_, comparator_);
+    fireTableDataChanged();
   }
 
   void clearSorting() {
@@ -66,11 +68,13 @@ public class TableModel<E> extends AbstractTableModel {
     for (final E subject : newData) {
       entityList_.add(subject);
     }
-    resort(oldSize);
+    Collections.sort(entityList_, comparator_);
+    fireTableDataChanged();
+//    resort(oldSize);
   }
 
   private void resort() {
-    resort(entityList_.size());
+//    resort(entityList_.size());
   }
 
   private void resort(int oldSize) {
@@ -135,24 +139,16 @@ public class TableModel<E> extends AbstractTableModel {
   }
 
   void removeData(Object subject) {
-    removeData(Collections.singleton(subject));
+    final int index = entityList_.indexOf(subject);
+
+    if (index >= 0) {
+      entityList_.remove(index);
+      fireTableRowsDeleted(index, index);
+    }
   }
 
   void removeData(Collection<?> bos) {
-    final int     oldSize = entityList_.size();
-          boolean resort  = false;
-
-    for (final Object subject : bos) {
-      final int index = entityList_.indexOf(subject);
-
-      if (index >= 0) {
-        entityList_.remove(index);
-        resort = true;
-      }
-    }
-    if (resort) {
-      resort(oldSize);
-    }
+    bos.forEach(this::removeData);
   }
 
   @Override
@@ -171,12 +167,7 @@ public class TableModel<E> extends AbstractTableModel {
   }
 
   List<E> getValues(int[] indices) {
-    final List<E> returnValue = new ArrayList<>(indices.length);
-
-    for (int i = 0; i < indices.length && i < entityList_.size(); i++) {
-      returnValue.add(entityList_.get(indices[i]));
-    }
-    return returnValue;
+    return IntStream.of(indices).mapToObj(entityList_::get).toList();
   }
 
   List<E> getValues() {

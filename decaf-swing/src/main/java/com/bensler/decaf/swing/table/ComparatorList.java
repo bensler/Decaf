@@ -1,72 +1,42 @@
 package com.bensler.decaf.swing.table;
 
-import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.LinkedList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Optional;
 
 
 /**
  */
 final class ComparatorList<E> extends Object implements Comparator<E> {
 
-  private   final         LinkedList<ComparatorWrapper>   sorting_;
+  private final LinkedHashMap<Column<E>, ComparatorWrapper<E>> sorting_;
 
   ComparatorList() {
-    sorting_ = new LinkedList<>();
-  }
-
-  private void addCompWrapper(ComparatorWrapper wrapper) {
-    final int index = sorting_.indexOf(wrapper);
-
-    if (index > 0) {
-      while (sorting_.size() > index) {
-        sorting_.removeLast();
-      }
-    }
-    sorting_.addFirst(wrapper);
+    sorting_ = new LinkedHashMap<>();
   }
 
   @Override
-  public int compare(E o1, E o2) {
-    int cmpVal = 0;
-
-    for (int i = 0; i < sorting_.size(); i++) {
-      cmpVal = sorting_.get(i).compare(o1, o2);
-      if (cmpVal != 0) {
-        break;
-      }
-    }
-    return cmpVal;
+  public int compare(E e1, E e2) {
+    return sorting_.values().stream()
+    .mapToInt(wrapper -> wrapper.compare(e1, e2))
+    .filter(cmpVal -> (cmpVal != 0))
+    .findFirst().orElse(0);
   }
 
-  Sorting getSorting(Column<?> column) {
-    if (
-      (!sorting_.isEmpty())
-      && (sorting_.getFirst().column_ == column)
-    ) {
-      return (sorting_.getFirst()).sorting_.getOpposite();
-    } else {
-      return Sorting.ASCENDING;
-    }
+  Optional<Sorting> getSorting(Column<E> column) {
+    return Optional.ofNullable(sorting_.get(column)).map(ComparatorWrapper::getSorting);
   }
 
-  /**@return if order is just switched */
-  boolean addSorting(Column<?> column, Sorting sorting) {
-    if (!sorting_.isEmpty()) {
-      final ComparatorWrapper first = sorting_.getFirst();
+  Sorting sortByColumn(Column<E> column) {
+    final Sorting sorting = getSorting(column).map(Sorting::getOpposite).orElse(Sorting.ASCENDING);
 
-      if (first.column_ == column) {
-        final Sorting oldSorting = first.sorting_;
+    sortByColumn(column, sorting);
+    return sorting;
+  }
 
-        first.setSorting(sorting);
-        return (sorting == oldSorting.getOpposite());
-      }
-    }
-    addCompWrapper(new ComparatorWrapper(
-      column, sorting
-    ));
-    return false;
+  void sortByColumn(Column<E> column, Sorting sorting) {
+    sorting_.putFirst(column, new ComparatorWrapper<>(column, sorting));
   }
 
   boolean isEmpty() {
@@ -74,15 +44,13 @@ final class ComparatorList<E> extends Object implements Comparator<E> {
   }
 
   List<String> getSortPrefs() {
-    final List<String> result = new ArrayList<>(sorting_.size() * 2);
+    return sorting_.entrySet().stream()
+    .map(entry -> entry.getKey().getView().getId() + ":" + entry.getValue().sorting_)
+    .toList();
+  }
 
-    for (int i = 0; i < sorting_.size(); i++) {
-      final ComparatorWrapper wrapper = sorting_.get(i);
-
-      result.add(wrapper.column_.getView().getId());
-      result.add(Boolean.toString(wrapper.sorting_.isAscending()));
-    }
-    return result;
+  void clear() {
+    sorting_.clear();
   }
 
 //  void loadSortPrefs(String[] sortings, ColumnModel colModel) {
@@ -115,31 +83,20 @@ final class ComparatorList<E> extends Object implements Comparator<E> {
 //    }
 //  }
 
-  private final class ComparatorWrapper extends Object implements Comparator<E> {
+  final static class ComparatorWrapper<E> extends Object implements Comparator<E> {
 
-    private   final         Column      column_;
-
-                            Sorting     sorting_;
+    final Column<E> column_;
+    final Sorting sorting_;
 
     ComparatorWrapper(
-      Column column, Sorting sorting
+      Column<E> column, Sorting sorting
     ) {
       column_ = column;
       sorting_ = sorting;
     }
 
-    @Override
-    public boolean equals(Object obj) {
-      return ((obj.getClass().equals(getClass())) && (((ComparatorWrapper)obj).column_.equals(column_)));
-    }
-
-    @Override
-    public int hashCode() {
-      return column_.hashCode();
-    }
-
-    void setSorting(Sorting sorting) {
-      sorting_ = sorting;
+    Sorting getSorting() {
+      return sorting_;
     }
 
     @Override
@@ -147,10 +104,6 @@ final class ComparatorList<E> extends Object implements Comparator<E> {
       return (sorting_.getFactor() * column_.getView().compare(o1, o2));
     }
 
-  }
-
-  void clear() {
-    sorting_.clear();
   }
 
 }

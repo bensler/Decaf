@@ -4,6 +4,7 @@ import java.awt.Component;
 import java.awt.Insets;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 import javax.swing.JButton;
 import javax.swing.JTable;
@@ -12,28 +13,29 @@ import javax.swing.table.TableCellRenderer;
 
 /**
  */
-class HeaderRenderer extends JButton implements TableCellRenderer {
+class HeaderRenderer<E> extends JButton implements TableCellRenderer {
 
-  private   final         ColumnModel<?>          columnModel_;
+  private final TableModel<?> model_;
+  private final ColumnModel<?> columnModel_;
+  private final Map<Sorting, JButton> sortingButtonMap_;
 
-  private   final         Map<Sorting, JButton>   sortingButtonMap_;
+  HeaderRenderer(TableModel<E> model, ColumnModel<?> columnModel) {
+    final Insets insets = new Insets(0, 0, 0, 0);
+    final int size = getFont().getSize();
 
-  HeaderRenderer(ColumnModel<?> columnModel) {
-    final Insets              insets  = new Insets(0, 0, 0, 0);
-    final int                 size    = getFont().getSize();
-
+    model_ = model;
     columnModel_ = columnModel;
-    sortingButtonMap_ = new HashMap<Sorting, JButton>(1);
+    sortingButtonMap_ = new HashMap<>(1);
 
-    createButton(Sorting.NONE, size, insets);
     createButton(Sorting.ASCENDING, size, insets);
     createButton(Sorting.DESCENDING, size, insets);
+    createButton(null, size, insets);
   }
 
   private void createButton(
     Sorting sorting, int size, Insets insets
   ) {
-    final JButton   button = new JButton();
+    final JButton button = new JButton();
 
     button.setMargin(insets);
     button.setHorizontalTextPosition(LEFT);
@@ -45,13 +47,14 @@ class HeaderRenderer extends JButton implements TableCellRenderer {
   @Override
   public Component getTableCellRendererComponent(
     JTable table, Object value, boolean isSelected, boolean hasFocus,
-    int row, int column
+    int row, int colIndex
   ) {
-    final Sorting   sorting   = columnModel_.getSorting(column);
-    final boolean   pressed   = columnModel_.isColumnPressed(column);
-    final String    valueStr  = (value == null) ? "" : value.toString();
-    final String    tooltip   = (valueStr.trim().length() < 1) ? null : value.toString();
-    final JButton   button    = sortingButtonMap_.get(sorting);
+    final Column column = columnModel_.getColumn(colIndex);
+    final Optional<Sorting> sorting = model_.getSorting(column);
+    final boolean pressed = columnModel_.isColumnPressed(colIndex);
+    final String valueStr = (value == null) ? "" : value.toString();
+    final String tooltip = (valueStr.trim().length() < 1) ? null : value.toString();
+    final JButton button = sortingButtonMap_.get(sorting.orElse(null));
 
     button.setText(valueStr);
     button.setToolTipText(tooltip);
