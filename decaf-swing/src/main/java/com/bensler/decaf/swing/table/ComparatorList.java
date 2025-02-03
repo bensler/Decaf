@@ -5,6 +5,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Optional;
 
+import com.bensler.decaf.util.Pair;
+
 
 /**
  */
@@ -24,12 +26,17 @@ final class ComparatorList<E> extends Object implements Comparator<E> {
     .findFirst().orElse(0);
   }
 
-  Optional<Sorting> getSorting(Column<E> column) {
-    return Optional.ofNullable(sorting_.get(column)).map(ComparatorWrapper::getSorting);
+  Optional<Pair<Sorting, Integer>> getSorting(Column<?> column) {
+    return Optional.ofNullable(sorting_.get(column)).map(cmpWrapper -> new Pair<>(
+      cmpWrapper.getSorting(), List.copyOf(sorting_.sequencedKeySet()).indexOf(column)
+    ));
   }
 
   Sorting sortByColumn(Column<E> column) {
-    final Sorting sorting = getSorting(column).map(Sorting::getOpposite).orElse(Sorting.ASCENDING);
+    final Sorting sorting = getSorting(column)
+    .map(Pair::getLeft)
+    .map(Sorting::getOpposite)
+    .orElse(Sorting.ASCENDING);
 
     sortByColumn(column, sorting);
     return sorting;

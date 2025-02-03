@@ -10,6 +10,8 @@ import javax.swing.JButton;
 import javax.swing.JTable;
 import javax.swing.table.TableCellRenderer;
 
+import com.bensler.decaf.util.Pair;
+
 
 /**
  */
@@ -50,11 +52,11 @@ class HeaderRenderer<E> extends JButton implements TableCellRenderer {
     int row, int colIndex
   ) {
     final Column column = columnModel_.getColumn(colIndex);
-    final Optional<Sorting> sorting = model_.getSorting(column);
+    final Optional<Pair<Sorting, Integer>> sorting = model_.getSorting(column);
     final boolean pressed = columnModel_.isColumnPressed(colIndex);
     final String valueStr = (value == null) ? "" : value.toString();
     final String tooltip = (valueStr.trim().length() < 1) ? null : value.toString();
-    final JButton button = sortingButtonMap_.get(sorting.orElse(null));
+    final JButton button = sortingButtonMap_.get(sorting.map(Pair::getLeft).orElse(null));
 
     button.setText(valueStr);
     button.setToolTipText(tooltip);

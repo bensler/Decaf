@@ -34,7 +34,7 @@ public class Pair<L, R> {
 
   @Override
   public String toString() {
-    return "%s[left:%s, right:%s]".formatted(getClass().getSimpleName(), left_, right_);
+    return "%s[%s,%s]".formatted(getClass().getSimpleName(), left_, right_);
   }
 
 }

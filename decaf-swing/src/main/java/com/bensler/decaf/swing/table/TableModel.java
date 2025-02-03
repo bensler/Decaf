@@ -9,6 +9,8 @@ import java.util.stream.IntStream;
 
 import javax.swing.table.AbstractTableModel;
 
+import com.bensler.decaf.util.Pair;
+
 /**
  */
 public class TableModel<E> extends AbstractTableModel {
@@ -39,7 +41,7 @@ public class TableModel<E> extends AbstractTableModel {
     return entityList_.get(row);
   }
 
-  Optional<Sorting> getSorting(Column<E> column) {
+  Optional<Pair<Sorting, Integer>> getSorting(Column<?> column) {
     return comparator_.getSorting(column);
   }
 
