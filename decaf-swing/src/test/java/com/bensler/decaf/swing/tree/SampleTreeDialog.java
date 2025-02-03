@@ -15,6 +15,7 @@ import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
 import com.bensler.decaf.swing.list.EntityList;
+import com.bensler.decaf.swing.selection.SelectionMode;
 import com.bensler.decaf.swing.table.EntityTable;
 import com.bensler.decaf.swing.table.TablePropertyView;
 import com.bensler.decaf.swing.table.TableView;
@@ -64,6 +65,7 @@ class SampleTreeDialog {
       new TablePropertyView<>("name", "Name", nameView),
       new TablePropertyView<>("parentName", "Parent", parentNameView)
     ));
+    table_.setSelectionMode(SelectionMode.MULTIPLE_INTERVAL);
     dialog_.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
     tree_.setData(data);
     list_.setData(data.getMembers());

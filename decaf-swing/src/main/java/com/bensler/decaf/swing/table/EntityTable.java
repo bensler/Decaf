@@ -68,8 +68,6 @@ implements ListSelectionListener, FocusListener, EntityComponent<E> {
 
 //  private                 ActionImpl          customizeAction_;
 
-  private                 boolean             sortable_;
-
   protected               Preferences         prefs_;
 
   private                 boolean             autoColumnResize_;
@@ -95,12 +93,11 @@ implements ListSelectionListener, FocusListener, EntityComponent<E> {
 
   public EntityTable(TableView<E> view, Preferences prefs) {
     autoColumnResize_ = true;
-    sortable_ = true;
     view_ = view;
     focusListeners_ = new HashSet<>();
     selection_ = new ArrayList<>(2);
     savedSelection_ = new ArrayList<>(2);
-    model_ = new TableModel<>(view_, this);
+    model_ = new TableModel<>(view_);
     table_ = new TableComponent<>(this, model_, view_);
     table_.addFocusListener(this);
     columnModel_ = (ColumnModel)table_.getColumnModel();
@@ -234,7 +231,9 @@ implements ListSelectionListener, FocusListener, EntityComponent<E> {
 //      if (autoColumnResize_) {
 //        table_.setSizesFromHeaderLabel();
 //      }
-//      table_.loadSortPrefs(PreferencesUtil.loadStrings(new PrefKey(prefs_, SORT_KEY)));
+//      if (isSortable()) {
+//        table_.loadSortPrefs(PreferencesUtil.loadStrings(new PrefKey(prefs_, SORT_KEY)));
+//      }
     }
   }
 
@@ -501,23 +500,6 @@ implements ListSelectionListener, FocusListener, EntityComponent<E> {
       updateBackground();
       ((JComponent)scrollPane_.getParent()).revalidate();
     }
-  }
-
-  /** Set if this table should be sortable (default) or not by
-   * clicking on the table headers. */
-  public void setSortable(boolean flag) {
-    if (sortable_ != flag) {
-      if (!(sortable_ = flag)) {
-        model_.clearSorting();
-        table_.getTableHeader().repaint();
-      }
-    }
-  }
-
-  /** @return if this table is sortable (default) or not by
-   * clicking on the table headers. */
-  public boolean isSortable() {
-    return sortable_;
   }
 
   public void setSelectionBackground(Color color) {

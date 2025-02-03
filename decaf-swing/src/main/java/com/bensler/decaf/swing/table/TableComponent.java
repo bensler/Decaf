@@ -134,7 +134,6 @@ public class TableComponent<E> extends JTable {
   private void sortByColumn(Column<E> column, Sorting sorting) {
     if (column.isSortable()) {
       sortableTableModel_.sortByColumn(column, sorting);
-      entityTable_.saveSortState();
       tableHeader.repaint();
     }
   }
@@ -188,7 +187,6 @@ public class TableComponent<E> extends JTable {
       }
       if (
         (evt.getButton() == MouseEvent.BUTTON1)
-        && (entityTable_.isSortable())
         && (getResizeColumnIndex(evt.getPoint()) < 0)
       ) {
         final Column column = columnModel_.getColumn(tableHeader.columnAtPoint(evt.getPoint()));
