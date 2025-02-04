@@ -63,7 +63,9 @@ class SampleTreeDialog {
     list_ = new EntityList<>(nameView);
     table_ = new EntityTable<>(new TableView<>(
       new TablePropertyView<>("name", "Name", nameView),
-      new TablePropertyView<>("parentName", "Parent", parentNameView)
+      new TablePropertyView<>("parentName", "Parent", parentNameView),
+      new TablePropertyView<>("name1", "Name", nameView),
+      new TablePropertyView<>("parentName2", "Parent", parentNameView)
     ));
     table_.setSelectionMode(SelectionMode.MULTIPLE_INTERVAL);
     dialog_.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);

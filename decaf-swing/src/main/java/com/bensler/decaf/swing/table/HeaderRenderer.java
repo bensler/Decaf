@@ -66,25 +66,36 @@ class HeaderRenderer<E> extends JButton implements TableCellRenderer {
 
   static class ArrowIcon implements Icon {
 
-    private final Color color_;
-    private final int size_;
+    private final Color colorFill_;
+    private final Color colorBg_;
+    private final Color colorFg_;
+    private final int maxSize_;
     private Optional<Pair<Sorting, Integer>> sorting_;
+    private int size_;
 
     ArrowIcon(int size, JButton parent) {
-      final Color fg = parent.getForeground();
-      final Color bg = parent.getBackground();
-
-      color_ = new Color(
-        ((1 * fg.getRed())   + bg.getRed()  ) / 2,
-        ((1 * fg.getGreen()) + bg.getGreen()) / 2,
-        ((1 * fg.getBlue())  + bg.getBlue() ) / 2
+      colorFg_ = parent.getForeground();
+      colorBg_ = parent.getBackground();
+      colorFill_ = new Color(
+        (colorFg_.getRed()   + (2 * colorBg_.getRed())  ) / 3,
+        (colorFg_.getGreen() + (2 * colorBg_.getGreen())) / 3,
+        (colorFg_.getBlue()  + (2 * colorBg_.getBlue()) ) / 3
       );
-      size_ = size;
+      size_ = maxSize_ = size;
       sorting_ = Optional.empty();
     }
 
     void setSorting(Optional<Pair<Sorting, Integer>> sorting) {
       sorting_ = sorting;
+      size_ = 0;
+      if (sorting_.isPresent()) {
+        switch (sorting_.get().getRight().intValue()) {
+          case 0  : size_ = maxSize_; break;
+          case 1  : size_ = Math.round((maxSize_ / 4.0f) * 3); break;
+          case 2  : size_ = Math.round( maxSize_ / 2.0f     ); break;
+        }
+      }
+      System.out.println(size_);
     }
 
     @Override
@@ -104,12 +115,20 @@ class HeaderRenderer<E> extends JButton implements TableCellRenderer {
               g2d.scale(1, -1);
               g2d.translate(0, -size_ + 1);
             }
-            g2d.setColor(color_);
+            g2d.setColor(colorFill_);
             g2d.fillPolygon(
               new int[] {0       , 0 + size, 0 + (size / 2)},
               new int[] {0 + size, 0 + size, 0            },
               3
             );
+            g2d.setColor(colorFg_);
+            g2d.drawPolygon(
+              new int[] {0       , 0 + size, 0 + (size / 2)},
+              new int[] {0 + size, 0 + size, 0            },
+              3
+            );
+//            g2d.setColor(colorBg_);
+//            g2d.drawLine(0, 0, size, size);
           } finally {
             g2d.dispose();
           }
