@@ -69,7 +69,7 @@ public class TableComponent<E> extends JTable {
     sortableTableModel_ = model;
     columnModel_ = (ColumnModel)columnModel;
     createDefaultColumnsFromModel();
-    headerRenderer_ = new HeaderRenderer(sortableTableModel_, (ColumnModel)getColumnModel());
+    headerRenderer_ = new HeaderRenderer<>(sortableTableModel_, (ColumnModel)getColumnModel());
     tableHeader.setDefaultRenderer(headerRenderer_);
     gapBorder_ = BorderFactory.createEmptyBorder(0, 3, 0, 3);
     tableHeader.addMouseListener(new HeaderListener());
