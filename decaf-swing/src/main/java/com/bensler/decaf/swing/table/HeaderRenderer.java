@@ -92,8 +92,8 @@ class HeaderRenderer<E> extends JButton implements TableCellRenderer {
 
         g.setColor(Color.GREEN);
         if (sorting == Sorting.DESCENDING) {
-          g2d.translate(0, 2 * size_);
           g2d.scale(1, -1);
+          g2d.translate(0, -1.5f * size_);
         }
         g.drawPolygon(
           new int[] {x        , x + size_, x + (size_ / 2)},
