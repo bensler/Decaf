@@ -5,7 +5,6 @@ import java.awt.Component;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Insets;
-import java.awt.geom.AffineTransform;
 import java.util.Optional;
 
 import javax.swing.ButtonModel;
@@ -32,7 +31,7 @@ class HeaderRenderer<E> extends JButton implements TableCellRenderer {
     button_ = new JButton();
     button_.setMargin(new Insets(0, 0, 0, 0));
     button_.setHorizontalTextPosition(LEFT);
-    button_.setIcon(arrowIcon_ = new ArrowIcon(getFont().getSize()));
+    button_.setIcon(arrowIcon_ = new ArrowIcon(getFont().getSize(), button_));
   }
 
   @Override
@@ -67,10 +66,19 @@ class HeaderRenderer<E> extends JButton implements TableCellRenderer {
 
   static class ArrowIcon implements Icon {
 
+    private final Color color_;
     private final int size_;
     private Optional<Pair<Sorting, Integer>> sorting_;
 
-    ArrowIcon(int size) {
+    ArrowIcon(int size, JButton parent) {
+      final Color fg = parent.getForeground();
+      final Color bg = parent.getBackground();
+
+      color_ = new Color(
+        ((1 * fg.getRed())   + bg.getRed()  ) / 2,
+        ((1 * fg.getGreen()) + bg.getGreen()) / 2,
+        ((1 * fg.getBlue())  + bg.getBlue() ) / 2
+      );
       size_ = size;
       sorting_ = Optional.empty();
     }
@@ -81,26 +89,31 @@ class HeaderRenderer<E> extends JButton implements TableCellRenderer {
 
     @Override
     public void paintIcon(Component c, Graphics g, int x, int y) {
-      g.setColor(Color.RED);
-      g.drawRect(x, y, size_, size_);
       if (sorting_.isPresent()) {
         final Pair<Sorting, Integer> pair = sorting_.get();
-        final Sorting sorting = pair.getLeft();
         final Integer prio = pair.getRight();
-        final Graphics2D g2d = ((Graphics2D)g);
-        final AffineTransform transform = g2d.getTransform();
 
-        g.setColor(Color.GREEN);
-        if (sorting == Sorting.DESCENDING) {
-          g2d.scale(1, -1);
-          g2d.translate(0, -1.5f * size_);
+        if (prio < 3) {
+          final Sorting sorting = pair.getLeft();
+          final Graphics2D g2d = (Graphics2D) g.create(x, y, size_, size_);
+
+          try {
+            final int size = size_ - 1;
+
+            if (sorting == Sorting.DESCENDING) {
+              g2d.scale(1, -1);
+              g2d.translate(0, -size_ + 1);
+            }
+            g2d.setColor(color_);
+            g2d.fillPolygon(
+              new int[] {0       , 0 + size, 0 + (size / 2)},
+              new int[] {0 + size, 0 + size, 0            },
+              3
+            );
+          } finally {
+            g2d.dispose();
+          }
         }
-        g.drawPolygon(
-          new int[] {x        , x + size_, x + (size_ / 2)},
-          new int[] {y + size_, y + size_, y              },
-          3
-        );
-        g2d.setTransform(transform);
       }
     }
 
