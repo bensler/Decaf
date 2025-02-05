@@ -296,7 +296,7 @@ implements ListSelectionListener, FocusListener, EntityComponent<E> {
 
   @Override
   public List<E> getSelection() {
-    return table_.getSelectedValues();
+    return List.copyOf(selection_);
   }
 
   @Override
@@ -396,7 +396,8 @@ implements ListSelectionListener, FocusListener, EntityComponent<E> {
   public void valueChanged(ListSelectionEvent evt) {
     if (!evt.getValueIsAdjusting()) {
       selection_.clear();
-      selection_.addAll(getSelection());
+      selection_.addAll(table_.getSelectedValues());
+//System.out.println("selectionCount:" + selection_.size());
       fireSelectionChanged();
     }
   }
@@ -614,10 +615,6 @@ implements ListSelectionListener, FocusListener, EntityComponent<E> {
       return super.getPreferredSize();
     }
 
-  }
-
-  public void setRowView(TableRowView<E> rowView) {
-    table_.setRowView(rowView);
   }
 
   @Override

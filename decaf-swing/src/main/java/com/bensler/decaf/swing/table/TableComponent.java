@@ -37,7 +37,7 @@ public class TableComponent<E> extends JTable {
 
   private   final         TableModel<E>       sortableTableModel_;
 
-  private   final         ColumnModel<E>         columnModel_;
+  private   final         ColumnModel<E>      columnModel_;
 
   private   final         TableView<E>        view_;
 
@@ -422,10 +422,6 @@ public class TableComponent<E> extends JTable {
     }
     columnModel_.setPrefSizes(sizes);
     columnModel_.updateColPrefSizes(sum);
-  }
-
-  public void setRowView(TableRowView rowView) {
-    rowView_ = rowView;
   }
 
   public Color getBackgroundSelectionColorUnfocused() {
