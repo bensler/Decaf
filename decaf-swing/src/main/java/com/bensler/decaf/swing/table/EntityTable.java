@@ -8,7 +8,6 @@ import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -23,9 +22,6 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JViewport;
-import javax.swing.ListSelectionModel;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 
 import com.bensler.decaf.swing.EntityComponent;
 import com.bensler.decaf.swing.selection.EntitySelectionListener;
@@ -37,8 +33,7 @@ import com.jgoodies.forms.layout.FormLayout;
 
 /**
  */
-public class EntityTable<E> extends Object
-implements ListSelectionListener, FocusListener, EntityComponent<E> {
+public class EntityTable<E> extends Object implements FocusListener, EntityComponent<E> {
 
   private   final static  String              COL_KEY     = "cols";
 
@@ -60,29 +55,21 @@ implements ListSelectionListener, FocusListener, EntityComponent<E> {
 
   private   final         Map<PopupListener, PopupListenerWrapper> popupListeners_;
 
-  private   final         List<E>             selection_;
+  private final TableSelectionController selectionCtrl_;
+//  private   final         List<E>             selection_;
+//  private   final         List<E>             savedSelection_;
+//  private                 EntitySelectionListener<E> selectionListener_;
+//  private                 boolean             silentSelectionChange_;
+//  private                 SelectionMode       selectionMode_;
+//  private                 ListSelectionModel  defSelModel_;
 
-  private   final         List<E>             savedSelection_;
-
-  private                 EntitySelectionListener<E> selectionListener_;
-
-//  private                 ActionImpl          customizeAction_;
+  //  private                 ActionImpl          customizeAction_;
 
   protected               Preferences         prefs_;
 
   private                 boolean             autoColumnResize_;
 
-  private                 boolean             silentSelectionChange_;
-
-  private                 SelectionMode       selectionMode_;
-
-  private                 ListSelectionModel  defSelModel_;
-
-  private                 boolean             enabled_;
-
   private                 Color               enabledBgColor_;
-
-  private                 boolean             informFocusedBoManager_;
 
   /** May be null! If not null it is shown when the table empty. */
   private                 Background          emptyBackgroundComp_;
@@ -95,10 +82,9 @@ implements ListSelectionListener, FocusListener, EntityComponent<E> {
     autoColumnResize_ = true;
     view_ = view;
     focusListeners_ = new HashSet<>();
-    selection_ = new ArrayList<>(2);
-    savedSelection_ = new ArrayList<>(2);
     model_ = new TableModel<>(view_);
     table_ = new TableComponent<>(this, model_, view_);
+    selectionCtrl_ = new TableSelectionController(this);
     table_.addFocusListener(this);
     columnModel_ = (ColumnModel)table_.getColumnModel();
     columnModel_.init();
@@ -106,7 +92,6 @@ implements ListSelectionListener, FocusListener, EntityComponent<E> {
     initCustAction();
     setSelectionListener(null);
     popupListeners_ = new HashMap<>(1);
-    silentSelectionChange_ = false;
     scrollPane_.getViewport().setBackground(table_.getBackground());
     defSelModel_ = table_.getSelectionModel();
     setSelectionMode(SelectionMode.SINGLE);
@@ -271,10 +256,6 @@ implements ListSelectionListener, FocusListener, EntityComponent<E> {
 //    return views;
 //  }
 
-  public SelectionMode getSelectionMode() {
-    return selectionMode_;
-  }
-
   public void setSelectionMode(SelectionMode mode) {
     if (selectionMode_ != mode) {
       setSelectionMode_(mode);
@@ -296,7 +277,7 @@ implements ListSelectionListener, FocusListener, EntityComponent<E> {
 
   @Override
   public List<E> getSelection() {
-    return List.copyOf(selection_);
+    return selectionCtrl_.getSelection();
   }
 
   @Override
@@ -393,18 +374,8 @@ implements ListSelectionListener, FocusListener, EntityComponent<E> {
   }
 
   @Override
-  public void valueChanged(ListSelectionEvent evt) {
-    if (!evt.getValueIsAdjusting()) {
-      selection_.clear();
-      selection_.addAll(table_.getSelectedValues());
-//System.out.println("selectionCount:" + selection_.size());
-      fireSelectionChanged();
-    }
-  }
-
-  @Override
   public void select(Object subject) {
-    select(Arrays.asList(new Object[] {subject}));
+    select(List.of(subject));
   }
 
   @Override
@@ -426,12 +397,6 @@ implements ListSelectionListener, FocusListener, EntityComponent<E> {
     table_.scrollRectToVisible(
       table_.getCellRect(index, 0, true)
     );
-  }
-
-  private void fireSelectionChanged() {
-    if (!silentSelectionChange_ && enabled_) {
-      selectionListener_.selectionChanged(this, new ArrayList<>(selection_));
-    }
   }
 
   public void doubleclickTriggered(MouseEvent evt) {
@@ -467,20 +432,20 @@ implements ListSelectionListener, FocusListener, EntityComponent<E> {
 
   }
 
-  List<E> setSelectionSilent() {
-    silentSelectionChange_ = true;
-    return new ArrayList<>(selection_);
-  }
-
-  void setSelectionUnsilent(List<E> selectionBefore) {
-    if (!new HashSet<>(selectionBefore).equals(new HashSet<>(selection_))) {
-      table_.setSelectedValues(selectionBefore);
-      silentSelectionChange_ = false;
-      fireSelectionChanged();
-      table_.repaint();
-    }
-    silentSelectionChange_ = false;
-  }
+//  List<E> setSelectionSilent() {
+//    silentSelectionChange_ = true;
+//    return new ArrayList<>(selection_);
+//  }
+//
+//  void setSelectionUnsilent(List<E> selectionBefore) {
+//    if (!new HashSet<>(selectionBefore).equals(new HashSet<>(selection_))) {
+//      table_.setSelectedValues(selectionBefore);
+//      silentSelectionChange_ = false;
+//      fireSelectionChanged();
+//      table_.repaint();
+//    }
+//    silentSelectionChange_ = false;
+//  }
 
   /** Convenience wrapper for setVisibleRows(visibleRows,visibleRows);*/
   public void setVisibleRows(int visibleRows) {
@@ -515,28 +480,6 @@ implements ListSelectionListener, FocusListener, EntityComponent<E> {
 
   public void requestFocus() {
     table_.requestFocus();
-  }
-
-  public void setEnabled(boolean enabled) {
-    if (enabled_ ^ enabled) {
-      if (enabled) {
-        scrollPane_.getViewport().setBackground(enabledBgColor_);
-        table_.setBackground(enabledBgColor_);
-        setSelectionMode_(selectionMode_);
-      } else {
-        enabledBgColor_ = table_.getBackground();
-        scrollPane_.getViewport().setBackground(null);
-        scrollPane_.setBackground(null);
-        table_.setBackground(null);
-        setSelectionMode_(SelectionMode.NONE);
-      }
-      enabled_ = enabled;
-    }
-  }
-
-  @Override
-  public boolean isEnabled() {
-    return enabled_;
   }
 
   public E getValue(Point point) {
@@ -576,10 +519,6 @@ implements ListSelectionListener, FocusListener, EntityComponent<E> {
 
   public int getRowCount() {
     return model_.getRowCount();
-  }
-
-  public void setInformFocusedBoManager(boolean inform) {
-    informFocusedBoManager_ = inform;
   }
 
   public void setEmptyBackgroundComp(JComponent emptyBackgroundComp) {

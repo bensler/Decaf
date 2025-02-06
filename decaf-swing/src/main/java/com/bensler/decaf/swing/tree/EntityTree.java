@@ -404,11 +404,6 @@ TreeSelectionListener, FocusListener {
     tree_.repaint();
   }
 
-  @Override
-  public boolean isEnabled() {
-    return tree_.isEnabled();
-  }
-
   @SuppressWarnings("unchecked")
   public EntityTreeModel<H> getModel() {
     return (EntityTreeModel<H>)tree_.getModel();

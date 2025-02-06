@@ -54,10 +54,6 @@ public class EntityList<E> extends Object implements ListSelectionListener, Enti
 
   private                 DefaultListSelectionModel defSelModel_;
 
-  private                 boolean             enabled_;
-
-  private                 Color               enabledBgColor_;
-
   public EntityList(PropertyView<? super E, ?> view) {
     super();
 
@@ -77,7 +73,6 @@ public class EntityList<E> extends Object implements ListSelectionListener, Enti
     scrollPane_.getViewport().setBackground(list_.getBackground());
     setSelectionMode(SelectionMode.SINGLE);
     list_.getSelectionModel().addListSelectionListener(this);
-    enabled_ = true;
   }
 
   /** @return the JList component wrapped by a JScrollpane
@@ -285,28 +280,6 @@ public class EntityList<E> extends Object implements ListSelectionListener, Enti
 
   public void requestFocus() {
     list_.requestFocus();
-  }
-
-  public void setEnabled(boolean enabled) {
-    if (enabled_ ^ enabled) {
-      if (enabled) {
-        scrollPane_.getViewport().setBackground(enabledBgColor_);
-        list_.setBackground(enabledBgColor_);
-        setSelectionMode(selectionMode_);
-      } else {
-        enabledBgColor_ = list_.getBackground();
-        scrollPane_.getViewport().setBackground(null);
-        scrollPane_.setBackground(null);
-        list_.setBackground(null);
-        setSelectionMode(SelectionMode.NONE);
-      }
-      enabled_ = enabled;
-    }
-  }
-
-  @Override
-  public boolean isEnabled() {
-    return enabled_;
   }
 
   @Override

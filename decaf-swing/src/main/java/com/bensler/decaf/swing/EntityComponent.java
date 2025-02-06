@@ -17,8 +17,6 @@ public interface EntityComponent<E> extends SelectionHolder<E> {
 
   public Optional<E> contains(Object entity);
 
-  public boolean isEnabled();
-
   @FunctionalInterface
   public interface FocusListener {
 
