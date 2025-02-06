@@ -26,7 +26,6 @@ import javax.swing.JViewport;
 import com.bensler.decaf.swing.EntityComponent;
 import com.bensler.decaf.swing.selection.EntitySelectionListener;
 import com.bensler.decaf.swing.selection.SelectionMode;
-import com.bensler.decaf.swing.view.NoSelectionModel;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
@@ -55,7 +54,7 @@ public class EntityTable<E> extends Object implements FocusListener, EntityCompo
 
   private   final         Map<PopupListener, PopupListenerWrapper> popupListeners_;
 
-  private final TableSelectionController selectionCtrl_;
+  private final TableSelectionController<E> selectionCtrl_;
 //  private   final         List<E>             selection_;
 //  private   final         List<E>             savedSelection_;
 //  private                 EntitySelectionListener<E> selectionListener_;
@@ -84,7 +83,7 @@ public class EntityTable<E> extends Object implements FocusListener, EntityCompo
     focusListeners_ = new HashSet<>();
     model_ = new TableModel<>(view_);
     table_ = new TableComponent<>(this, model_, view_);
-    selectionCtrl_ = new TableSelectionController(this);
+    selectionCtrl_ = new TableSelectionController<>(this);
     table_.addFocusListener(this);
     columnModel_ = (ColumnModel)table_.getColumnModel();
     columnModel_.init();
@@ -257,22 +256,7 @@ public class EntityTable<E> extends Object implements FocusListener, EntityCompo
 //  }
 
   public void setSelectionMode(SelectionMode mode) {
-    if (selectionMode_ != mode) {
-      setSelectionMode_(mode);
-      selectionMode_ = mode;
-    }
-  }
-
-  private void setSelectionMode_(SelectionMode mode) {
-    if (selectionMode_ == SelectionMode.NONE) {
-      table_.setSelectionModel(defSelModel_);
-    }
-    if (mode == SelectionMode.NONE) {
-      table_.setSelectionModel(NoSelectionModel.createTableListModel());
-    } else {
-      table_.setSelectionModel(defSelModel_);
-      table_.setSelectionMode(mode.getTableConstant());
-    }
+    selectionCtrl_.setSelectionMode(mode);
   }
 
   @Override
@@ -356,7 +340,7 @@ public class EntityTable<E> extends Object implements FocusListener, EntityCompo
 
   @Override
   public void setSelectionListener(EntitySelectionListener<E> listener) {
-    selectionListener_ = ((listener != null) ? listener : EntitySelectionListener.getNopInstance());
+    selectionCtrl_.setSelectionListener(listener);
   }
 
   public void addPopupListener(PopupListener listener) {

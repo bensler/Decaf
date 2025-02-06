@@ -9,6 +9,8 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 import com.bensler.decaf.swing.selection.EntitySelectionListener;
+import com.bensler.decaf.swing.selection.SelectionMode;
+import com.bensler.decaf.swing.view.NoSelectionModel;
 
 class TableSelectionController<E> implements ListSelectionListener {
 
@@ -52,6 +54,11 @@ class TableSelectionController<E> implements ListSelectionListener {
     selectionListeners_.remove(listener);
   }
 
+  public void setSelectionListener(EntitySelectionListener<E> listener) {
+    selectionListeners_.clear();
+    addSelectionListener(listener);
+  }
+
   private void fireEvent() {
     final List<E> selection = List.copyOf(selection_);
 
@@ -74,5 +81,24 @@ class TableSelectionController<E> implements ListSelectionListener {
   public List<E> getSelection() {
     return  List.copyOf(selection_);
   }
+
+  public void setSelectionMode(SelectionMode mode) {
+    if (selectionMode_ != mode) {
+      setSelectionMode_(mode);
+      selectionMode_ = mode;
+    }
+  }
+
+  private void setSelectionMode_(SelectionMode mode) {
+    if (selectionMode_ == SelectionMode.NONE) {
+      table_.setSelectionModel(defSelModel_);
+    }
+    if (mode == SelectionMode.NONE) {
+      table_.setSelectionModel(NoSelectionModel.createTableListModel());
+    } else {
+      table_.setSelectionModel(defSelModel_);
+      table_.setSelectionMode(mode.getTableConstant());
+    }
+   }
 
 }
