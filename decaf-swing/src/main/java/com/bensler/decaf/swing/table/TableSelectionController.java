@@ -20,19 +20,20 @@ class TableSelectionController<E> implements ListSelectionListener {
   private final ListSelectionModel defSelModel_;
   private final Set<EntitySelectionListener<E>> selectionListeners_;
   private final List<E> selection_;
-  private boolean ignoreSourceEvents_;
+  private SelectionKeeper selectionKeeper_;
 
-  TableSelectionController(EntityTable<E> owner) {
+  TableSelectionController(EntityTable<E> owner, TableComponent<E> table) {
     selectionListeners_ = new HashSet<>();
     selection_ = new ArrayList<>();
-    ignoreSourceEvents_ = false;
-    (table_ = (owner_ = owner).getComponent()).getSelectionModel().addListSelectionListener(this);
-    defSelModel_ = table_.getSelectionModel();
+    selectionKeeper_ = null;
+    owner_ = owner;
+    table_ = table;
+    (defSelModel_ = table_.getSelectionModel()).addListSelectionListener(this);
   }
 
   @Override
   public void valueChanged(ListSelectionEvent evt) {
-    if ((!ignoreSourceEvents_) && (!evt.getValueIsAdjusting())) {
+    if ((selectionKeeper_ == null) && (!evt.getValueIsAdjusting())) {
       final List<E> newSelection = table_.getSelectedValues();
 
       if (!Set.copyOf(selection_).equals(Set.copyOf(newSelection))) {
@@ -55,19 +56,6 @@ class TableSelectionController<E> implements ListSelectionListener {
     final List<E> selection = List.copyOf(selection_);
 
     selectionListeners_.forEach(listener -> listener.selectionChanged(owner_, selection));
-  }
-
-  void setSelectionSilent() {
-    ignoreSourceEvents_ = true;
-  }
-
-  void setSelectionUnsilent(List<E> selectionBefore) {
-    if (!new HashSet<>(selectionBefore).equals(new HashSet<>(selection_))) {
-      table_.setSelectedValues(selectionBefore);
-      fireSelectionChanged();
-      table_.repaint();
-    }
-    ignoreSourceEvents_ = false;
   }
 
   public List<E> getSelection() {
@@ -96,16 +84,21 @@ class TableSelectionController<E> implements ListSelectionListener {
     private final List<E> oldSelection_;
 
     SelectionKeeper() {
+      if (selectionKeeper_ != null ) {
+        throw new IllegalStateException("Do not nest SelectionKeeper objects!");
+      } else {
+        selectionKeeper_ = this;
+      }
       oldSelection_ = List.copyOf(selection_);
     }
 
     @Override
     public void close() {
-      // TODO
-//      Collections.sort(entityList_, comparator_);
-//      if (alwaysFireEvent_ || (!oldEntityList_.equals(entityList_))) {
-//        fireTableDataChanged();
-//      }
+      table_.setSelectedValues(oldSelection_);
+      if (!new HashSet<>(oldSelection_).equals(new HashSet<>(selection_))) {
+        fireSelectionChanged();
+      }
+      selectionKeeper_ = null;
     }
 
   }

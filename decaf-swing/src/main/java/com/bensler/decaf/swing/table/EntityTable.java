@@ -54,7 +54,6 @@ public class EntityTable<E> extends Object implements FocusListener, EntityCompo
 
   private   final         Map<PopupListener, PopupListenerWrapper> popupListeners_;
 
-  private final TableSelectionController<E> selectionCtrl_;
 //  private   final         List<E>             selection_;
 //  private   final         List<E>             savedSelection_;
 //  private                 EntitySelectionListener<E> selectionListener_;
@@ -83,7 +82,6 @@ public class EntityTable<E> extends Object implements FocusListener, EntityCompo
     focusListeners_ = new HashSet<>();
     model_ = new TableModel<>(view_);
     table_ = new TableComponent<>(this, model_, view_);
-    selectionCtrl_ = new TableSelectionController<>(this);
     table_.addFocusListener(this);
     columnModel_ = (ColumnModel)table_.getColumnModel();
     columnModel_.init();
@@ -246,12 +244,12 @@ public class EntityTable<E> extends Object implements FocusListener, EntityCompo
 //  }
 
   public void setSelectionMode(SelectionMode mode) {
-    selectionCtrl_.setSelectionMode(mode);
+    table_.selectionCtrl_.setSelectionMode(mode);
   }
 
   @Override
   public List<E> getSelection() {
-    return selectionCtrl_.getSelection();
+    return table_.selectionCtrl_.getSelection();
   }
 
   @Override
@@ -281,14 +279,14 @@ public class EntityTable<E> extends Object implements FocusListener, EntityCompo
 //  }
 
   public void updateData(E subject) {
-    try (var s = selectionCtrl_.new SelectionKeeper()) {
+    try (var s = table_.selectionCtrl_.new SelectionKeeper()) {
       model_.updateData(subject);
     }
     table_.repaint(); // TODO fire change event in model instead
   }
 
   public void updateData(Collection<E> bos) {
-    try (var s = selectionCtrl_.new SelectionKeeper()) {
+    try (var s = table_.selectionCtrl_.new SelectionKeeper()) {
       model_.updateData(bos);
     }
   }
@@ -302,7 +300,7 @@ public class EntityTable<E> extends Object implements FocusListener, EntityCompo
 //  }
 
   public void addData(E subject) {
-    try (var s = selectionCtrl_.new SelectionKeeper()) {
+    try (var s = table_.selectionCtrl_.new SelectionKeeper()) {
       model_.addData(subject);
 //    } finally {
 //      dataSizeChanged();
@@ -311,7 +309,7 @@ public class EntityTable<E> extends Object implements FocusListener, EntityCompo
 
   public void setData(Collection<E> newData) {
     if (!new HashSet<>(newData).equals(new HashSet<>(getValues()))) {
-      try (var s = selectionCtrl_.new SelectionKeeper()) {
+      try (var s = table_.selectionCtrl_.new SelectionKeeper()) {
         model_.setData(newData);
 //      } finally {
 //      dataSizeChanged();
@@ -320,7 +318,7 @@ public class EntityTable<E> extends Object implements FocusListener, EntityCompo
   }
 
   public void addData(Collection<E> bos) {
-    try (var s = selectionCtrl_.new SelectionKeeper()) {
+    try (var s = table_.selectionCtrl_.new SelectionKeeper()) {
       model_.addData(bos);
 //    } finally {
 //    dataSizeChanged();
@@ -328,7 +326,7 @@ public class EntityTable<E> extends Object implements FocusListener, EntityCompo
   }
 
   public void removeData(Object subject) {
-    try (var s = selectionCtrl_.new SelectionKeeper()) {
+    try (var s = table_.selectionCtrl_.new SelectionKeeper()) {
       model_.removeData(subject);
 //    } finally {
 //    dataSizeChanged();
@@ -336,7 +334,7 @@ public class EntityTable<E> extends Object implements FocusListener, EntityCompo
   }
 
   public void removeData(Collection<?> bos) {
-    try (var s = selectionCtrl_.new SelectionKeeper()) {
+    try (var s = table_.selectionCtrl_.new SelectionKeeper()) {
       model_.removeData(bos);
 //    } finally {
 //    dataSizeChanged();
@@ -356,7 +354,7 @@ public class EntityTable<E> extends Object implements FocusListener, EntityCompo
 
   @Override
   public void setSelectionListener(EntitySelectionListener<E> listener) {
-    selectionCtrl_.addSelectionListener(listener);
+    table_.selectionCtrl_.addSelectionListener(listener);
   }
 
   public void addPopupListener(PopupListener listener) {

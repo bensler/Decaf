@@ -10,7 +10,6 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
 import java.awt.event.MouseMotionListener;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
 
 import javax.swing.BorderFactory;
@@ -41,6 +40,8 @@ public class TableComponent<E> extends JTable {
 
   private   final         TableView<E>        view_;
 
+  final TableSelectionController<E> selectionCtrl_;
+
   /** Causes a gap when right and left aligned columns are beside each other */
   private   final         Border              gapBorder_;
 
@@ -55,13 +56,11 @@ public class TableComponent<E> extends JTable {
 
   private                 ColumnResizeState   columnResizeState_;
 
-  TableComponent(
-    EntityTable<E> boTable, TableModel<E> model, TableView<E> view
-  ) {
+  TableComponent(EntityTable<E> entityTable, TableModel<E> model, TableView<E> view) {
     super(model);
-
+    selectionCtrl_ = new TableSelectionController<>(entityTable, this);
     backgroundSelectionColorUnfocused_ = ColorHelper.mix(getSelectionBackground(), 2, UIManager.getColor("Table.background"), 1);
-    entityTable_ = boTable;
+    entityTable_ = entityTable;
     columnResizeState_ = ColumnResizeState.NONE;
     rowView_ = new TableRowView.Nop<>();
     visibleRows_ = new int[]{10, 10};
@@ -128,13 +127,18 @@ public class TableComponent<E> extends JTable {
   }
 
   private void sortByColumn(Column<E> column) {
-    sortableTableModel_.sortByColumn(column);
+    try (var s = selectionCtrl_.new SelectionKeeper()) {
+      if (column.isSortable()) {
+        sortableTableModel_.sortByColumn(column);
+      }
+    }
   }
 
   private void sortByColumn(Column<E> column, Sorting sorting) {
-    if (column.isSortable()) {
-      sortableTableModel_.sortByColumn(column, sorting);
-      tableHeader.repaint();
+    try (var s = selectionCtrl_.new SelectionKeeper()) {
+      if (column.isSortable()) {
+        sortableTableModel_.sortByColumn(column, sorting);
+      }
     }
   }
 
@@ -142,15 +146,12 @@ public class TableComponent<E> extends JTable {
     return sortableTableModel_.getValues(getSelectedRows());
   }
 
-  void setSelectedValues(Collection selection) {
+  void setSelectedValues(Collection<E> newSelection) {
     clearSelection();
-    for (Iterator<?> iter = selection.iterator(); iter.hasNext();) {
-      final int index = sortableTableModel_.indexOf(iter.next());
-
-      if (index >= 0) {
-        addRowSelectionInterval(index, index);
-      }
-    }
+    newSelection.stream()
+      .mapToInt(sortableTableModel_::indexOf)
+      .filter(index -> index >= 0)
+      .forEach(index -> addRowSelectionInterval(index, index));
   }
 
   private class HeaderDragListener extends MouseMotionAdapter {
