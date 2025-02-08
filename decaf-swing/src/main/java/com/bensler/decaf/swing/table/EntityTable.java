@@ -89,13 +89,11 @@ public class EntityTable<E> extends Object implements FocusListener, EntityCompo
     columnModel_.init();
     scrollPane_ = createScrollPane(table_);
     initCustAction();
-    setSelectionListener(null);
     popupListeners_ = new HashMap<>(1);
     scrollPane_.getViewport().setBackground(table_.getBackground());
-    defSelModel_ = table_.getSelectionModel();
+//    defSelModel_ = table_.getSelectionModel();
     setSelectionMode(SelectionMode.SINGLE);
-    defSelModel_.addListSelectionListener(this);
-    enabled_ = true;
+//    defSelModel_.addListSelectionListener(this);
     showDefaultVisibleColumns();
     setPreferences(prefs);
   }
@@ -171,14 +169,6 @@ public class EntityTable<E> extends Object implements FocusListener, EntityCompo
 
   public void clear() {
     setData(new ArrayList<>());
-  }
-
-  public void setData(Collection<E> newData) {
-    if (!new HashSet<>(newData).equals(new HashSet<>(getValues()))) {
-      saveSelection();
-      model_.setData(newData);
-      dataSizeChanged();
-    }
   }
 
   void saveColumnState() {
@@ -275,56 +265,82 @@ public class EntityTable<E> extends Object implements FocusListener, EntityCompo
     return model_.getValues();
   }
 
-  private void saveSelection() {
-    savedSelection_.clear();
-    savedSelection_.addAll(selection_);
-  }
+//  private void saveSelection() {
+//    savedSelection_.clear();
+//    savedSelection_.addAll(selection_);
+//  }
 
-  private void applySavedSelection() {
-    silentSelectionChange_ = true;
-
-    try {
-      select(savedSelection_);
-    } finally {
-      silentSelectionChange_ = false;
-    }
-  }
+//  private void applySavedSelection() {
+//    silentSelectionChange_ = true;
+//
+//    try {
+//      select(savedSelection_);
+//    } finally {
+//      silentSelectionChange_ = false;
+//    }
+//  }
 
   public void updateData(E subject) {
-    saveSelection();
-    model_.updateData(subject);
-    applySavedSelection();
+    try (var s = selectionCtrl_.new SelectionKeeper()) {
+      model_.updateData(subject);
+    }
     table_.repaint(); // TODO fire change event in model instead
   }
 
   public void updateData(Collection<E> bos) {
-    saveSelection();
-    model_.updateData(bos);
-    applySavedSelection();
+    try (var s = selectionCtrl_.new SelectionKeeper()) {
+      model_.updateData(bos);
+    }
   }
 
+//  private void dataSizeChanged() {
+//    table_.invalidateIfNeeded();
+//    if (scrollPane_.getParent() != null) {
+//      updateBackground();
+//      ((JComponent)scrollPane_.getParent()).revalidate();
+//    }
+//  }
+
   public void addData(E subject) {
-    saveSelection();
-    model_.addData(subject);
-    dataSizeChanged();
+    try (var s = selectionCtrl_.new SelectionKeeper()) {
+      model_.addData(subject);
+//    } finally {
+//      dataSizeChanged();
+    }
+  }
+
+  public void setData(Collection<E> newData) {
+    if (!new HashSet<>(newData).equals(new HashSet<>(getValues()))) {
+      try (var s = selectionCtrl_.new SelectionKeeper()) {
+        model_.setData(newData);
+//      } finally {
+//      dataSizeChanged();
+      }
+    }
   }
 
   public void addData(Collection<E> bos) {
-    saveSelection();
-    model_.addData(bos);
-    dataSizeChanged();
+    try (var s = selectionCtrl_.new SelectionKeeper()) {
+      model_.addData(bos);
+//    } finally {
+//    dataSizeChanged();
+    }
   }
 
   public void removeData(Object subject) {
-    saveSelection();
-    model_.removeData(subject);
-    dataSizeChanged();
+    try (var s = selectionCtrl_.new SelectionKeeper()) {
+      model_.removeData(subject);
+//    } finally {
+//    dataSizeChanged();
+    }
   }
 
   public void removeData(Collection<?> bos) {
-    saveSelection();
-    model_.removeData(bos);
-    dataSizeChanged();
+    try (var s = selectionCtrl_.new SelectionKeeper()) {
+      model_.removeData(bos);
+//    } finally {
+//    dataSizeChanged();
+    }
   }
 
   public void showGrid(boolean horizontal, boolean vertikal) {
@@ -340,7 +356,7 @@ public class EntityTable<E> extends Object implements FocusListener, EntityCompo
 
   @Override
   public void setSelectionListener(EntitySelectionListener<E> listener) {
-    selectionCtrl_.setSelectionListener(listener);
+    selectionCtrl_.addSelectionListener(listener);
   }
 
   public void addPopupListener(PopupListener listener) {
@@ -364,16 +380,18 @@ public class EntityTable<E> extends Object implements FocusListener, EntityCompo
 
   @Override
   public void select(Collection<E> subject) {
-    table_.setSelectedValues(subject);
-    fireSelectionChanged();
-    scrollSelectionVisible();
+    // TODO
+//    table_.setSelectedValues(subject);
+//    fireSelectionChanged();
+//    scrollSelectionVisible();
   }
 
   /** Works only if there is one entry is selected */
   public void scrollSelectionVisible() {
-    if (selection_.size() == 1) {
-      scrollIndexVisible(model_.indexOf(selection_.get(0)));
-    }
+    // TODO
+//    if (selection_.size() == 1) {
+//      scrollIndexVisible(model_.indexOf(selection_.get(0)));
+//    }
   }
 
   /** Works only if exactly one entry if selected. */
@@ -441,15 +459,6 @@ public class EntityTable<E> extends Object implements FocusListener, EntityCompo
    * (min>=1)<=<=max (default: min:10,max:10). */
   public void setVisibleRows(int min, int max) {
     table_.setVisibleRows(min, max);
-  }
-
-  private void dataSizeChanged() {
-    applySavedSelection();
-    table_.invalidateIfNeeded();
-    if (scrollPane_.getParent() != null) {
-      updateBackground();
-      ((JComponent)scrollPane_.getParent()).revalidate();
-    }
   }
 
   public void setSelectionBackground(Color color) {

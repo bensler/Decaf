@@ -115,20 +115,14 @@ class HeaderRenderer<E> extends JButton implements TableCellRenderer {
               g2d.scale(1, -1);
               g2d.translate(0, -size_ + 1);
             }
+
+            final int[] xCoords = new int[] {0       , 0 + size, 0 + (size / 2)};
+            final int[] yCoords = new int[] {0 + size, 0 + size, 0             };
+
             g2d.setColor(colorFill_);
-            g2d.fillPolygon(
-              new int[] {0       , 0 + size, 0 + (size / 2)},
-              new int[] {0 + size, 0 + size, 0            },
-              3
-            );
+            g2d.fillPolygon(xCoords, yCoords, xCoords.length);
             g2d.setColor(colorFg_);
-            g2d.drawPolygon(
-              new int[] {0       , 0 + size, 0 + (size / 2)},
-              new int[] {0 + size, 0 + size, 0            },
-              3
-            );
-//            g2d.setColor(colorBg_);
-//            g2d.drawLine(0, 0, size, size);
+            g2d.drawPolygon(xCoords, yCoords, xCoords.length);
           } finally {
             g2d.dispose();
           }

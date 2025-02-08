@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
@@ -16,6 +17,7 @@ class TableSelectionController<E> implements ListSelectionListener {
 
   private final EntityTable<E> owner_;
   private final TableComponent<E> table_;
+  private final ListSelectionModel defSelModel_;
   private final Set<EntitySelectionListener<E>> selectionListeners_;
   private final List<E> selection_;
   private boolean ignoreSourceEvents_;
@@ -25,6 +27,7 @@ class TableSelectionController<E> implements ListSelectionListener {
     selection_ = new ArrayList<>();
     ignoreSourceEvents_ = false;
     (table_ = (owner_ = owner).getComponent()).getSelectionModel().addListSelectionListener(this);
+    defSelModel_ = table_.getSelectionModel();
   }
 
   @Override
@@ -40,12 +43,6 @@ class TableSelectionController<E> implements ListSelectionListener {
     }
   }
 
-  private void fireSelectionChanged() {
-    if (!silentSelectionChange_ && enabled_) {
-      selectionListener_.selectionChanged(this, new ArrayList<>(selection_));
-    }
-  }
-
   public void addSelectionListener(EntitySelectionListener<E> listener) {
     selectionListeners_.add(listener);
   }
@@ -54,12 +51,7 @@ class TableSelectionController<E> implements ListSelectionListener {
     selectionListeners_.remove(listener);
   }
 
-  public void setSelectionListener(EntitySelectionListener<E> listener) {
-    selectionListeners_.clear();
-    addSelectionListener(listener);
-  }
-
-  private void fireEvent() {
+  private void fireSelectionChanged() {
     final List<E> selection = List.copyOf(selection_);
 
     selectionListeners_.forEach(listener -> listener.selectionChanged(owner_, selection));
@@ -83,22 +75,38 @@ class TableSelectionController<E> implements ListSelectionListener {
   }
 
   public void setSelectionMode(SelectionMode mode) {
-    if (selectionMode_ != mode) {
-      setSelectionMode_(mode);
-      selectionMode_ = mode;
+    final int oldModeInt = table_.getSelectionModel().getSelectionMode();
+    final int newModeInt = mode.getTableConstant();
+
+    if (oldModeInt != newModeInt) {
+      if (oldModeInt == SelectionMode.NONE.getTableConstant()) {
+        table_.setSelectionModel(defSelModel_);
+      }
+      if (mode == SelectionMode.NONE) {
+        table_.setSelectionModel(NoSelectionModel.NOP_MODEL_TABLE_LIST);
+      } else {
+        table_.setSelectionModel(defSelModel_);
+        table_.setSelectionMode(mode.getTableConstant());
+      }
     }
   }
 
-  private void setSelectionMode_(SelectionMode mode) {
-    if (selectionMode_ == SelectionMode.NONE) {
-      table_.setSelectionModel(defSelModel_);
-    }
-    if (mode == SelectionMode.NONE) {
-      table_.setSelectionModel(NoSelectionModel.createTableListModel());
-    } else {
-      table_.setSelectionModel(defSelModel_);
-      table_.setSelectionMode(mode.getTableConstant());
-    }
-   }
+  class SelectionKeeper implements AutoCloseable {
 
+    private final List<E> oldSelection_;
+
+    SelectionKeeper() {
+      oldSelection_ = List.copyOf(selection_);
+    }
+
+    @Override
+    public void close() {
+      // TODO
+//      Collections.sort(entityList_, comparator_);
+//      if (alwaysFireEvent_ || (!oldEntityList_.equals(entityList_))) {
+//        fireTableDataChanged();
+//      }
+    }
+
+  }
 }

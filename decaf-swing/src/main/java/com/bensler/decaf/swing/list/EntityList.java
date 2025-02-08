@@ -117,7 +117,7 @@ public class EntityList<E> extends Object implements ListSelectionListener, Enti
       }
       if (mode == SelectionMode.NONE) {
         defSelModel_ = (DefaultListSelectionModel)list_.getSelectionModel();
-        list_.setSelectionModel(NoSelectionModel.createTableListModel());
+        list_.setSelectionModel(NoSelectionModel.NOP_MODEL_TABLE_LIST);
       } else {
         list_.setSelectionMode(mode.getTableConstant());
       }

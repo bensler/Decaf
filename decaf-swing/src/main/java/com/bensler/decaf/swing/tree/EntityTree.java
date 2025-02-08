@@ -141,7 +141,7 @@ TreeSelectionListener, FocusListener {
       }
       if (mode == SelectionMode.NONE) {
         defSelModel_ = tree_.getSelectionModel();
-        tree_.setSelectionModel(NoSelectionModel.createTreeModel());
+        tree_.setSelectionModel(NoSelectionModel.NOP_MODEL_TREE);
       } else {
         tree_.getSelectionModel().setSelectionMode(mode.getTreeConstant());
       }

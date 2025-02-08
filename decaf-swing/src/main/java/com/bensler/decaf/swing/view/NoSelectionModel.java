@@ -1,17 +1,15 @@
 package com.bensler.decaf.swing.view;
 
 import javax.swing.DefaultListSelectionModel;
-import javax.swing.ListSelectionModel;
 import javax.swing.tree.DefaultTreeSelectionModel;
 import javax.swing.tree.TreePath;
-import javax.swing.tree.TreeSelectionModel;
 
 /**  */
 public class NoSelectionModel extends Object {
 
-  public    static  ListSelectionModel  createTableListModel() { return new TableList(); }
+  public static final DefaultListSelectionModel NOP_MODEL_TABLE_LIST = new TableList();
 
-  public    static  TreeSelectionModel  createTreeModel() { return new Tree(); }
+  public static final DefaultTreeSelectionModel NOP_MODEL_TREE = new Tree();
 
   private final static class TableList extends DefaultListSelectionModel {
 
