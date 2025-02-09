@@ -347,14 +347,13 @@ public class TableComponent<E> extends JTable {
     return view_.getColumnView(convertColumnIndexToModel(column));
   }
 
-  List<String> getSortPrefs() {
+  String getSortPrefs() {
     return sortableTableModel_.getSortPrefs();
   }
 
-//  void loadSortPrefs(String[] sortings) {
-//    sortableTableModel_.loadSortPrefs(sortings, columnModel_);
-//    headerRenderer_.repaint();
-//  }
+  void applySortPrefs(String sortings) {
+    sortableTableModel_.applySortPrefs(sortings);
+  }
 
   public E getViewable(int row) {
     return sortableTableModel_.getValueAt(row);

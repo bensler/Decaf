@@ -117,8 +117,15 @@ public class TableModel<E> extends AbstractTableModel {
     return (index < 0) ? Optional.empty() : Optional.of(entityList_.get(index));
   }
 
-  List<String> getSortPrefs() {
+  String getSortPrefs() {
     return comparator_.getSortPrefs();
+  }
+
+  void applySortPrefs(String sortings) {
+    comparator_.applySortPrefs(sortings);
+    if (!comparator_.isEmpty()) {
+     // resort();
+    }
   }
 
   class DataChangedNotifier implements AutoCloseable {
@@ -139,12 +146,5 @@ public class TableModel<E> extends AbstractTableModel {
     }
 
   }
-
-//  void loadSortPrefs(String[] sortings, ColumnModel colModel) {
-//      comparator_.loadSortPrefs(sortings, colModel);
-//      if (!comparator_.isEmpty()) {
-//        resort();
-//      }
-//  }
 
 }

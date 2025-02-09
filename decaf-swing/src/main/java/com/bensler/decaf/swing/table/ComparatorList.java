@@ -1,9 +1,11 @@
 package com.bensler.decaf.swing.table;
 
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import com.bensler.decaf.util.Pair;
 
@@ -46,45 +48,21 @@ final class ComparatorList<E> extends Object implements Comparator<E> {
     return sorting_.isEmpty();
   }
 
-  List<String> getSortPrefs() {
-    return sorting_.entrySet().stream()
-    .map(entry -> entry.getKey().getView().getId() + ":" + entry.getValue().sorting_)
-    .toList();
-  }
-
   void clear() {
     sorting_.clear();
   }
 
-//  void loadSortPrefs(String[] sortings, ColumnModel colModel) {
-//    try {
-//      sorting_.clear();
-//      for (int i = 0; i < sortings.length; i += 2) {
-//        final boolean           asc     = Boolean.valueOf(sortings[i + 1]).booleanValue();
-//        final Column            column  = colModel.resolveColumn(new StaticRef(TablePropertyView.class, sortings[i]));
-//        final ComparatorWrapper wrapper;
-//
-//        if (column.isSortable()) {
-//          wrapper = new ComparatorWrapper(
-//            column, (asc ? Sorting.ASCENDING : Sorting.DESCENDING)
-//          );
-//
-//          if (sorting_.contains(wrapper)) {
-//            break;
-//          } else {
-//            sorting_.addLast(wrapper);
-//          }
-//        }
-//      }
-//    } catch (RuntimeException re) {
-//      // ignore
-//    }
-//    if (!sorting_.isEmpty()) {
-//      final ComparatorWrapper first = sorting_.getFirst();
-//
-//      colModel.setSorting(first.column_, first.sorting_);
-//    }
-//  }
+  String getSortPrefs() {
+    return sorting_.entrySet().stream()
+    .map(entry -> entry.getKey().getView().getId() + ":" + entry.getValue().sorting_)
+    .collect(Collectors.joining(","));
+  }
+
+  void applySortPrefs(String sortings) {
+    Arrays.stream(sortings.split(",")).forEach(str -> {
+
+    });
+  }
 
   final static class ComparatorWrapper<E> extends Object implements Comparator<E> {
 
