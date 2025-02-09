@@ -63,22 +63,22 @@ class CheckboxTreeDialog {
   }
 
   private Hierarchy<Folder> createFolderData() {
-    final Folder a = new Folder(null, "a");
-    final Folder aa = new Folder(a, "aa");
-    final Folder ab = new Folder(a, "ab");
-    final Folder aba = new Folder(ab, "aba");
-    final Folder abb = new Folder(ab, "abb");
-    final Folder abba = new Folder(abb, "abba");
-    final Folder ac = new Folder(a, "ac");
-    final Folder b = new Folder(null, "b");
-    final Folder ba = new Folder(b, "ba");
-    final Folder bb = new Folder(b, "bb");
-    final Folder bc = new Folder(b, "bc");
-    final Folder c = new Folder(null, "c");
-    final Folder ca = new Folder(c, "ca");
-    final Folder cb = new Folder(c, "cb");
-    final Folder cbb = new Folder(cb, "cbb");
-    final Folder cc = new Folder(c, "cc");
+    final Folder a = new Folder(null, "a", 0);
+    final Folder aa = new Folder(a, "aa", 0);
+    final Folder ab = new Folder(a, "ab", 0);
+    final Folder aba = new Folder(ab, "aba", 0);
+    final Folder abb = new Folder(ab, "abb", 0);
+    final Folder abba = new Folder(abb, "abba", 0);
+    final Folder ac = new Folder(a, "ac", 0);
+    final Folder b = new Folder(null, "b", 0);
+    final Folder ba = new Folder(b, "ba", 0);
+    final Folder bb = new Folder(b, "bb", 0);
+    final Folder bc = new Folder(b, "bc", 0);
+    final Folder c = new Folder(null, "c", 0);
+    final Folder ca = new Folder(c, "ca", 0);
+    final Folder cb = new Folder(c, "cb", 0);
+    final Folder cbb = new Folder(cb, "cbb", 0);
+    final Folder cc = new Folder(c, "cc", 0);
 
     return new Hierarchy<>(Arrays.asList(
       a, aa, ab, aba, abb, abba, ac, b, ba, bb, bc, c, ca, cb, cbb, cc

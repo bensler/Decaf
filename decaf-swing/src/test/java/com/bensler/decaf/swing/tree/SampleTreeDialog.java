@@ -1,5 +1,6 @@
 package com.bensler.decaf.swing.tree;
 
+import static com.bensler.decaf.swing.view.SimplePropertyGetter.createComparablePropertyGetter;
 import static com.bensler.decaf.util.cmp.CollatorComparator.COLLATOR_COMPARATOR;
 import static com.bensler.decaf.util.cmp.NopComparator.NOP_COMPARATOR;
 
@@ -58,14 +59,17 @@ class SampleTreeDialog {
       new SimplePropertyGetter<>(Folder::getParent, NOP_COMPARATOR),
       new SimplePropertyGetter<>(Folder::getName, COLLATOR_COMPARATOR)
     ));
+    final PropertyViewImpl<Folder, Integer> sizeView = new PropertyViewImpl<>(
+      createComparablePropertyGetter(this::getFolderSize)
+    );
 
     tree_ = new EntityTree<>(nameView);
+    tree_.setVisibleRowCount(15, 1);
     list_ = new EntityList<>(nameView);
     table_ = new EntityTable<>(new TableView<>(
-      new TablePropertyView<>("name", "Name", nameView),
       new TablePropertyView<>("parentName", "Parent", parentNameView),
-      new TablePropertyView<>("name1", "Name", nameView),
-      new TablePropertyView<>("parentName2", "Parent", parentNameView)
+      new TablePropertyView<>("name", "Name", nameView),
+      new TablePropertyView<>("size", "Size", sizeView)
     ));
     table_.setSelectionMode(SelectionMode.MULTIPLE_INTERVAL);
     dialog_.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -85,16 +89,23 @@ class SampleTreeDialog {
     tree_.expandCollapseAll(true);
   }
 
+  Integer getFolderSize(Folder folder) {
+    return folder.getSize();
+  }
+
   private Hierarchy<Folder> createFolderData() {
     final Hierarchy<Folder> tree = new Hierarchy<>();
 
-    final Folder root = new Folder(null, "/");
-    final Folder home = new Folder(root, "home");
-    final Folder bobsHome = new Folder(home, "bob");
-    final Folder alicesHome = new Folder(home, "alice");
-    final Folder winRoot = new Folder(null, "C:");
+    final Folder root = new Folder(null, "/", 0);
+    final Folder home = new Folder(root, "home", 10);
+    final Folder bobsHome = new Folder(home, "bob", 1000);
+    final Folder alicesHome = new Folder(home, "alice", 2000);
+    final Folder winRoot = new Folder(null, "C:", 20);
+    final Folder winHome = new Folder(winRoot, "Eigene Dateien", 200);
+    final Folder winBobsHome = new Folder(winHome, "bob", 3000);
+    final Folder winAlicesHHome = new Folder(winHome, "alice", 4000);
 
-    tree.addAll(List.of(alicesHome, bobsHome, home, root, winRoot));
+    tree.addAll(List.of(alicesHome, bobsHome, home, root, winRoot, winHome, winBobsHome, winAlicesHHome));
     return tree;
   }
 

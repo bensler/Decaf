@@ -88,8 +88,13 @@ public class Bender extends Object {
   public void clickOn(final Component component) {
     clickOn(component, null);
   }
+
   public void clickOn(final Component component, Point position) {
     runDelayedInEventDispatcher(new Clicker(component, position));
+  }
+
+  public void clickOn(final Component component, int keyEventKeyCode, Point position) {
+    runDelayedInEventDispatcher(new Clicker(component, keyEventKeyCode, position));
   }
 
   public void assertEqualsVisually(final Component component, final TestImageSample sample) {
@@ -137,10 +142,16 @@ public class Bender extends Object {
   final class Clicker implements Runnable {
 
     private final Component target_;
+    private final Integer modifier_;
     private final Point relativePosition_;
 
     public Clicker(Component clickTarget, Point position) {
+      this(clickTarget, null, position);
+    }
+
+    public Clicker(Component clickTarget, Integer modifierKeycode, Point position) {
       target_ = clickTarget;
+      modifier_ = modifierKeycode;
       relativePosition_ = ((position != null) ? new Point(position.x, position.y) : position);
     }
 
@@ -158,8 +169,14 @@ public class Bender extends Object {
         location.x + diff.x,
         location.y + diff.y
       );
+      if (modifier_ != null) {
+        robot_.keyPress(modifier_);
+      }
       robot_.mousePress(InputEvent.BUTTON1_DOWN_MASK);
       robot_.mouseRelease(InputEvent.BUTTON1_DOWN_MASK);
+      if (modifier_ != null) {
+        robot_.keyRelease(modifier_);
+      }
     }
 
   }

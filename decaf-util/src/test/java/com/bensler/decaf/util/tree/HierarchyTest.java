@@ -12,10 +12,10 @@ import org.junit.jupiter.api.Test;
 
 class HierarchyTest {
 
-  final Folder root = new Folder(null, "/");
-  final Folder home = new Folder(root, "home");
-  final Folder bobsHome = new Folder(home, "bob");
-  final Folder alicesHome = new Folder(home, "alice");
+  final Folder root = new Folder(null, "/", 0);
+  final Folder home = new Folder(root, "home", 0);
+  final Folder bobsHome = new Folder(home, "bob", 0);
+  final Folder alicesHome = new Folder(home, "alice", 0);
 
   @Test
   void testIsEmpty() {
