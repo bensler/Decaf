@@ -41,9 +41,6 @@ class HeaderRenderer<E> extends JButton implements TableCellRenderer {
   ) {
     final Column<?> column = columnModel_.getColumn(colIndex);
     final Optional<Pair<Sorting, Integer>> sorting = model_.getSorting(column);
-
-    // System.out.println("HeaderRenderer:%s:%s".formatted(value, sorting));
-
     final boolean pressed = columnModel_.isColumnPressed(colIndex);
     final String valueStr = (value == null) ? "" : value.toString();
     final String tooltip = (valueStr.trim().length() < 1) ? null : valueStr;
@@ -95,7 +92,7 @@ class HeaderRenderer<E> extends JButton implements TableCellRenderer {
           case 2  : size_ = Math.round( maxSize_ / 2.0f     ); break;
         }
       }
-//      System.out.println(size_);
+      System.out.println(sorting + " # " + size_);
     }
 
     @Override
@@ -141,4 +138,5 @@ class HeaderRenderer<E> extends JButton implements TableCellRenderer {
     }
 
   }
+
 }

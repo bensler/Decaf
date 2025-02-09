@@ -7,7 +7,6 @@ import java.awt.Point;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.MouseEvent;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -53,13 +52,6 @@ public class EntityTable<E> extends Object implements FocusListener, EntityCompo
   private   final         TableView<E>        view_;
 
   private   final         Map<PopupListener, PopupListenerWrapper> popupListeners_;
-
-//  private   final         List<E>             selection_;
-//  private   final         List<E>             savedSelection_;
-//  private                 EntitySelectionListener<E> selectionListener_;
-//  private                 boolean             silentSelectionChange_;
-//  private                 SelectionMode       selectionMode_;
-//  private                 ListSelectionModel  defSelModel_;
 
   //  private                 ActionImpl          customizeAction_;
 
@@ -166,7 +158,7 @@ public class EntityTable<E> extends Object implements FocusListener, EntityCompo
 //  }
 
   public void clear() {
-    setData(new ArrayList<>());
+    removeData(getValues());
   }
 
   void saveColumnState() {
@@ -263,81 +255,15 @@ public class EntityTable<E> extends Object implements FocusListener, EntityCompo
     return model_.getValues();
   }
 
-//  private void saveSelection() {
-//    savedSelection_.clear();
-//    savedSelection_.addAll(selection_);
-//  }
-
-//  private void applySavedSelection() {
-//    silentSelectionChange_ = true;
-//
-//    try {
-//      select(savedSelection_);
-//    } finally {
-//      silentSelectionChange_ = false;
-//    }
-//  }
-
-  public void updateData(E subject) {
+  public void addOrUpdateData(Collection<E> entities) {
     try (var s = table_.selectionCtrl_.new SelectionKeeper()) {
-      model_.updateData(subject);
-    }
-    table_.repaint(); // TODO fire change event in model instead
-  }
-
-  public void updateData(Collection<E> bos) {
-    try (var s = table_.selectionCtrl_.new SelectionKeeper()) {
-      model_.updateData(bos);
+      model_.addOrUpdateData(entities);
     }
   }
 
-//  private void dataSizeChanged() {
-//    table_.invalidateIfNeeded();
-//    if (scrollPane_.getParent() != null) {
-//      updateBackground();
-//      ((JComponent)scrollPane_.getParent()).revalidate();
-//    }
-//  }
-
-  public void addData(E subject) {
+  public void removeData(Collection<?> entities) {
     try (var s = table_.selectionCtrl_.new SelectionKeeper()) {
-      model_.addData(subject);
-//    } finally {
-//      dataSizeChanged();
-    }
-  }
-
-  public void setData(Collection<E> newData) {
-    if (!new HashSet<>(newData).equals(new HashSet<>(getValues()))) {
-      try (var s = table_.selectionCtrl_.new SelectionKeeper()) {
-        model_.setData(newData);
-//      } finally {
-//      dataSizeChanged();
-      }
-    }
-  }
-
-  public void addData(Collection<E> bos) {
-    try (var s = table_.selectionCtrl_.new SelectionKeeper()) {
-      model_.addData(bos);
-//    } finally {
-//    dataSizeChanged();
-    }
-  }
-
-  public void removeData(Object subject) {
-    try (var s = table_.selectionCtrl_.new SelectionKeeper()) {
-      model_.removeData(subject);
-//    } finally {
-//    dataSizeChanged();
-    }
-  }
-
-  public void removeData(Collection<?> bos) {
-    try (var s = table_.selectionCtrl_.new SelectionKeeper()) {
-      model_.removeData(bos);
-//    } finally {
-//    dataSizeChanged();
+      model_.removeData(entities);
     }
   }
 

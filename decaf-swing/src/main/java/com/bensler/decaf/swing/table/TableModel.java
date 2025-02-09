@@ -57,35 +57,11 @@ public class TableModel<E> extends AbstractTableModel {
     }
   }
 
-  void setData(Collection<E> newData) {
-    try (var notifier = new DataChangedNotifier(true)) {
-      entityList_.clear();
-      entityList_.addAll(newData);
-    }
-  }
-
   int indexOf(Object subject) {
     return entityList_.indexOf(subject);
   }
 
-  void addData(E subject) {
-    addData(Collections.singleton(subject));
-  }
-
-  void addData(Collection<? extends E> data) {
-    try (var notifier = new DataChangedNotifier(true)) {
-      data.forEach(entity -> {
-        entityList_.remove(entity);
-        entityList_.add(entity);
-      });
-    }
-  }
-
-  void updateData(E subject) {
-    updateData(Collections.singleton(subject));
-  }
-
-  void updateData(Collection<? extends E> data) {
+  void addOrUpdateData(Collection<? extends E> data) {
     try (var notifier = new DataChangedNotifier(true)) {
       data.forEach(entity -> {
         final int index = entityList_.indexOf(entity);
@@ -99,7 +75,7 @@ public class TableModel<E> extends AbstractTableModel {
     }
   }
 
-  void removeData(Object subject) {
+  private void removeData(Object subject) {
     final int index = entityList_.indexOf(subject);
 
     if (index >= 0) {

@@ -75,7 +75,7 @@ class SampleTreeDialog {
     dialog_.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
     tree_.setData(data);
     list_.setData(data.getMembers());
-    table_.setData(data.getMembers());
+    table_.addOrUpdateData(data.getMembers());
     panel.add(tree_.getScrollPane(), new CellConstraints(2, 2));
     panel.add(list_.getScrollPane(), new CellConstraints(2, 4));
     panel.add(table_.getScrollPane(), new CellConstraints(2, 6));
