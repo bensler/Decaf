@@ -88,8 +88,12 @@ public class TableModel<E> extends AbstractTableModel {
   void updateData(Collection<? extends E> data) {
     try (var notifier = new DataChangedNotifier(true)) {
       data.forEach(entity -> {
-        if (entityList_.remove(entity)) {
+        final int index = entityList_.indexOf(entity);
+
+        if (index < 0) {
           entityList_.add(entity);
+        } else {
+          entityList_.set(index, entity);
         }
       });
     }
