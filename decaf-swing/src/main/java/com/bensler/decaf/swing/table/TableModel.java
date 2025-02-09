@@ -133,8 +133,10 @@ public class TableModel<E> extends AbstractTableModel {
     return new ArrayList<>(entityList_);
   }
 
-  boolean contains(Object bo) {
-    return entityList_.contains(bo);
+  Optional<E> contains(Object object) {
+    final int index = entityList_.indexOf(object);
+
+    return (index < 0) ? Optional.empty() : Optional.of(entityList_.get(index));
   }
 
   List<String> getSortPrefs() {

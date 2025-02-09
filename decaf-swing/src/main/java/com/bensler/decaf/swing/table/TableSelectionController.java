@@ -94,7 +94,8 @@ class TableSelectionController<E> implements ListSelectionListener {
 
     @Override
     public void close() {
-      table_.setSelectedValues(oldSelection_);
+      selection_.clear();
+      selection_.addAll(table_.setSelectedValues(oldSelection_));
       if (!new HashSet<>(oldSelection_).equals(new HashSet<>(selection_))) {
         fireSelectionChanged();
       }

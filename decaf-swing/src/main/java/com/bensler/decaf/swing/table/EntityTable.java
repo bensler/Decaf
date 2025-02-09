@@ -484,7 +484,7 @@ public class EntityTable<E> extends Object implements FocusListener, EntityCompo
 
   @Override
   public Optional<E> contains(Object entity) {
-    return (model_.contains(entity) ? Optional.of((E)entity) : Optional.empty());
+    return model_.contains(entity);
   }
 
   public boolean isEmpty() {

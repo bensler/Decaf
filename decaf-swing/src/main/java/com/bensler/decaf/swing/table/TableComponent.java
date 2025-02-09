@@ -1,5 +1,7 @@
 package com.bensler.decaf.swing.table;
 
+import static com.bensler.decaf.util.function.ForEachMapperAdapter.forEachMapper;
+
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
@@ -24,6 +26,7 @@ import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
 
 import com.bensler.decaf.swing.awt.ColorHelper;
+import com.bensler.decaf.util.Pair;
 
 
 /**
@@ -146,12 +149,14 @@ public class TableComponent<E> extends JTable {
     return sortableTableModel_.getValues(getSelectedRows());
   }
 
-  void setSelectedValues(Collection<E> newSelection) {
+  List<E> setSelectedValues(Collection<E> newSelection) {
     clearSelection();
-    newSelection.stream()
-      .mapToInt(sortableTableModel_::indexOf)
-      .filter(index -> index >= 0)
-      .forEach(index -> addRowSelectionInterval(index, index));
+    return newSelection.stream()
+      .map(entity -> new Pair<>(entity, sortableTableModel_.indexOf(entity)))
+      .filter(pair -> pair.getRight() >= 0)
+      .map(forEachMapper(pair -> addRowSelectionInterval(pair.getRight(), pair.getRight())))
+      .flatMap(pair ->  sortableTableModel_.contains(pair.getLeft()).stream())
+      .toList();
   }
 
   private class HeaderDragListener extends MouseMotionAdapter {
