@@ -41,10 +41,8 @@ public class TableModel<E> extends AbstractTableModel {
     return comparator_.getSorting(column);
   }
 
-  Sorting sortByColumn(Column<E> column) {
-    try (var notifier = new DataChangedNotifier(false)) {
-      return comparator_.sortByColumn(column);
-    }
+  Sorting getNewSorting(Column<E> column) {
+    return comparator_.getNewSorting(column);
   }
 
   void sortByColumn(Column<E> column, Sorting sorting) {

@@ -32,14 +32,10 @@ final class ComparatorList<E> extends Object implements Comparator<E> {
     ));
   }
 
-  Sorting sortByColumn(Column<E> column) {
-    final Sorting sorting = getSorting(column)
-    .map(Pair::getLeft)
-    .map(Sorting::getOpposite)
-    .orElse(Sorting.ASCENDING);
-
-    sortByColumn(column, sorting);
-    return sorting;
+  Sorting getNewSorting(Column<E> column) {
+    return getSorting(column).map(
+      pair -> (pair.getRight() == 0) ? pair.getLeft().getOpposite() : pair.getLeft()
+    ).orElse(Sorting.ASCENDING);
   }
 
   void sortByColumn(Column<E> column, Sorting sorting) {

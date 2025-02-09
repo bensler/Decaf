@@ -130,11 +130,7 @@ public class TableComponent<E> extends JTable {
   }
 
   private void sortByColumn(Column<E> column) {
-    try (var s = selectionCtrl_.new SelectionKeeper()) {
-      if (column.isSortable()) {
-        sortableTableModel_.sortByColumn(column);
-      }
-    }
+    sortByColumn(column, sortableTableModel_.getNewSorting(column));
   }
 
   private void sortByColumn(Column<E> column, Sorting sorting) {
