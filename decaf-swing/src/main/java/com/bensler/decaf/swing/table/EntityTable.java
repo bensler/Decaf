@@ -309,7 +309,7 @@ public class EntityTable<E> extends Object implements FocusListener, EntityCompo
 
   @Override
   public void select(Collection<E> subject) {
-    // TODO
+    throw new UnsupportedOperationException();    // TODO
 //    table_.setSelectedValues(subject);
 //    fireSelectionChanged();
 //    scrollSelectionVisible();
@@ -317,7 +317,7 @@ public class EntityTable<E> extends Object implements FocusListener, EntityCompo
 
   /** Works only if there is one entry is selected */
   public void scrollSelectionVisible() {
-    // TODO
+    throw new UnsupportedOperationException();    // TODO
 //    if (selection_.size() == 1) {
 //      scrollIndexVisible(model_.indexOf(selection_.get(0)));
 //    }

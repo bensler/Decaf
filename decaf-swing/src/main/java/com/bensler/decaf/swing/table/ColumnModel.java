@@ -1,6 +1,5 @@
 package com.bensler.decaf.swing.table;
 
-import java.sql.Ref;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -40,22 +39,11 @@ public class ColumnModel<E> extends DefaultTableColumnModel {
     return new HashSet<>(propertyColumnMap_.keySet());
   }
 
-  List<String> getPropertyKeyList() {
-    final List<String> returnValue    = new ArrayList<>(tableColumns.size());
-
-    for (int i = 0; i < tableColumns.size(); i++) {
-      final TablePropertyView view = ((Column)tableColumns.get(i)).getView();
-
-      returnValue.add(view.getId());
-    }
-    return returnValue;
-  }
-
   List<String> getSizeList() {
     final List<String> returnValue    = new ArrayList<>(tableColumns.size());
 
     for (int i = 0; i < tableColumns.size(); i++) {
-      returnValue.add(Integer.toString(((Column)tableColumns.get(i)).getWidth()));
+      returnValue.add(Integer.toString(((Column<?>)tableColumns.get(i)).getWidth()));
     }
     return returnValue;
   }
@@ -95,9 +83,7 @@ public class ColumnModel<E> extends DefaultTableColumnModel {
 
         if (prefSizes_.length == getColumnCount()) {
           for (int i = 0; i < prefSizes_.length; i++) {
-            final Column col = getColumn(i);
-
-            col.setPreferredWidth(Math.round(prefSizes_[i] * ratio));
+            getColumn(i).setPreferredWidth(Math.round(prefSizes_[i] * ratio));
           }
         }
       }
@@ -211,15 +197,6 @@ public class ColumnModel<E> extends DefaultTableColumnModel {
   @Override
   public Column getColumn(int columnIndex) {
     return (Column)super.getColumn(columnIndex);
-  }
-
-  public Column resolveColumn(Ref tablePropertyViewRef) {
-    for (TableColumn column : tableColumns) {
-      if (((Column)column).getView().equals(tablePropertyViewRef)) {
-        return (Column)column;
-      }
-    }
-    return null;
   }
 
 }

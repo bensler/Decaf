@@ -22,6 +22,10 @@ class Column<E> extends TableColumn {
     return view_;
   }
 
+  String getId() {
+    return view_.getId();
+  }
+
   @Override
   public TableCellRenderer getCellRenderer() {
     return view_;

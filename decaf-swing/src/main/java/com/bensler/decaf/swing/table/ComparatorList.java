@@ -54,7 +54,7 @@ final class ComparatorList<E> extends Object implements Comparator<E> {
 
   String getSortPrefs() {
     return sorting_.entrySet().stream()
-    .map(entry -> entry.getKey().getView().getId() + ":" + entry.getValue().sorting_)
+    .map(entry -> entry.getKey().getId() + ":" + entry.getValue().sorting_)
     .collect(Collectors.joining(","));
   }
 
