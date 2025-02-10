@@ -53,7 +53,7 @@ public class TableComponent<E> extends JTable {
    * [min,max], ([min]>=1)<=<=[max], default: [10,10] */
   private   final         int[]               visibleRows_;
 
-  private   final         HeaderRenderer      headerRenderer_;
+  private   final         HeaderRenderer<E>   headerRenderer_;
 
   private                 TableRowView<E>     rowView_;
 
@@ -112,7 +112,7 @@ public class TableComponent<E> extends JTable {
 
   @Override
   public void createDefaultColumnsFromModel() {
-    if (columnModel.getColumnCount() < 1) {
+    if (columnModel_.getColumnCount() < 1) {
       for (int i = 0; i < sortableTableModel_.getColumnCount(); i++) {
         addColumn(new Column<>(view_.getColumnView(i), i));
       }
@@ -320,7 +320,7 @@ public class TableComponent<E> extends JTable {
   @Override
   public Dimension getMinimumSize() {
     return new Dimension(
-      columnModel.getColumnCount() * 10 , super.getMinimumSize().height
+      columnModel_.getColumnCount() * 10 , super.getMinimumSize().height
     );
   }
 

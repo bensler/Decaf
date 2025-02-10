@@ -36,7 +36,7 @@ public class ColumnModel<E> extends DefaultTableColumnModel {
   }
 
   Set<TablePropertyView<E, ?>> getShownProperties() {
-    return new HashSet<>(propertyColumnMap_.keySet());
+    return Set.copyOf(propertyColumnMap_.keySet());
   }
 
   List<String> getSizeList() {
