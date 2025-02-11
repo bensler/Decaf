@@ -329,14 +329,6 @@ public class TableComponent<E> extends JTable {
     return sortableTableModel_.getValueAt(row);
   }
 
-  void setVisibleRows(int min, int max) {
-    //min >= 1
-    visibleRows_[0] = Math.max(1, min);
-    // max>=min
-    visibleRows_[1] = Math.max(visibleRows_[0], max);
-    invalidateIfNeeded();
-  }
-
   void invalidateIfNeeded() {
     if (isVisible()) {
       invalidate();

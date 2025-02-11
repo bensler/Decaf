@@ -336,33 +336,6 @@ public class EntityTable<E> extends Object implements FocusListener, EntityCompo
 
   }
 
-//  List<E> setSelectionSilent() {
-//    silentSelectionChange_ = true;
-//    return new ArrayList<>(selection_);
-//  }
-//
-//  void setSelectionUnsilent(List<E> selectionBefore) {
-//    if (!new HashSet<>(selectionBefore).equals(new HashSet<>(selection_))) {
-//      table_.setSelectedValues(selectionBefore);
-//      silentSelectionChange_ = false;
-//      fireSelectionChanged();
-//      table_.repaint();
-//    }
-//    silentSelectionChange_ = false;
-//  }
-
-  /** Convenience wrapper for setVisibleRows(visibleRows,visibleRows);*/
-  public void setVisibleRows(int visibleRows) {
-    setVisibleRows(visibleRows, visibleRows);
-  }
-
-  /** Sets the row count for calc the preferred viewports size when
-   * residing in a scrollpane.<p>
-   * (min>=1)<=<=max (default: min:10,max:10). */
-  public void setVisibleRows(int min, int max) {
-    table_.setVisibleRows(min, max);
-  }
-
   public void setSelectionBackground(Color color) {
     table_.setSelectionBackground(color);
   }

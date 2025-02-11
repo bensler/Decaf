@@ -92,7 +92,6 @@ class HeaderRenderer<E> extends JButton implements TableCellRenderer {
           case 2  : size_ = Math.round( maxSize_ / 2.0f     ); break;
         }
       }
-      System.out.println(sorting + " # " + size_);
     }
 
     @Override
