@@ -6,7 +6,9 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.swing.table.DefaultTableColumnModel;
 import javax.swing.table.TableColumn;
@@ -32,6 +34,11 @@ public class ColumnModel<E> extends DefaultTableColumnModel {
     for (int i = 0; i < view.getColumnCount(); i++) {
       addColumn(new Column<>(view.getColumnView(i), i));
     }
+  }
+
+  Map<String, Column<E>> getColumnsById() {
+    return propertyColumnMap_.entrySet().stream()
+        .collect(Collectors.toMap(entry -> entry.getKey().getId(), Entry::getValue));
   }
 
   void init() {
@@ -189,8 +196,8 @@ public class ColumnModel<E> extends DefaultTableColumnModel {
   }
 
   @Override
-  public Column getColumn(int columnIndex) {
-    return (Column)super.getColumn(columnIndex);
+  public Column<E> getColumn(int columnIndex) {
+    return (Column<E>)super.getColumn(columnIndex);
   }
 
 }

@@ -19,7 +19,6 @@ import javax.swing.JComponent;
 import javax.swing.JTable;
 import javax.swing.UIManager;
 import javax.swing.border.Border;
-import javax.swing.event.TableColumnModelEvent;
 import javax.swing.plaf.basic.BasicTableUI;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
@@ -33,8 +32,6 @@ import com.bensler.decaf.util.Pair;
 public class TableComponent<E> extends JTable {
 
   private   final         Color               backgroundSelectionColorUnfocused_;
-
-  private   final         EntityTable<E>      entityTable_;
 
   private   final         TableModel<E>       sortableTableModel_;
 
@@ -62,7 +59,6 @@ public class TableComponent<E> extends JTable {
     super(model, new ColumnModel<E>(view));
     selectionCtrl_ = new TableSelectionController<>(entityTable, this);
     backgroundSelectionColorUnfocused_ = ColorHelper.mix(getSelectionBackground(), 2, UIManager.getColor("Table.background"), 1);
-    entityTable_ = entityTable;
     columnResizeState_ = ColumnResizeState.NONE;
     rowView_ = new TableRowView.Nop<>();
     visibleRows_ = new int[]{10, 10};
@@ -85,7 +81,6 @@ public class TableComponent<E> extends JTable {
       super.doLayout();
       if (columnResizeState_ == ColumnResizeState.COL) {
         columnModel_.updatePrefSizes();
-        entityTable_.saveColumnState();
       }
     } finally {
       columnResizeState_ = ColumnResizeState.NONE;
@@ -109,13 +104,9 @@ public class TableComponent<E> extends JTable {
   }
 
   private void sortByColumn(Column<E> column) {
-    sortByColumn(column, sortableTableModel_.getNewSorting(column));
-  }
-
-  private void sortByColumn(Column<E> column, Sorting sorting) {
     try (var s = selectionCtrl_.new SelectionKeeper()) {
       if (column.isSortable()) {
-        sortableTableModel_.sortByColumn(column, sorting);
+        sortableTableModel_.sortByColumn(column, sortableTableModel_.getNewSorting(column));
       }
     }
   }
@@ -170,7 +161,7 @@ public class TableComponent<E> extends JTable {
         (evt.getButton() == MouseEvent.BUTTON1)
         && (getResizeColumnIndex(evt.getPoint()) < 0)
       ) {
-        final Column column = columnModel_.getColumn(tableHeader.columnAtPoint(evt.getPoint()));
+        final Column<E> column = columnModel_.getColumn(tableHeader.columnAtPoint(evt.getPoint()));
 
         if (column.isSortable()) {
           columnModel_.setPressedColumn(column);
@@ -232,7 +223,7 @@ public class TableComponent<E> extends JTable {
   }
 
   private int getPrefColumnWidth(int columnIndex) {
-    final Column            column    = columnModel_.getColumn(columnIndex);
+    final Column<E>         column    = columnModel_.getColumn(columnIndex);
     final TablePropertyView view      = column.getView();
           int               maxWidth  = headerRenderer_.getTableCellRendererComponent(
       this, view.getName(), false, false, -1, columnIndex
@@ -331,7 +322,7 @@ public class TableComponent<E> extends JTable {
   }
 
   void applySortPrefs(String sortings) {
-    sortableTableModel_.applySortPrefs(sortings);
+    sortableTableModel_.applySortPrefs(sortings, columnModel_.getColumnsById());
   }
 
   public E getViewable(int row) {
@@ -382,14 +373,6 @@ public class TableComponent<E> extends JTable {
       key_ = key;
     }
 
-  }
-
-  @Override
-  public void columnMoved(TableColumnModelEvent e) {
-    super.columnMoved(e);
-    if (e.getFromIndex() != e.getToIndex()) {
-      entityTable_.saveColumnState();
-    }
   }
 
   public void setSizesFromData() {

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.IntStream;
 
@@ -46,13 +47,13 @@ public class TableModel<E> extends AbstractTableModel {
   }
 
   void sortByColumn(Column<E> column, Sorting sorting) {
-    try (var notifier = new DataChangedNotifier(false)) {
+    try (var notifier = new SortingChangedNotifier(false)) {
       comparator_.sortByColumn(column, sorting);
     }
   }
 
   void clearSorting() {
-    try (var notifier = new DataChangedNotifier(false)) {
+    try (var notifier = new SortingChangedNotifier(false)) {
       comparator_.clear();
     }
   }
@@ -62,7 +63,7 @@ public class TableModel<E> extends AbstractTableModel {
   }
 
   void addOrUpdateData(Collection<? extends E> data) {
-    try (var notifier = new DataChangedNotifier(true)) {
+    try (var notifier = new SortingChangedNotifier(true)) {
       data.forEach(entity -> {
         final int index = entityList_.indexOf(entity);
 
@@ -121,19 +122,18 @@ public class TableModel<E> extends AbstractTableModel {
     return comparator_.getSortPrefs();
   }
 
-  void applySortPrefs(String sortings) {
-    comparator_.applySortPrefs(sortings);
-    if (!comparator_.isEmpty()) {
-     // resort();
+  void applySortPrefs(String sortings, Map<String, Column<E>> columnsById) {
+    try (var notifier = new SortingChangedNotifier(false)) {
+      comparator_.applySortPrefs(sortings, columnsById);
     }
   }
 
-  class DataChangedNotifier implements AutoCloseable {
+  class SortingChangedNotifier implements AutoCloseable {
 
     private final boolean alwaysFireEvent_;
     private final List<E> oldEntityList_;
 
-    DataChangedNotifier(boolean alwaysFireEvent) {
+    SortingChangedNotifier(boolean alwaysFireEvent) {
       oldEntityList_ = (alwaysFireEvent_ = alwaysFireEvent) ? List.of() : List.copyOf(entityList_);
     }
 

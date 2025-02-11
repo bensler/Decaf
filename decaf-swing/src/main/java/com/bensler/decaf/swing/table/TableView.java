@@ -23,15 +23,11 @@ public class TableView<E> extends Object {
   }
 
   public Object getCellValue(int colIndex, E entity) {
-    return views_.get(colIndex).getPropertyValue(entity);
+    return getColumnView(colIndex).getPropertyValue(entity);
   }
 
   public TablePropertyView<E, ?> getColumnView(int colIndex) {
     return views_.get(colIndex);
-  }
-
-  public boolean contains(TablePropertyView<?, ?> view) {
-    return views_.contains(view);
   }
 
 }

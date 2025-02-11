@@ -14,7 +14,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.prefs.Preferences;
 
 import javax.swing.JComponent;
 import javax.swing.JPanel;
@@ -56,8 +55,6 @@ public class EntityTable<E> extends Object implements FocusListener, EntityCompo
 
   //  private                 ActionImpl          customizeAction_;
 
-  protected               Preferences         prefs_;
-
   private                 boolean             autoColumnResize_;
 
   private                 Color               enabledBgColor_;
@@ -66,10 +63,6 @@ public class EntityTable<E> extends Object implements FocusListener, EntityCompo
   private                 Background          emptyBackgroundComp_;
 
   public EntityTable(TableView<E> view) {
-    this(view, null);
-  }
-
-  public EntityTable(TableView<E> view, Preferences prefs) {
     autoColumnResize_ = true;
     view_ = view;
     focusListeners_ = new HashSet<>();
@@ -86,7 +79,6 @@ public class EntityTable<E> extends Object implements FocusListener, EntityCompo
     setSelectionMode(SelectionMode.SINGLE);
 //    defSelModel_.addListSelectionListener(this);
     showDefaultVisibleColumns();
-    setPreferences(prefs);
   }
 
   protected JScrollPane createScrollPane(TableComponent tableComponent) {
@@ -107,11 +99,6 @@ public class EntityTable<E> extends Object implements FocusListener, EntityCompo
 //    customizeButton.setFocusable(false);
 ////    customizeButton.setBorder(null);
 //    scrollPane_.setCorner(JScrollPane.UPPER_RIGHT_CORNER, customizeButton);
-  }
-
-  public void setPreferences(Preferences prefs) {
-    prefs_ = prefs;
-    loadState();
   }
 
   /** @return the JTable component wrapped by a JScrollpane
@@ -162,20 +149,6 @@ public class EntityTable<E> extends Object implements FocusListener, EntityCompo
     removeData(getValues());
   }
 
-  void saveColumnState() {
-    autoColumnResize_ = false;
-    if (prefs_ != null) {
-//      PreferencesUtil.saveCollection(new PrefKey(prefs_, COL_KEY), columnModel_.getPropertyKeyList());
-//      PreferencesUtil.saveCollection(new PrefKey(prefs_, SIZE_KEY), columnModel_.getSizeList());
-    }
-  }
-
-  void saveSortState() {
-    if (prefs_ != null) {
-//      PreferencesUtil.saveCollection(new PrefKey(prefs_, SORT_KEY), table_.getSortPrefs());
-    }
-  }
-
   private void showDefaultVisibleColumns() {
 //    setProperties(view_.getDefaultVisibleViews().toArray(new String[0]));
     table_.setSizesFromHeaderLabel();
@@ -183,7 +156,7 @@ public class EntityTable<E> extends Object implements FocusListener, EntityCompo
 
   /** Call setPreferences(Preferences) before! */
   public void loadState() {
-    if (prefs_ != null) {
+    {
 //      final List<TablePropertyView> views = setProperties(PreferencesUtil.loadStrings(new PrefKey(prefs_, COL_KEY)));
 //      final String[] sizeStrings = PreferencesUtil.loadStrings(new PrefKey(prefs_, SIZE_KEY));
 //
