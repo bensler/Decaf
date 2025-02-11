@@ -1,10 +1,8 @@
 package com.bensler.decaf.swing.table;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -49,13 +47,10 @@ public class ColumnModel<E> extends DefaultTableColumnModel {
     return Set.copyOf(propertyColumnMap_.keySet());
   }
 
-  List<String> getSizeList() {
-    final List<String> returnValue    = new ArrayList<>(tableColumns.size());
-
-    for (int i = 0; i < tableColumns.size(); i++) {
-      returnValue.add(Integer.toString(((Column<?>)tableColumns.get(i)).getWidth()));
-    }
-    return returnValue;
+  String getSizes() {
+    return propertyColumnMap_.entrySet().stream()
+      .map(entry -> entry.getKey().getId() + ":" + entry.getValue().getWidth())
+      .collect(Collectors.joining(","));
   }
 
   void setPrefSizes(int[] sizes) {

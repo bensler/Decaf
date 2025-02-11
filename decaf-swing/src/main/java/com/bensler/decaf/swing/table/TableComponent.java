@@ -152,17 +152,8 @@ public class TableComponent<E> extends JTable {
       final Point point             = evt.getPoint();
       final int   resizeColumnIndex = getResizeColumnIndex(point);
 
-      if (resizeColumnIndex < 0) {
-        if (evt.getButton() == MouseEvent.BUTTON1) {
-          sortByColumn(columnModel_.getColumn(tableHeader.columnAtPoint(evt.getPoint())));
-        }
-      } else {
-        if (evt.getClickCount() == 2) {
-          if (resizeColumnIndex >= 0) {
-            // TODO
-//            resizeToFit(resizeColumnIndex);
-          }
-        }
+      if ((resizeColumnIndex < 0) && (evt.getButton() == MouseEvent.BUTTON1)) {
+        sortByColumn(columnModel_.getColumn(tableHeader.columnAtPoint(evt.getPoint())));
       }
     }
 
@@ -284,6 +275,7 @@ public class TableComponent<E> extends JTable {
   }
 
   String getSortPrefs() {
+    System.out.println(columnModel_.getSizes());
     return sortableTableModel_.getSortPrefs();
   }
 
