@@ -24,11 +24,14 @@ public class ColumnModel<E> extends DefaultTableColumnModel {
 
   private int[] prefSizes_;
 
-  ColumnModel() {
+  ColumnModel(TableView<E> view) {
     allPropertiesColumnMap_ = new HashMap<>();
     propertyColumnMap_ = new HashMap<>();
     pressedColumn_ = null;
     prefSizes_ = null;
+    for (int i = 0; i < view.getColumnCount(); i++) {
+      addColumn(new Column<>(view.getColumnView(i), i));
+    }
   }
 
   void init() {
@@ -100,15 +103,6 @@ public class ColumnModel<E> extends DefaultTableColumnModel {
 //  Column getSortedColumn() {
 //    return sortedColumn_;
 //  }
-
-  void setProperties(List<TablePropertyView> properties) {
-    if (!properties.isEmpty()) {
-      setShownProperties(new HashSet<>(0));
-      for (int i = 0; i < properties.size(); i++) {
-        addColumn(allPropertiesColumnMap_.get(properties.get(i)));
-      }
-    }
-  }
 
   void setShownProperties(Collection<TablePropertyView> newProperties) {
     final Set<TablePropertyView<E, ?>>   shownProperties   = getShownProperties();

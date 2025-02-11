@@ -8,12 +8,13 @@ import javax.swing.table.TableColumn;
  */
 class Column<E> extends TableColumn {
 
-  private   final         TablePropertyView<E, ?>   view_;
+  private final TablePropertyView<E, ?>   view_;
 
-  private                 int                       viewIndex_;
+  private int viewIndex_;
 
   Column(TablePropertyView<E, ?> view, int newModelIndex) {
     super(newModelIndex);
+    setHeaderValue(view.getName());
     viewIndex_ = -1;
     view_ = view;
   }

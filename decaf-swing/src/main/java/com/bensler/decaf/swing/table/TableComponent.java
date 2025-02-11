@@ -23,7 +23,6 @@ import javax.swing.event.TableColumnModelEvent;
 import javax.swing.plaf.basic.BasicTableUI;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
-import javax.swing.table.TableColumnModel;
 
 import com.bensler.decaf.swing.awt.ColorHelper;
 import com.bensler.decaf.util.Pair;
@@ -60,7 +59,7 @@ public class TableComponent<E> extends JTable {
   private                 ColumnResizeState   columnResizeState_;
 
   TableComponent(EntityTable<E> entityTable, TableModel<E> model, TableView<E> view) {
-    super(model);
+    super(model, new ColumnModel<E>(view));
     selectionCtrl_ = new TableSelectionController<>(entityTable, this);
     backgroundSelectionColorUnfocused_ = ColorHelper.mix(getSelectionBackground(), 2, UIManager.getColor("Table.background"), 1);
     entityTable_ = entityTable;
@@ -70,7 +69,6 @@ public class TableComponent<E> extends JTable {
     view_ = view;
     sortableTableModel_ = model;
     columnModel_ = (ColumnModel)columnModel;
-    createDefaultColumnsFromModel();
     headerRenderer_ = new HeaderRenderer<>(sortableTableModel_, (ColumnModel)getColumnModel());
     tableHeader.setDefaultRenderer(headerRenderer_);
     gapBorder_ = BorderFactory.createEmptyBorder(0, 3, 0, 3);
@@ -99,34 +97,15 @@ public class TableComponent<E> extends JTable {
           int   sum   = 0;
 
     for (int i = 0; i < columnModel_.getColumnCount(); i++) {
-      final TablePropertyView<E, ?> view = columnModel_.getColumn(i).getView();
+      final String name = columnModel_.getColumn(i).getView().getName();
 
       sizes[i] = headerRenderer_.getTableCellRendererComponent(
-        this, view.getName(), false, false, -1, i
+        this, name, false, false, -1, i
       ).getPreferredSize().width;
       sum += sizes[i];
     }
     columnModel_.setPrefSizes(sizes);
     columnModel_.updateColPrefSizes(sum);
-  }
-
-  @Override
-  public void createDefaultColumnsFromModel() {
-    if (columnModel_.getColumnCount() < 1) {
-      for (int i = 0; i < sortableTableModel_.getColumnCount(); i++) {
-        addColumn(new Column<>(view_.getColumnView(i), i));
-      }
-    }
-  }
-
-  @Override
-  public boolean getAutoCreateColumnsFromModel() {
-    return false;
-  }
-
-  @Override
-  protected TableColumnModel createDefaultColumnModel() {
-    return new ColumnModel<E>();
   }
 
   private void sortByColumn(Column<E> column) {
