@@ -59,16 +59,16 @@ final class ComparatorList<E> extends Object implements Comparator<E> {
   }
 
   void applySortPrefs(String sortings, Map<String, Column<E>> columnsById) {
-    List.of(sortings.split(",")).reversed().forEach(str -> {
-      final String[] idSorting = str.split(":");
-      final String columnId = idSorting[0];
-
-      if ((idSorting.length == 2) && columnsById.containsKey(columnId)) {
+    List.of(sortings.split(",")).reversed().stream()
+      .map(str -> str.split(":"))
+      .filter(idSorting -> idSorting.length == 2)
+      .map(idSorting -> new Pair<>(idSorting[0], idSorting[1]))
+      .filter(idSorting -> columnsById.containsKey(idSorting.getLeft()))
+      .forEach(idSorting -> {
         try {
-          sortByColumn(columnsById.get(columnId), Sorting.valueOf(idSorting[1]));
+          sortByColumn(columnsById.get(idSorting.getLeft()), Sorting.valueOf(idSorting.getRight()));
         } catch (IllegalArgumentException iae) { /* idSorting[1] did not match a Sorting enum value */ }
-      }
-    });
+      });
   }
 
   final static class ComparatorWrapper<E> extends Object implements Comparator<E> {
