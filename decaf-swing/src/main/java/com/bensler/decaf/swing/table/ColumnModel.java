@@ -106,10 +106,6 @@ public class ColumnModel<E> extends DefaultTableColumnModel {
 //    }
 //    return (int[])ArrayUtil.createCopy(prefSizes_);
 //  }
-//
-//  Column getSortedColumn() {
-//    return sortedColumn_;
-//  }
 
   void setShownProperties(Collection<TablePropertyView> newProperties) {
     final Set<TablePropertyView<E, ?>>   shownProperties   = getShownProperties();
@@ -141,8 +137,8 @@ public class ColumnModel<E> extends DefaultTableColumnModel {
     }
   }
 
-  private void showColumn(TablePropertyView view) {
-    final Column column = allPropertiesColumnMap_.get(view);
+  private void showColumn(TablePropertyView<?, ?> view) {
+    final Column<E> column = allPropertiesColumnMap_.get(view);
 
     if (column != null) {
       final int viewIndex = getColumnCount();
@@ -152,8 +148,8 @@ public class ColumnModel<E> extends DefaultTableColumnModel {
     }
   }
 
-  void hideColumn(TablePropertyView view) {
-    final Column column = allPropertiesColumnMap_.get(view);
+  private void hideColumn(TablePropertyView<?, ?> view) {
+    final Column<E> column = allPropertiesColumnMap_.get(view);
 
     if (column != null) {
       column.setViewIndex(tableColumns.indexOf(column));
@@ -181,14 +177,13 @@ public class ColumnModel<E> extends DefaultTableColumnModel {
     super.removeColumn(column);
   }
 
-  void setPressedColumn(Column column) {
-    if (tableColumns.contains(column)) {
+  boolean setPressedColumn(Column column) {
+    final boolean change = (column != pressedColumn_) && ((column == null) || (tableColumns.contains(column)));
+
+    if (change) {
       pressedColumn_ = column;
     }
-  }
-
-  void resetPressedColumn() {
-    pressedColumn_ = null;
+    return change;
   }
 
   boolean isColumnPressed(int col) {

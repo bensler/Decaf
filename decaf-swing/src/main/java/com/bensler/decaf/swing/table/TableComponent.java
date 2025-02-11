@@ -21,7 +21,6 @@ import javax.swing.UIManager;
 import javax.swing.border.Border;
 import javax.swing.plaf.basic.BasicTableUI;
 import javax.swing.table.TableCellRenderer;
-import javax.swing.table.TableColumn;
 
 import com.bensler.decaf.swing.awt.ColorHelper;
 import com.bensler.decaf.util.Pair;
@@ -53,13 +52,10 @@ public class TableComponent<E> extends JTable {
 
   private                 TableRowView<E>     rowView_;
 
-  private                 ColumnResizeState   columnResizeState_;
-
   TableComponent(EntityTable<E> entityTable, TableModel<E> model, TableView<E> view) {
     super(model, new ColumnModel<E>(view));
     selectionCtrl_ = new TableSelectionController<>(entityTable, this);
     backgroundSelectionColorUnfocused_ = ColorHelper.mix(getSelectionBackground(), 2, UIManager.getColor("Table.background"), 1);
-    columnResizeState_ = ColumnResizeState.NONE;
     rowView_ = new TableRowView.Nop<>();
     visibleRows_ = new int[]{10, 10};
     view_ = view;
@@ -70,21 +66,6 @@ public class TableComponent<E> extends JTable {
     gapBorder_ = BorderFactory.createEmptyBorder(0, 3, 0, 3);
     tableHeader.addMouseListener(new HeaderListener());
     tableHeader.addMouseMotionListener(new HeaderDragListener());
-  }
-
-  @Override
-  public void doLayout() {
-    try {
-      if (columnResizeState_ == ColumnResizeState.SIZE) {
-        columnModel_.updateColPrefSizes(getSize().width);
-      }
-      super.doLayout();
-      if (columnResizeState_ == ColumnResizeState.COL) {
-        columnModel_.updatePrefSizes();
-      }
-    } finally {
-      columnResizeState_ = ColumnResizeState.NONE;
-    }
   }
 
   void setSizesFromHeaderLabel() {
@@ -129,25 +110,11 @@ public class TableComponent<E> extends JTable {
 
     @Override
     public void mouseDragged(MouseEvent e) {
-      TableColumn resizingColumn  = tableHeader.getResizingColumn();
-
-      if (resizingColumn != null) {
-        columnResizeState_ = ColumnResizeState.COL;
+      if (columnModel_.setPressedColumn(null)) {
+        tableHeader.repaint();
       }
     }
 
-  }
-
-  void setResizingState() {
-    columnResizeState_ = ColumnResizeState.SIZE;
-  }
-
-  @Override
-  public void setSize(Dimension d) {
-    if (getSize().width != d.width) {
-      setResizingState();
-    }
-    super.setSize(d);
   }
 
   private class HeaderListener extends MouseAdapter {
@@ -163,8 +130,7 @@ public class TableComponent<E> extends JTable {
       ) {
         final Column<E> column = columnModel_.getColumn(tableHeader.columnAtPoint(evt.getPoint()));
 
-        if (column.isSortable()) {
-          columnModel_.setPressedColumn(column);
+        if (column.isSortable() && columnModel_.setPressedColumn(column)) {
           tableHeader.repaint();
         }
       }
@@ -175,8 +141,8 @@ public class TableComponent<E> extends JTable {
       if (
         (evt.getButton() == MouseEvent.BUTTON1)
         && (getResizeColumnIndex(evt.getPoint()) < 0)
+        && columnModel_.setPressedColumn(null)
       ) {
-      	columnModel_.resetPressedColumn();
         tableHeader.repaint();
       }
     }
@@ -351,20 +317,6 @@ public class TableComponent<E> extends JTable {
       }
     }
     return tt;
-  }
-
-  private enum ColumnResizeState {
-
-    NONE("none"),
-    COL("col"),
-    SIZE("size");
-
-    private final String key_;
-
-    private ColumnResizeState(String key) {
-      key_ = key;
-    }
-
   }
 
   public void setSizesFromData() {
