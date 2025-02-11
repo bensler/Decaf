@@ -53,7 +53,7 @@ public class TableComponent<E> extends JTable {
   private                 TableRowView<E>     rowView_;
 
   TableComponent(EntityTable<E> entityTable, TableModel<E> model, TableView<E> view) {
-    super(model, new ColumnModel<E>(view));
+    super(model, new ColumnModel<>(view));
     selectionCtrl_ = new TableSelectionController<>(entityTable, this);
     backgroundSelectionColorUnfocused_ = ColorHelper.mix(getSelectionBackground(), 2, UIManager.getColor("Table.background"), 1);
     rowView_ = new TableRowView.Nop<>();
@@ -77,7 +77,7 @@ public class TableComponent<E> extends JTable {
 
       sizes[i] = headerRenderer_.getTableCellRendererComponent(
         this, name, false, false, -1, i
-      ).getPreferredSize().width;
+      ).getPreferredSize().width * 10;
       sum += sizes[i];
     }
     columnModel_.setPrefSizes(sizes);

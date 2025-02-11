@@ -136,9 +136,9 @@ public class ColumnModel<E> extends DefaultTableColumnModel {
     final Column<E> column = allPropertiesColumnMap_.get(view);
 
     if (column != null) {
-      final int viewIndex = getColumnCount();
-
-      column.setViewIndex(viewIndex);
+//      final int viewIndex = getColumnCount();
+//
+//      column.setViewIndex(viewIndex);
       addColumn(column);
     }
   }
@@ -147,7 +147,7 @@ public class ColumnModel<E> extends DefaultTableColumnModel {
     final Column<E> column = allPropertiesColumnMap_.get(view);
 
     if (column != null) {
-      column.setViewIndex(tableColumns.indexOf(column));
+//      column.setViewIndex(tableColumns.indexOf(column));
       removeColumn(column);
     }
   }

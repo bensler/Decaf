@@ -16,31 +16,19 @@ implements TableCellRenderer, Named, Comparator<E> {
   private   final           String            id_;
   private   final           String            name_;
 
-  private   final           boolean           defaultVisible_;
-
   private   final           PropertyView<? super E, P>  propertyView_;
 
   public TablePropertyView(
-    String key, String name, PropertyView<? super E, P> propertyView
+    String id, String name, PropertyView<? super E, P> propertyView
   ) {
-    this(key, name, true, propertyView);
-  }
 
-  public TablePropertyView(
-    String key, String name, boolean defaultVisible, PropertyView<? super E, P> propertyView
-  ) {
-    id_ = key;
+    id_ = id;
     name_ = name;
-    defaultVisible_ = defaultVisible;
     propertyView_ = propertyView;
   }
 
   public String getId() {
     return id_;
-  }
-
-  public boolean isDefaultVisible() {
-    return defaultVisible_;
   }
 
   public P getPropertyValue(E viewable) {
@@ -52,7 +40,7 @@ implements TableCellRenderer, Named, Comparator<E> {
     JTable table, Object value,
     boolean selected, boolean hasFocus, int row, int column
   ) {
-    throw new RuntimeException("Should not be called");
+    throw new UnsupportedOperationException("Should not be called");
   }
 
   public Component getCellRendererComponent(
