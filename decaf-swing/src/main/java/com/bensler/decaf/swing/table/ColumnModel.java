@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import javax.swing.table.DefaultTableColumnModel;
 import javax.swing.table.TableColumn;
@@ -48,8 +49,10 @@ public class ColumnModel<E> extends DefaultTableColumnModel {
   }
 
   String getSizes() {
-    return propertyColumnMap_.entrySet().stream()
-      .map(entry -> entry.getKey().getId() + ":" + entry.getValue().getWidth())
+    return IntStream.range(0, getColumnCount())
+      .mapToObj(this::getColumn)
+      .map(Column.class::cast)
+      .map(column -> column.getId() + ":" + column.getWidth())
       .collect(Collectors.joining(","));
   }
 
