@@ -314,17 +314,17 @@ public class TableComponent<E> extends JTable {
     return tt;
   }
 
-  public void setSizesFromData() {
-    final int[] sizes = new int[columnModel_.getColumnCount()];
-          int   sum   = 0;
-
-    for (int i = 0; i < sizes.length; i++) {
-      sizes[i] = getPrefColumnWidth(i) + 2;
-      sum += sizes[i];
-    }
-    columnModel_.setPrefSizes(sizes);
-    columnModel_.updateColPrefSizes(sum);
-  }
+//  public void setSizesFromData() {
+//    final int[] sizes = new int[columnModel_.getColumnCount()];
+//          int   sum   = 0;
+//
+//    for (int i = 0; i < sizes.length; i++) {
+//      sizes[i] = getPrefColumnWidth(i) + 2;
+//      sum += sizes[i];
+//    }
+//    columnModel_.setPrefSizes(sizes);
+//    columnModel_.updateColPrefSizes(sum);
+//  }
 
   public Color getBackgroundSelectionColorUnfocused() {
     return backgroundSelectionColorUnfocused_;

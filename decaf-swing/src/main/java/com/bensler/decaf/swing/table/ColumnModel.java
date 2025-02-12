@@ -1,8 +1,6 @@
 package com.bensler.decaf.swing.table;
 
-import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -60,9 +58,9 @@ public class ColumnModel<E> extends DefaultTableColumnModel {
     prefSizes_ = sizes;
   }
 
-  void setPrefSize(int size, int columnIndex) {
-    prefSizes_[columnIndex] = size;
-  }
+//  void setPrefSize(int size, int columnIndex) {
+//    prefSizes_[columnIndex] = size;
+//  }
 
   int getPrefWidth() {
     int   prefSizeSum = 0;
@@ -105,55 +103,55 @@ public class ColumnModel<E> extends DefaultTableColumnModel {
 //    return (int[])ArrayUtil.createCopy(prefSizes_);
 //  }
 
-  void setShownProperties(Collection<TablePropertyView> newProperties) {
-    final Set<TablePropertyView<E, ?>>   shownProperties   = getShownProperties();
-    final Set<TablePropertyView>   toRemove          = new HashSet<>(shownProperties);
-    final Set<TablePropertyView>   toAdd             = new HashSet<>(newProperties);
-
-    toRemove.removeAll(newProperties);
-    toAdd.removeAll(shownProperties);
-    for (TablePropertyView view : toRemove) {
-      hideColumn(view);
-    }
-    updatePrefSizes();
-    if (!toAdd.isEmpty()) {
-            int   i             = 0;
-            int   prefSizeSum   = 0;
-      final int[] newPrefSizes  = new int[prefSizes_.length + toAdd.size()];
-      final int   avgSize;
-
-      for (i = 0; i < prefSizes_.length; i++) {
-        prefSizeSum += prefSizes_[i];
-        newPrefSizes[i] = prefSizes_[i];
-      }
-      avgSize = Math.round(((float)prefSizeSum) / newPrefSizes.length);
-      for (TablePropertyView view : toAdd) {
-        showColumn(view);
-        newPrefSizes[i] = avgSize;
-      }
-      prefSizes_ = newPrefSizes;
-    }
-  }
-
-  private void showColumn(TablePropertyView<?, ?> view) {
-    final Column<E> column = allPropertiesColumnMap_.get(view);
-
-    if (column != null) {
-//      final int viewIndex = getColumnCount();
+//  void setShownProperties(Collection<TablePropertyView> newProperties) {
+//    final Set<TablePropertyView<E, ?>>   shownProperties   = getShownProperties();
+//    final Set<TablePropertyView>   toRemove          = new HashSet<>(shownProperties);
+//    final Set<TablePropertyView>   toAdd             = new HashSet<>(newProperties);
 //
-//      column.setViewIndex(viewIndex);
-      addColumn(column);
-    }
-  }
-
-  private void hideColumn(TablePropertyView<?, ?> view) {
-    final Column<E> column = allPropertiesColumnMap_.get(view);
-
-    if (column != null) {
-//      column.setViewIndex(tableColumns.indexOf(column));
-      removeColumn(column);
-    }
-  }
+//    toRemove.removeAll(newProperties);
+//    toAdd.removeAll(shownProperties);
+//    for (TablePropertyView view : toRemove) {
+//      hideColumn(view);
+//    }
+//    updatePrefSizes();
+//    if (!toAdd.isEmpty()) {
+//            int   i             = 0;
+//            int   prefSizeSum   = 0;
+//      final int[] newPrefSizes  = new int[prefSizes_.length + toAdd.size()];
+//      final int   avgSize;
+//
+//      for (i = 0; i < prefSizes_.length; i++) {
+//        prefSizeSum += prefSizes_[i];
+//        newPrefSizes[i] = prefSizes_[i];
+//      }
+//      avgSize = Math.round(((float)prefSizeSum) / newPrefSizes.length);
+//      for (TablePropertyView view : toAdd) {
+//        showColumn(view);
+//        newPrefSizes[i] = avgSize;
+//      }
+//      prefSizes_ = newPrefSizes;
+//    }
+//  }
+//
+//  private void showColumn(TablePropertyView<?, ?> view) {
+//    final Column<E> column = allPropertiesColumnMap_.get(view);
+//
+//    if (column != null) {
+////      final int viewIndex = getColumnCount();
+////
+////      column.setViewIndex(viewIndex);
+//      addColumn(column);
+//    }
+//  }
+//
+//  private void hideColumn(TablePropertyView<?, ?> view) {
+//    final Column<E> column = allPropertiesColumnMap_.get(view);
+//
+//    if (column != null) {
+////      column.setViewIndex(tableColumns.indexOf(column));
+//      removeColumn(column);
+//    }
+//  }
 
   @Override
   public void addColumn(TableColumn aColumn) {

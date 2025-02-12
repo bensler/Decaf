@@ -168,24 +168,24 @@ public class EntityTable<E> extends Object implements FocusListener, EntityCompo
     }
   }
 
-  public void setSizesFromData() {
-    if (autoColumnResize_) {
-      table_.setSizesFromData();
-    }
-  }
-
-  private void setSizes(String[] sizeStrings) {
-    final int[] sizes   = new int[sizeStrings.length];
-
-    for (int i = 0; i < sizeStrings.length; i++) {
-      sizes[i] = Integer.parseInt(sizeStrings[i].trim());
-      if (sizes[i] < 1) {
-        throw new NumberFormatException("size must be positive");
-      }
-    }
-    columnModel_.setPrefSizes(sizes);
-  }
-
+//  public void setSizesFromData() {
+//    if (autoColumnResize_) {
+//      table_.setSizesFromData();
+//    }
+//  }
+//
+//  private void setSizes(String[] sizeStrings) {
+//    final int[] sizes   = new int[sizeStrings.length];
+//
+//    for (int i = 0; i < sizeStrings.length; i++) {
+//      sizes[i] = Integer.parseInt(sizeStrings[i].trim());
+//      if (sizes[i] < 1) {
+//        throw new NumberFormatException("size must be positive");
+//      }
+//    }
+//    columnModel_.setPrefSizes(sizes);
+//  }
+//
 //  private List<TablePropertyView> setProperties(String[] propNames) {
 //    final List<TablePropertyView>   views = new ArrayList<TablePropertyView>(propNames.length);
 //
