@@ -24,7 +24,6 @@ import javax.swing.JViewport;
 import com.bensler.decaf.swing.EntityComponent;
 import com.bensler.decaf.swing.selection.EntitySelectionListener;
 import com.bensler.decaf.swing.selection.SelectionMode;
-import com.bensler.decaf.util.prefs.PrefKey;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
@@ -32,12 +31,6 @@ import com.jgoodies.forms.layout.FormLayout;
 /**
  */
 public class EntityTable<E> extends Object implements FocusListener, EntityComponent<E> {
-
-  private   final static  String              COL_KEY     = "cols";
-
-  private   final static  String              SIZE_KEY    = "sizes";
-
-  private   final static  String              SORT_KEY    = "sort";
 
   private   final         Set<FocusListener>  focusListeners_;
 
@@ -173,10 +166,6 @@ public class EntityTable<E> extends Object implements FocusListener, EntityCompo
 //        table_.loadSortPrefs(PreferencesUtil.loadStrings(new PrefKey(prefs_, SORT_KEY)));
 //      }
     }
-  }
-
-  public TablePrefPersister createPrefs(PrefKey basePrefKey) {
-    return new TablePrefPersister(new PrefKey(basePrefKey, SORT_KEY), table_);
   }
 
   public void setSizesFromData() {

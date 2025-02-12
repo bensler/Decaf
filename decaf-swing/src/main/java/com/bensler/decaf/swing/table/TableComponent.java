@@ -274,8 +274,11 @@ public class TableComponent<E> extends JTable {
     return view_.getColumnView(convertColumnIndexToModel(column));
   }
 
+  String getColumnWidthPrefs() {
+    return columnModel_.getSizes();
+  }
+
   String getSortPrefs() {
-    System.out.println(columnModel_.getSizes());
     return sortableTableModel_.getSortPrefs();
   }
 
