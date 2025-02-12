@@ -46,52 +46,29 @@ public class EntityTable<E> extends Object implements FocusListener, EntityCompo
 
   private   final         Map<PopupListener, PopupListenerWrapper> popupListeners_;
 
-  //  private                 ActionImpl          customizeAction_;
-
-  private                 boolean             autoColumnResize_;
-
   private                 Color               enabledBgColor_;
 
   /** May be null! If not null it is shown when the table empty. */
   private                 Background          emptyBackgroundComp_;
 
   public EntityTable(TableView<E> view) {
-    autoColumnResize_ = true;
     view_ = view;
     focusListeners_ = new HashSet<>();
     model_ = new TableModel<>(view_);
     table_ = new TableComponent<>(this, model_, view_);
     table_.addFocusListener(this);
     columnModel_ = (ColumnModel)table_.getColumnModel();
-    columnModel_.init();
     scrollPane_ = createScrollPane(table_);
-    initCustAction();
     popupListeners_ = new HashMap<>(1);
     scrollPane_.getViewport().setBackground(table_.getBackground());
 //    defSelModel_ = table_.getSelectionModel();
     setSelectionMode(SelectionMode.SINGLE);
 //    defSelModel_.addListSelectionListener(this);
-    showDefaultVisibleColumns();
+//    showDefaultVisibleColumns();
   }
 
-  protected JScrollPane createScrollPane(TableComponent tableComponent) {
+  protected JScrollPane createScrollPane(TableComponent<E> tableComponent) {
     return new JScrollPane(tableComponent);
-  }
-
-  private void initCustAction() {
-//    final JButton customizeButton;
-//
-//    customizeAction_ = new ActionImpl(
-//      GeneralKeys.CUSTOMIZE, null, BinResKeys.CUSTOMIZE, null
-//    );
-//    customizeAction_.setDialogAction();
-//    customizeAction_.enable(this);
-//    customizeButton = new JButton(customizeAction_);
-//    customizeButton.setText("");
-//    customizeButton.setToolTipText(customizeAction_.getName());
-//    customizeButton.setFocusable(false);
-////    customizeButton.setBorder(null);
-//    scrollPane_.setCorner(JScrollPane.UPPER_RIGHT_CORNER, customizeButton);
   }
 
   /** @return the JTable component wrapped by a JScrollpane
@@ -117,35 +94,14 @@ public class EntityTable<E> extends Object implements FocusListener, EntityCompo
     );
   }
 
-//  public void doAction(ActionEx action) throws CanceledException {
-//    if (action == customizeAction_) {
-//      customize(columnModel_.getShownProperties());
-//    }
-//  }
-//
-//  protected PropertyDialog createPropertyDialog(Collection<? extends Named> properties) {
-//    return new PropertyDialog(properties);
-//  }
-//
-//  protected void customize(Object dlgData) throws UserCanceledException {
-//    final PropertyDialog dlg = createPropertyDialog(getView().getViews());
-//
-//    dlg.setTitle(Client.getRes().getString(GeneralKeys.CONFIG_COLUMNS));
-//    columnModel_.setShownProperties(
-//      new HashSet((Collection)dlg.show(dlgData))
-//    );
-//    table_.setResizingState();
-//    saveColumnState();
-//  }
-
   public void clear() {
     removeData(getValues());
   }
 
-  private void showDefaultVisibleColumns() {
-//    setProperties(view_.getDefaultVisibleViews().toArray(new String[0]));
-    table_.setSizesFromHeaderLabel();
-  }
+//  private void showDefaultVisibleColumns() {
+////    setProperties(view_.getDefaultVisibleViews().toArray(new String[0]));
+//    table_.setSizesFromHeaderLabel();
+//  }
 
   /** Call setPreferences(Preferences) before! */
   public void loadState() {
@@ -368,10 +324,6 @@ public class EntityTable<E> extends Object implements FocusListener, EntityCompo
 
   public int getIndexOf(Object object) {
     return model_.indexOf(object);
-  }
-
-  ColumnModel<E> getColumnModel() {
-    return columnModel_;
   }
 
   public int getRowCount() {

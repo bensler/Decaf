@@ -66,9 +66,10 @@ public class TableComponent<E> extends JTable {
     gapBorder_ = BorderFactory.createEmptyBorder(0, 3, 0, 3);
     tableHeader.addMouseListener(new HeaderListener());
     tableHeader.addMouseMotionListener(new HeaderDragListener());
+    setSizesFromHeaderLabel();
   }
 
-  void setSizesFromHeaderLabel() {
+  private void setSizesFromHeaderLabel() {
     final int[] sizes = new int[view_.getColumnCount()];
           int   sum   = 0;
 
@@ -121,9 +122,6 @@ public class TableComponent<E> extends JTable {
 
     @Override
     public void mousePressed(MouseEvent evt) {
-    	if (isEditing()) {
-        getCellEditor().stopCellEditing();
-      }
       if (
         (evt.getButton() == MouseEvent.BUTTON1)
         && (getResizeColumnIndex(evt.getPoint()) < 0)
@@ -179,21 +177,21 @@ public class TableComponent<E> extends JTable {
 
   }
 
-  private int getPrefColumnWidth(int columnIndex) {
-    final Column<E>         column    = columnModel_.getColumn(columnIndex);
-    final TablePropertyView view      = column.getView();
-          int               maxWidth  = headerRenderer_.getTableCellRendererComponent(
-      this, view.getName(), false, false, -1, columnIndex
-    ).getPreferredSize().width;
-
-    for (int row = 0; row < getRowCount(); row++) {
-      maxWidth = Math.max(maxWidth, prepareRenderer(view, row, columnIndex).getPreferredSize().width);
-    }
-//    columnModel_.setPrefSize(maxWidth, columnIndex);
-//    columnModel_.updateColPrefSizes(columnModel_.getPrefWidth());
-//    invalidateIfNeeded();
-    return maxWidth;
-  }
+//  private int getPrefColumnWidth(int columnIndex) {
+//    final Column<E>         column    = columnModel_.getColumn(columnIndex);
+//    final TablePropertyView view      = column.getView();
+//          int               maxWidth  = headerRenderer_.getTableCellRendererComponent(
+//      this, view.getName(), false, false, -1, columnIndex
+//    ).getPreferredSize().width;
+//
+//    for (int row = 0; row < getRowCount(); row++) {
+//      maxWidth = Math.max(maxWidth, prepareRenderer(view, row, columnIndex).getPreferredSize().width);
+//    }
+////    columnModel_.setPrefSize(maxWidth, columnIndex);
+////    columnModel_.updateColPrefSizes(columnModel_.getPrefWidth());
+////    invalidateIfNeeded();
+//    return maxWidth;
+//  }
 
   boolean isSelected(Point point) {
     final int row         = rowAtPoint(point);

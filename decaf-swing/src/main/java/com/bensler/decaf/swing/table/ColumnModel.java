@@ -31,15 +31,12 @@ public class ColumnModel<E> extends DefaultTableColumnModel {
     for (int i = 0; i < view.getColumnCount(); i++) {
       addColumn(new Column<>(view.getColumnView(i), i));
     }
+    allPropertiesColumnMap_.putAll(propertyColumnMap_);
   }
 
   Map<String, Column<E>> getColumnsById() {
     return propertyColumnMap_.entrySet().stream()
         .collect(Collectors.toMap(entry -> entry.getKey().getId(), Entry::getValue));
-  }
-
-  void init() {
-    allPropertiesColumnMap_.putAll(propertyColumnMap_);
   }
 
   Set<TablePropertyView<E, ?>> getShownProperties() {
