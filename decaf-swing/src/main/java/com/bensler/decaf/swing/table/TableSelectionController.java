@@ -62,6 +62,10 @@ class TableSelectionController<E> implements ListSelectionListener {
     return  List.copyOf(selection_);
   }
 
+  TableSelectionController<E>.SelectionKeeper createSelectionKeeper() {
+    return new SelectionKeeper();
+  }
+
   public void setSelectionMode(SelectionMode mode) {
     final int oldModeInt = table_.getSelectionModel().getSelectionMode();
     final int newModeInt = mode.getTableConstant();

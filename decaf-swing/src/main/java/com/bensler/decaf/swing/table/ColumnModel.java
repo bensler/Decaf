@@ -3,7 +3,6 @@ package com.bensler.decaf.swing.table;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -37,10 +36,6 @@ public class ColumnModel<E> extends DefaultTableColumnModel {
   Map<String, Column<E>> getColumnsById() {
     return propertyColumnMap_.entrySet().stream()
         .collect(Collectors.toMap(entry -> entry.getKey().getId(), Entry::getValue));
-  }
-
-  Set<TablePropertyView<E, ?>> getShownProperties() {
-    return Set.copyOf(propertyColumnMap_.keySet());
   }
 
   String getSizes() {

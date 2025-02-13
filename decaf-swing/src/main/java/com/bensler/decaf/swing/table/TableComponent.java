@@ -7,9 +7,7 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.Rectangle;
-import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseMotionAdapter;
 import java.awt.event.MouseMotionListener;
 import java.util.Collection;
 import java.util.List;
@@ -30,151 +28,53 @@ import com.bensler.decaf.util.Pair;
  */
 public class TableComponent<E> extends JTable {
 
-  private   final         Color               backgroundSelectionColorUnfocused_;
+  private final Color backgroundSelectionColorUnfocused_;
 
-  private   final         TableModel<E>       sortableTableModel_;
+  private final TableModel<E> tableModel_;
 
-  private   final         ColumnModel<E>      columnModel_;
+  private final ColumnsController<E> columnsCtrl_;
+  private final ColumnModel<E> columnModel_;
 
-  private   final         TableView<E>        view_;
+  private final TableView<E> view_;
 
   final TableSelectionController<E> selectionCtrl_;
 
   /** Causes a gap when right and left aligned columns are beside each other */
-  private   final         Border              gapBorder_;
+  private final Border gapBorder_;
 
   /** for calc the preferred viewports size when residing in
    * a scrollpane.<p>
    * [min,max], ([min]>=1)<=<=[max], default: [10,10] */
-  private   final         int[]               visibleRows_;
+  private final int[] visibleRows_;
 
-  private   final         HeaderRenderer<E>   headerRenderer_;
-
-  private                 TableRowView<E>     rowView_;
+  private final TableRowView<E> rowView_;
 
   TableComponent(EntityTable<E> entityTable, TableModel<E> model, TableView<E> view, ColumnsController<E> colCtrl) {
     super(model, colCtrl.getColumnModel());
+    columnsCtrl_ = colCtrl;
     selectionCtrl_ = new TableSelectionController<>(entityTable, this);
     backgroundSelectionColorUnfocused_ = ColorHelper.mix(getSelectionBackground(), 2, UIManager.getColor("Table.background"), 1);
     rowView_ = new TableRowView.Nop<>();
-    visibleRows_ = new int[]{10, 10};
+    visibleRows_ = new int[] {10, 10};
     view_ = view;
-    sortableTableModel_ = model;
-    columnModel_ = (ColumnModel)columnModel;
-    headerRenderer_ = new HeaderRenderer<>(sortableTableModel_, (ColumnModel)getColumnModel());
-    tableHeader.setDefaultRenderer(headerRenderer_);
+    tableModel_ = model;
+    columnModel_ = colCtrl.getColumnModel();
+    colCtrl.configure(tableHeader, selectionCtrl_);
     gapBorder_ = BorderFactory.createEmptyBorder(0, 3, 0, 3);
-    tableHeader.addMouseListener(new HeaderListener());
-    tableHeader.addMouseMotionListener(new HeaderDragListener());
-    setSizesFromHeaderLabel();
-  }
-
-  private void setSizesFromHeaderLabel() {
-    final int[] sizes = new int[columnModel.getColumnCount()];
-          int   sum   = 0;
-
-    for (int i = 0; i < columnModel_.getColumnCount(); i++) {
-      final String name = columnModel_.getColumn(i).getView().getName();
-
-      sizes[i] = headerRenderer_.getTableCellRendererComponent(
-        this, name, false, false, -1, i
-      ).getPreferredSize().width * 10;
-      sum += sizes[i];
-    }
-    columnModel_.setPrefSizes(sizes);
-    columnModel_.updateColPrefSizes(sum);
-  }
-
-  private void sortByColumn(Column<E> column) {
-    try (var s = selectionCtrl_.new SelectionKeeper()) {
-      if (column.isSortable()) {
-        sortableTableModel_.sortByColumn(column, sortableTableModel_.getNewSorting(column));
-      }
-    }
   }
 
   List<E> getSelectedValues() {
-    return sortableTableModel_.getValues(getSelectedRows());
+    return tableModel_.getValues(getSelectedRows());
   }
 
   List<E> setSelectedValues(Collection<E> newSelection) {
     clearSelection();
     return newSelection.stream()
-      .map(entity -> new Pair<>(entity, sortableTableModel_.indexOf(entity)))
+      .map(entity -> new Pair<>(entity, tableModel_.indexOf(entity)))
       .filter(pair -> pair.getRight() >= 0)
       .map(forEachMapper(pair -> addRowSelectionInterval(pair.getRight(), pair.getRight())))
-      .flatMap(pair ->  sortableTableModel_.contains(pair.getLeft()).stream())
+      .flatMap(pair ->  tableModel_.contains(pair.getLeft()).stream())
       .toList();
-  }
-
-  private class HeaderDragListener extends MouseMotionAdapter {
-
-    @Override
-    public void mouseDragged(MouseEvent e) {
-      if (columnModel_.setPressedColumn(null)) {
-        tableHeader.repaint();
-      }
-    }
-
-  }
-
-  private class HeaderListener extends MouseAdapter {
-
-    @Override
-    public void mousePressed(MouseEvent evt) {
-      if (
-        (evt.getButton() == MouseEvent.BUTTON1)
-        && (getResizeColumnIndex(evt.getPoint()) < 0)
-      ) {
-        final Column<E> column = columnModel_.getColumn(tableHeader.columnAtPoint(evt.getPoint()));
-
-        if (column.isSortable() && columnModel_.setPressedColumn(column)) {
-          tableHeader.repaint();
-        }
-      }
-    }
-
-    @Override
-    public void mouseReleased(MouseEvent evt) {
-      if (
-        (evt.getButton() == MouseEvent.BUTTON1)
-        && (getResizeColumnIndex(evt.getPoint()) < 0)
-        && columnModel_.setPressedColumn(null)
-      ) {
-        tableHeader.repaint();
-      }
-    }
-
-    @Override
-    public void mouseClicked(MouseEvent evt) {
-      final Point point             = evt.getPoint();
-      final int   resizeColumnIndex = getResizeColumnIndex(point);
-
-      if ((resizeColumnIndex < 0) && (evt.getButton() == MouseEvent.BUTTON1)) {
-        sortByColumn(columnModel_.getColumn(tableHeader.columnAtPoint(evt.getPoint())));
-      }
-    }
-
-    private int getResizeColumnIndex(Point point) {
-      int columnIndex = tableHeader.columnAtPoint(point);
-
-      if (columnIndex >= 0) {
-        final Rectangle   rect = tableHeader.getHeaderRect(columnIndex);
-
-        rect.grow(-3, 0);
-        if (rect.contains(point)) {
-          columnIndex = -1;
-        } else {
-          final int center = rect.x + (rect.width / 2);
-
-          columnIndex += (
-            (tableHeader.getComponentOrientation().isLeftToRight() ^ (point.x < center)) ? 0 : -1
-          );
-        }
-      }
-      return columnIndex;
-    }
-
   }
 
 //  private int getPrefColumnWidth(int columnIndex) {
@@ -206,8 +106,11 @@ public class TableComponent<E> extends JTable {
   public void addMouseMotionListener(MouseMotionListener l) {
     if (!(l instanceof BasicTableUI.MouseInputHandler)) {
       super.addMouseMotionListener(l);
+    } else {
+      System.out.println("trap");
     }
   }
+
   /** Selects the row at the given position */
   void modifySelection(Point point) {
     final int row         = rowAtPoint(point);
@@ -277,15 +180,15 @@ public class TableComponent<E> extends JTable {
   }
 
   String getSortPrefs() {
-    return sortableTableModel_.getSortPrefs();
+    return tableModel_.getSortPrefs();
   }
 
   void applySortPrefs(String sortings) {
-    sortableTableModel_.applySortPrefs(sortings, columnModel_.getColumnsById());
+    tableModel_.applySortPrefs(sortings, columnModel_.getColumnsById());
   }
 
   public E getViewable(int row) {
-    return sortableTableModel_.getValueAt(row);
+    return tableModel_.getValueAt(row);
   }
 
   void invalidateIfNeeded() {

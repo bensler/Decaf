@@ -53,7 +53,7 @@ public class EntityTable<E> extends Object implements FocusListener, EntityCompo
     view_ = view;
     focusListeners_ = new HashSet<>();
     model_ = new TableModel<>(view_);
-    table_ = new TableComponent<>(this, model_, view_, new ColumnsController<E>(view_));
+    table_ = new TableComponent<>(this, model_, view_, new ColumnsController<E>(model_));
     table_.addFocusListener(this);
     scrollPane_ = createScrollPane(table_);
     popupListeners_ = new HashMap<>(1);

@@ -23,10 +23,13 @@ public class TableModel<E> extends AbstractTableModel {
   private final ComparatorList<E> comparator_;
 
   TableModel(TableView<E> view) {
-    super();
     view_ = view;
     entityList_ = new ArrayList<>();
     comparator_ = new ComparatorList<>();
+  }
+
+  TableView<E> getView() {
+    return view_;
   }
 
   @Override
