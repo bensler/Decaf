@@ -33,16 +33,15 @@ public class ColumnsController<E> {
     final int[] sizes = new int[view.getColumnCount()];
           int   sum   = 0;
 
-    for (int i = 0; i < columnModel_.getColumnCount(); i++) {
-      final String name = columnModel_.getColumn(i).getView().getName();
+    for (int i = 0; i < view.getColumnCount(); i++) {
+      final String name = view.getColumnView(i).getName();
 
       sizes[i] = headerRenderer_.getTableCellRendererComponent(
         null, name, false, false, -1, i
       ).getPreferredSize().width * 10;
       sum += sizes[i];
     }
-    columnModel_.setPrefSizes(sizes);
-    columnModel_.updateColPrefSizes(sum);
+    columnModel_.setPrefSizes(sizes, sum);
   }
 
   ColumnModel<E> getColumnModel() {

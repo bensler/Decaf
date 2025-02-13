@@ -46,13 +46,21 @@ public class ColumnModel<E> extends DefaultTableColumnModel {
       .collect(Collectors.joining(","));
   }
 
-  void setPrefSizes(int[] sizes) {
+  void setPrefSizes(int[] sizes, int sum) {
     prefSizes_ = sizes;
-  }
+    final int   prefWidth = getPrefWidth();
 
-//  void setPrefSize(int size, int columnIndex) {
-//    prefSizes_[columnIndex] = size;
-//  }
+    if ((sum > 0) && (prefWidth > 0)) {
+      final float ratio = ((float)sum) / prefWidth;
+
+      if (prefSizes_.length == getColumnCount()) {
+        for (int i = 0; i < prefSizes_.length; i++) {
+          getColumn(i).setPreferredWidth(Math.round(prefSizes_[i] * ratio));
+        }
+      }
+    }
+
+  }
 
   int getPrefWidth() {
     int   prefSizeSum = 0;
@@ -63,31 +71,48 @@ public class ColumnModel<E> extends DefaultTableColumnModel {
     return prefSizeSum;
   }
 
-  void updatePrefSizes() {
-    prefSizes_ = new int[getColumnCount()];
-    for (int i = 0; i < prefSizes_.length; i++) {
-      prefSizes_[i] = getColumn(i).getWidth();
+  @Override
+  public void addColumn(TableColumn aColumn) {
+    final Column              column    = (Column)aColumn;
+    final TablePropertyView   property  = column.getView();
+
+    if (!propertyColumnMap_.containsKey(property)) {
+      propertyColumnMap_.put(property, column);
+      super.addColumn(column);
     }
   }
 
-  void updateColPrefSizes(int size) {
-    if (prefSizes_ == null) {
-      updatePrefSizes();
-    } else {
-      final int   prefWidth = getPrefWidth();
-
-      if ((size > 0) && (prefWidth > 0)) {
-        final float ratio = ((float)size) / prefWidth;
-
-        if (prefSizes_.length == getColumnCount()) {
-          for (int i = 0; i < prefSizes_.length; i++) {
-            getColumn(i).setPreferredWidth(Math.round(prefSizes_[i] * ratio));
-          }
-        }
-      }
+  @Override
+  public void removeColumn(TableColumn column) {
+    propertyColumnMap_.remove(((Column)column).getView());
+    if (column == pressedColumn_) {
+      pressedColumn_ = null;
     }
+    super.removeColumn(column);
   }
 
+  boolean setPressedColumn(Column column) {
+    final boolean change = (column != pressedColumn_) && ((column == null) || (tableColumns.contains(column)));
+
+    if (change) {
+      pressedColumn_ = column;
+    }
+    return change;
+  }
+
+  boolean isColumnPressed(int col) {
+    return (pressedColumn_ == tableColumns.get(col));
+  }
+
+  @Override
+  public Column<E> getColumn(int columnIndex) {
+    return (Column<E>)super.getColumn(columnIndex);
+  }
+
+//  void setPrefSize(int size, int columnIndex) {
+//    prefSizes_[columnIndex] = size;
+//  }
+//
 //  int[] getPrefSizes() {
 //    if (prefSizes_ == null) {
 //      updatePrefSizes();
@@ -144,43 +169,5 @@ public class ColumnModel<E> extends DefaultTableColumnModel {
 //      removeColumn(column);
 //    }
 //  }
-
-  @Override
-  public void addColumn(TableColumn aColumn) {
-    final Column              column    = (Column)aColumn;
-    final TablePropertyView   property  = column.getView();
-
-    if (!propertyColumnMap_.containsKey(property)) {
-      propertyColumnMap_.put(property, column);
-      super.addColumn(column);
-    }
-  }
-
-  @Override
-  public void removeColumn(TableColumn column) {
-    propertyColumnMap_.remove(((Column)column).getView());
-    if (column == pressedColumn_) {
-      pressedColumn_ = null;
-    }
-    super.removeColumn(column);
-  }
-
-  boolean setPressedColumn(Column column) {
-    final boolean change = (column != pressedColumn_) && ((column == null) || (tableColumns.contains(column)));
-
-    if (change) {
-      pressedColumn_ = column;
-    }
-    return change;
-  }
-
-  boolean isColumnPressed(int col) {
-    return (pressedColumn_ == tableColumns.get(col));
-  }
-
-  @Override
-  public Column<E> getColumn(int columnIndex) {
-    return (Column<E>)super.getColumn(columnIndex);
-  }
 
 }
