@@ -245,7 +245,7 @@ public class TableComponent<E> extends JTable {
   @Override
   public Dimension getMinimumSize() {
     return new Dimension(
-      columnModel_.getColumnCount() * 10 , super.getMinimumSize().height
+      columnModel.getColumnCount() * 10 , super.getMinimumSize().height
     );
   }
 

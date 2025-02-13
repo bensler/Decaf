@@ -40,8 +40,6 @@ public class EntityTable<E> extends Object implements FocusListener, EntityCompo
 
   private   final         TableModel<E>       model_;
 
-  protected final         ColumnModel<E>      columnModel_;
-
   private   final         TableView<E>        view_;
 
   private   final         Map<PopupListener, PopupListenerWrapper> popupListeners_;
@@ -57,13 +55,10 @@ public class EntityTable<E> extends Object implements FocusListener, EntityCompo
     model_ = new TableModel<>(view_);
     table_ = new TableComponent<>(this, model_, view_);
     table_.addFocusListener(this);
-    columnModel_ = (ColumnModel)table_.getColumnModel();
     scrollPane_ = createScrollPane(table_);
     popupListeners_ = new HashMap<>(1);
     scrollPane_.getViewport().setBackground(table_.getBackground());
-//    defSelModel_ = table_.getSelectionModel();
     setSelectionMode(SelectionMode.SINGLE);
-//    defSelModel_.addListSelectionListener(this);
 //    showDefaultVisibleColumns();
   }
 
