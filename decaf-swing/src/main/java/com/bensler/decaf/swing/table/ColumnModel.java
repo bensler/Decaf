@@ -18,14 +18,11 @@ public class ColumnModel<E> extends DefaultTableColumnModel {
 
   private final Map<TablePropertyView<E, ?>, Column<E>> propertyColumnMap_;
 
-  private Column<E> pressedColumn_;
-
   private int[] prefSizes_;
 
   ColumnModel(TableView<E> view) {
     allPropertiesColumnMap_ = new HashMap<>();
     propertyColumnMap_ = new HashMap<>();
-    pressedColumn_ = null;
     prefSizes_ = null;
     for (int i = 0; i < view.getColumnCount(); i++) {
       addColumn(new Column<>(view.getColumnView(i), i));
@@ -80,28 +77,6 @@ public class ColumnModel<E> extends DefaultTableColumnModel {
       propertyColumnMap_.put(property, column);
       super.addColumn(column);
     }
-  }
-
-  @Override
-  public void removeColumn(TableColumn column) {
-    propertyColumnMap_.remove(((Column)column).getView());
-    if (column == pressedColumn_) {
-      pressedColumn_ = null;
-    }
-    super.removeColumn(column);
-  }
-
-  boolean setPressedColumn(Column column) {
-    final boolean change = (column != pressedColumn_) && ((column == null) || (tableColumns.contains(column)));
-
-    if (change) {
-      pressedColumn_ = column;
-    }
-    return change;
-  }
-
-  boolean isColumnPressed(int col) {
-    return (pressedColumn_ == tableColumns.get(col));
   }
 
   @Override

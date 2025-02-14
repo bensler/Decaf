@@ -20,14 +20,14 @@ import com.bensler.decaf.util.Pair;
  */
 class HeaderRenderer<E> extends JButton implements TableCellRenderer {
 
-  private final TableModel<?> model_;
-  private final ColumnModel<?> columnModel_;
+  private final TableModel<E> model_;
+  private final ColumnsController<E> colCtrl_;
   private final JButton button_;
   private final ArrowIcon arrowIcon_;
 
-  HeaderRenderer(TableModel<E> model, ColumnModel<?> columnModel) {
+  HeaderRenderer(TableModel<E> model, ColumnsController<E> colCtrl) {
     model_ = model;
-    columnModel_ = columnModel;
+    colCtrl_ = colCtrl;
     button_ = new JButton();
     button_.setMargin(new Insets(0, 0, 0, 0));
     button_.setHorizontalTextPosition(LEFT);
@@ -39,9 +39,9 @@ class HeaderRenderer<E> extends JButton implements TableCellRenderer {
     JTable table, Object value, boolean isSelected, boolean hasFocus,
     int row, int colIndex
   ) {
-    final Column<?> column = columnModel_.getColumn(colIndex);
+    final Column<?> column = colCtrl_.getColumn(colIndex);
     final Optional<Pair<Sorting, Integer>> sorting = model_.getSorting(column);
-    final boolean pressed = columnModel_.isColumnPressed(colIndex);
+    final boolean pressed = colCtrl_.isColumnPressed(colIndex);
     final String valueStr = (value == null) ? "" : value.toString();
     final String tooltip = (valueStr.trim().length() < 1) ? null : valueStr;
     final JButton button = button_;

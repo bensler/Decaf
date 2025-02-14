@@ -18,13 +18,16 @@ public class ColumnsController<E> {
   private final TableModel<E> tableModel_;
   private final ColumnModel<E> columnModel_;
   private final HeaderRenderer<E> headerRenderer_;
+
   private final Map<TablePropertyView<E, ?>, Column<E>> viewColumnMap_;
+  private Column<E> pressedColumn_;
 
   ColumnsController(TableModel<E> tableModel) {
     final TableView<E> view = (tableModel_ = tableModel).getView();
 
     columnModel_ = new ColumnModel<>(view);
-    headerRenderer_ = new HeaderRenderer<>(tableModel, columnModel_);
+    headerRenderer_ = new HeaderRenderer<>(tableModel, this);
+    pressedColumn_ = null;
     viewColumnMap_ = IntStream.range(0, view.getColumnCount())
       .mapToObj(i -> new Column<>(view.getColumnView(i), i))
       .map(ForEachMapperAdapter.forEachMapper(columnModel_::addColumn))
@@ -42,6 +45,25 @@ public class ColumnsController<E> {
       sum += sizes[i];
     }
     columnModel_.setPrefSizes(sizes, sum);
+  }
+
+  Column<E> getColumn(int col) {
+    return columnModel_.getColumn(col);
+  }
+
+  boolean isColumnPressed(int col) {
+    return (pressedColumn_ == columnModel_.getColumn(col));
+  }
+
+  void setPressedColumn(Column<E> column, JTableHeader tableHeader) {
+    final boolean change = (column != pressedColumn_) && (
+      (column == null) || (viewColumnMap_.containsValue(column))
+    );
+
+    if (change) {
+      pressedColumn_ = column;
+      tableHeader.repaint();
+    }
   }
 
   ColumnModel<E> getColumnModel() {
@@ -76,9 +98,7 @@ public class ColumnsController<E> {
 
     @Override
     public void mouseDragged(MouseEvent e) {
-      if (columnModel_.setPressedColumn(null)) {
-        tableHeader_.repaint();
-      }
+      setPressedColumn(null, tableHeader_);
     }
 
     @Override
@@ -89,8 +109,8 @@ public class ColumnsController<E> {
       ) {
         final Column<E> column = columnModel_.getColumn(tableHeader_.columnAtPoint(evt.getPoint()));
 
-        if (column.isSortable() && columnModel_.setPressedColumn(column)) {
-          tableHeader_.repaint();
+        if (column.isSortable()) {
+          setPressedColumn(column, tableHeader_);
         }
       }
     }
@@ -100,9 +120,8 @@ public class ColumnsController<E> {
       if (
         (evt.getButton() == MouseEvent.BUTTON1)
         && (getResizeColumnIndex(evt.getPoint()) < 0)
-        && columnModel_.setPressedColumn(null)
       ) {
-        tableHeader_.repaint();
+        setPressedColumn(null, tableHeader_);
       }
     }
 
