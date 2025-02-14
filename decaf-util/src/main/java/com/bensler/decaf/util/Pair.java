@@ -1,5 +1,7 @@
 package com.bensler.decaf.util;
 
+import java.util.function.Function;
+
 public class Pair<L, R> {
 
   private final L left_;
@@ -16,6 +18,13 @@ public class Pair<L, R> {
 
   public R getRight() {
     return right_;
+  }
+
+  public <LP, RP> Pair<LP, RP> map(
+    Function<? super L, ? extends LP> leftMapper,
+    Function<? super R, ? extends RP> rightMapper
+  ) {
+    return new Pair<>(leftMapper.apply(left_), rightMapper.apply(right_));
   }
 
   @Override

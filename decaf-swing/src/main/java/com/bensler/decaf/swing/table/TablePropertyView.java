@@ -10,8 +10,7 @@ import com.bensler.decaf.swing.view.PropertyView;
 import com.bensler.decaf.util.Named;
 
 
-public final class TablePropertyView<E, P> extends Object
-implements TableCellRenderer, Named, Comparator<E> {
+public final class TablePropertyView<E, P> implements TableCellRenderer, Named, Comparator<E> {
 
   private   final           String            id_;
   private   final           String            name_;
@@ -21,7 +20,6 @@ implements TableCellRenderer, Named, Comparator<E> {
   public TablePropertyView(
     String id, String name, PropertyView<? super E, P> propertyView
   ) {
-
     id_ = id;
     name_ = name;
     propertyView_ = propertyView;

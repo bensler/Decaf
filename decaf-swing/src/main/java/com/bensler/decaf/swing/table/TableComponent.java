@@ -48,16 +48,16 @@ public class TableComponent<E> extends JTable {
 
   private final TableRowView<E> rowView_;
 
-  TableComponent(EntityTable<E> entityTable, TableModel<E> model, TableView<E> view, ColumnsController<E> colCtrl) {
-    super(model, colCtrl.getColumnModel());
-    columnsCtrl_ = colCtrl;
+  TableComponent(EntityTable<E> entityTable, TableModel<E> model, TableView<E> view) {
+    super(model, model.getColumnsController().getColumnModel());
+    columnsCtrl_ = model.getColumnsController();
     selectionCtrl_ = new TableSelectionController<>(entityTable, this);
     backgroundSelectionColorUnfocused_ = ColorHelper.mix(getSelectionBackground(), 2, UIManager.getColor("Table.background"), 1);
     rowView_ = new TableRowView.Nop<>();
     visibleRows_ = new int[] {10, 10};
     view_ = view;
     tableModel_ = model;
-    colCtrl.configure(tableHeader, selectionCtrl_);
+    columnsCtrl_.configure(tableHeader, selectionCtrl_);
     gapBorder_ = BorderFactory.createEmptyBorder(0, 3, 0, 3);
   }
 
@@ -182,7 +182,7 @@ public class TableComponent<E> extends JTable {
   }
 
   void applySortPrefs(String sortings) {
-    tableModel_.applySortPrefs(sortings, columnsCtrl_.getColumnsById());
+    tableModel_.applySortPrefs(sortings);
   }
 
   public E getViewable(int row) {

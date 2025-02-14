@@ -3,9 +3,7 @@ package com.bensler.decaf.swing.table;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import javax.swing.table.TableColumn;
 
@@ -42,8 +40,8 @@ final class ComparatorList<E> extends Object implements Comparator<E> {
     ).orElse(Sorting.ASCENDING);
   }
 
-  void sortByColumn(Column<E> column, Sorting sorting) {
-    sorting_.putFirst(column, new ComparatorWrapper<>(column.getView(), sorting));
+  void sortByColumn(TableColumn column, Comparator<E> comparator, Sorting sorting) {
+    sorting_.putFirst(column, new ComparatorWrapper<>(comparator, sorting));
   }
 
   boolean isEmpty() {
@@ -54,32 +52,19 @@ final class ComparatorList<E> extends Object implements Comparator<E> {
     sorting_.clear();
   }
 
-  String getSortPrefs() {
-    return sorting_.values().stream()
-      .map(wrapper -> wrapper.view_.getId() + ":" + wrapper.sorting_)
-      .collect(Collectors.joining(","));
-  }
-
-  void applySortPrefs(String sortings, Map<String, Column<E>> columnsById) {
-    List.of(sortings.split(",")).reversed().stream()
-      .map(str -> str.split(":"))
-      .filter(idSorting -> idSorting.length == 2)
-      .map(idSorting -> new Pair<>(idSorting[0], idSorting[1]))
-      .filter(idSorting -> columnsById.containsKey(idSorting.getLeft()))
-      .forEach(idSorting -> {
-        try {
-          sortByColumn(columnsById.get(idSorting.getLeft()), Sorting.valueOf(idSorting.getRight()));
-        } catch (IllegalArgumentException iae) { /* idSorting[1] did not match a Sorting enum value */ }
-      });
+  List<Pair<TableColumn, Sorting>> getSorting() {
+    return sorting_.entrySet().stream()
+      .map(entry -> new Pair<>(entry.getKey(), entry.getValue().sorting_))
+      .toList();
   }
 
   final static class ComparatorWrapper<E> extends Object implements Comparator<E> {
 
-    final TablePropertyView<E, ?> view_;
+    final Comparator<E> comparator_;
     final Sorting sorting_;
 
-    ComparatorWrapper(TablePropertyView<E, ?> view, Sorting sorting) {
-      view_ = view;
+    ComparatorWrapper(Comparator<E> comparator, Sorting sorting) {
+      comparator_ = comparator;
       sorting_ = sorting;
     }
 
@@ -89,7 +74,7 @@ final class ComparatorList<E> extends Object implements Comparator<E> {
 
     @Override
     public int compare(E o1, E o2) {
-      return (sorting_.getFactor() * view_.compare(o1, o2));
+      return (sorting_.getFactor() * comparator_.compare(o1, o2));
     }
 
   }

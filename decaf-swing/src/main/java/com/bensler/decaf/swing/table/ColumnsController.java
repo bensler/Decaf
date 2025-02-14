@@ -1,6 +1,6 @@
 package com.bensler.decaf.swing.table;
 
-import static java.util.function.Function.identity;
+import static com.bensler.decaf.util.function.ForEachMapperAdapter.forEachMapper;
 
 import java.awt.Point;
 import java.awt.Rectangle;
@@ -8,7 +8,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.function.Function;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -17,7 +17,7 @@ import javax.swing.table.JTableHeader;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
 
-import com.bensler.decaf.util.function.ForEachMapperAdapter;
+import com.bensler.decaf.util.Pair;
 
 public class ColumnsController<E> {
 
@@ -25,10 +25,9 @@ public class ColumnsController<E> {
   private final TableColumnModel columnModel_;
   private final HeaderRenderer<E> headerRenderer_;
 
-  private final Map<TablePropertyView<E, ?>, Column<E>> viewColumnMap_;
-  private final Map<Column<E>, TablePropertyView<E, ?>> columnViewMap_;
-  private final Map<Column<E>, Column<E>> columnMap_;
-  private Column<E> pressedColumn_;
+  private final Map<String, TableColumn> viewIdColumnMap_;
+  private final Map<TableColumn, TablePropertyView<E, ?>> columnViewMap_;
+  private TableColumn pressedColumn_;
   private int[] prefSizes_;
 
   ColumnsController(TableModel<E> tableModel) {
@@ -37,14 +36,12 @@ public class ColumnsController<E> {
     columnModel_ = new DefaultTableColumnModel();
     headerRenderer_ = new HeaderRenderer<>(tableModel, this);
     pressedColumn_ = null;
-    viewColumnMap_ = IntStream.range(0, view.getColumnCount())
+    columnViewMap_ = IntStream.range(0, view.getColumnCount())
       .mapToObj(i -> createColumn(view, i))
-      .map(ForEachMapperAdapter.forEachMapper(columnModel_::addColumn))
-      .collect(Collectors.toMap(Column::getView, Function.identity()));
-    columnViewMap_ = viewColumnMap_.entrySet().stream()
-      .collect(Collectors.toMap(Entry::getValue, Entry::getKey));
-    columnMap_ = columnViewMap_.keySet().stream()
-      .collect(Collectors.toMap(identity(), identity()));
+      .map(forEachMapper(pair -> columnModel_.addColumn(pair.getRight())))
+      .collect(Collectors.toMap(Pair::getRight, Pair::getLeft));
+    viewIdColumnMap_ = columnViewMap_.entrySet().stream()
+      .collect(Collectors.toMap(entry -> entry.getValue().getId(), Entry::getKey));
 
     final int[] sizes = new int[view.getColumnCount()];
           int   sum   = 0;
@@ -60,13 +57,17 @@ public class ColumnsController<E> {
     setPrefSizes(sizes, sum);
   }
 
-  private static <E> Column<E> createColumn(TableView<E> view, int index) {
+  private static <E> Pair<TablePropertyView<E, ?>, TableColumn> createColumn(TableView<E> view, int index) {
     final TablePropertyView<E, ?> columnView = view.getColumnView(index);
-    final Column<E> column = new Column<>(columnView, index);
+    final TableColumn column = new TableColumn(index);
 
     column.setHeaderValue(columnView.getName());
     column.setCellRenderer(columnView);
-    return column;
+    return new Pair<>(columnView, column);
+  }
+
+  TablePropertyView<E, ?> getView(TableColumn column) {
+    return columnViewMap_.get(column);
   }
 
   String getSizes() {
@@ -105,13 +106,17 @@ public class ColumnsController<E> {
     return columnModel_.getColumn(col);
   }
 
+  Optional<TableColumn> getColumn(String colId) {
+    return Optional.ofNullable(viewIdColumnMap_.get(colId));
+  }
+
   boolean isColumnPressed(int col) {
     return (pressedColumn_ == columnModel_.getColumn(col));
   }
 
-  void setPressedColumn(Column<E> column, JTableHeader tableHeader) {
+  void setPressedColumn(TableColumn column, JTableHeader tableHeader) {
     final boolean change = (column != pressedColumn_) && (
-      (column == null) || (viewColumnMap_.containsValue(column))
+      (column == null) || (columnViewMap_.containsKey(column))
     );
 
     if (change) {
@@ -124,21 +129,12 @@ public class ColumnsController<E> {
     return columnModel_;
   }
 
-  Column<E> getEColumn(int colIndex) {
-    return columnMap_.get(columnModel_.getColumn(colIndex));
-  }
-
   void configure(JTableHeader tableHeader, TableSelectionController<E> selectionCtrl) {
     final HeaderMouseListener mouseListener = new HeaderMouseListener(tableHeader, selectionCtrl);
 
     tableHeader.setDefaultRenderer(headerRenderer_);
     tableHeader.addMouseListener(mouseListener);
     tableHeader.addMouseMotionListener(mouseListener);
-  }
-
-  Map<String, Column<E>> getColumnsById() {
-    return viewColumnMap_.entrySet().stream()
-      .collect(Collectors.toMap(entry -> entry.getKey().getId(), Entry::getValue));
   }
 
   private class HeaderMouseListener extends MouseAdapter {
@@ -151,9 +147,11 @@ public class ColumnsController<E> {
       selectionCtrl_ = selectionCtrl;
     }
 
-    private void sortByColumn(Column<E> column) {
+    private void sortByColumn(TableColumn column) {
       try (var s = selectionCtrl_.createSelectionKeeper()) {
-        if (columnViewMap_.get(column).isSortable()) {
+        final TablePropertyView<E, ?> propertyView = columnViewMap_.get(column);
+
+        if (propertyView.isSortable()) {
           tableModel_.sortByColumn(column, tableModel_.getNewSorting(column));
         }
       }
@@ -170,7 +168,7 @@ public class ColumnsController<E> {
         (evt.getButton() == MouseEvent.BUTTON1)
         && (getResizeColumnIndex(evt.getPoint()) < 0)
       ) {
-        final Column<E> column = getEColumn(tableHeader_.columnAtPoint(evt.getPoint()));
+        final TableColumn column = columnModel_.getColumn(tableHeader_.columnAtPoint(evt.getPoint()));
 
         if (columnViewMap_.get(column).isSortable()) {
           setPressedColumn(column, tableHeader_);
@@ -194,7 +192,7 @@ public class ColumnsController<E> {
       final int   resizeColumnIndex = getResizeColumnIndex(point);
 
       if ((resizeColumnIndex < 0) && (evt.getButton() == MouseEvent.BUTTON1)) {
-        sortByColumn(getEColumn(tableHeader_.columnAtPoint(evt.getPoint())));
+        sortByColumn(columnModel_.getColumn(tableHeader_.columnAtPoint(evt.getPoint())));
       }
     }
 

@@ -52,23 +52,18 @@ public class EntityTable<E> extends Object implements FocusListener, EntityCompo
   public EntityTable(TableView<E> view) {
     view_ = view;
     focusListeners_ = new HashSet<>();
-    model_ = new TableModel<>(view_);
-    table_ = new TableComponent<>(this, model_, view_, new ColumnsController<E>(model_));
+    table_ = new TableComponent<>(this, model_ = new TableModel<>(view_), view_);
     table_.addFocusListener(this);
     scrollPane_ = createScrollPane(table_);
     popupListeners_ = new HashMap<>(1);
     scrollPane_.getViewport().setBackground(table_.getBackground());
     setSelectionMode(SelectionMode.SINGLE);
-//    showDefaultVisibleColumns();
   }
 
   protected JScrollPane createScrollPane(TableComponent<E> tableComponent) {
     return new JScrollPane(tableComponent);
   }
 
-  /** @return the JTable component wrapped by a JScrollpane
-   *  @see com.bensler.flob.gui.EntityComponent#getComponent()
-   */
   @Override
   public TableComponent<E> getComponent() {
     return table_;
@@ -257,7 +252,7 @@ public class EntityTable<E> extends Object implements FocusListener, EntityCompo
 
   public static interface PopupListener {
 
-    public void popupTriggered(EntityTable source, JTable table, MouseEvent evt);
+    public void popupTriggered(EntityTable<?> source, JTable table, MouseEvent evt);
 
   }
 

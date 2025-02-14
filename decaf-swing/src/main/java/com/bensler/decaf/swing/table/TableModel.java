@@ -4,8 +4,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import javax.swing.table.AbstractTableModel;
@@ -19,6 +20,8 @@ public class TableModel<E> extends AbstractTableModel {
 
   private final TableView<E> view_;
 
+  private final ColumnsController<E> colCtrl_;
+
   private final List<E> entityList_;
 
   private final ComparatorList<E> comparator_;
@@ -27,10 +30,15 @@ public class TableModel<E> extends AbstractTableModel {
     view_ = view;
     entityList_ = new ArrayList<>();
     comparator_ = new ComparatorList<>();
+    colCtrl_ = new ColumnsController<>(this);
   }
 
   TableView<E> getView() {
     return view_;
+  }
+
+  ColumnsController<E> getColumnsController() {
+    return colCtrl_;
   }
 
   @Override
@@ -46,13 +54,13 @@ public class TableModel<E> extends AbstractTableModel {
     return comparator_.getSorting(column);
   }
 
-  Sorting getNewSorting(Column<E> column) {
+  Sorting getNewSorting(TableColumn column) {
     return comparator_.getNewSorting(column);
   }
 
-  void sortByColumn(Column<E> column, Sorting sorting) {
+  void sortByColumn(TableColumn column, Sorting sorting) {
     try (var notifier = new SortingChangedNotifier(false)) {
-      comparator_.sortByColumn(column, sorting);
+      comparator_.sortByColumn(column, colCtrl_.getView(column), sorting);
     }
   }
 
@@ -123,13 +131,24 @@ public class TableModel<E> extends AbstractTableModel {
   }
 
   String getSortPrefs() {
-    return comparator_.getSortPrefs();
+    return comparator_.getSorting().stream()
+      .map(pair -> pair.map(colCtrl_::getView, Function.identity()))
+      .map(pair -> pair.getLeft().getId() + ":" + pair.getRight())
+      .collect(Collectors.joining(","));
   }
 
-  void applySortPrefs(String sortings, Map<String, Column<E>> columnsById) {
+  void applySortPrefs(String sortings) {
     try (var notifier = new SortingChangedNotifier(false)) {
-      comparator_.applySortPrefs(sortings, columnsById);
-    }
+      List.of(sortings.split(",")).reversed().stream()
+        .map(str -> str.split(":"))
+        .filter(idSorting -> idSorting.length == 2)
+        .map(idSorting -> new Pair<>(idSorting[0], idSorting[1]))
+        .map(idSorting -> idSorting.map(colCtrl_::getColumn, Sorting::valueOf))
+        .filter(propViewSorting -> propViewSorting.getLeft().isPresent())
+        .forEach(propViewSorting -> {
+          sortByColumn(propViewSorting.getLeft().get(), propViewSorting.getRight());
+        });
+    } catch (IllegalArgumentException iae) { /* idSorting[1] did not match a Sorting enum value */ }
   }
 
   class SortingChangedNotifier implements AutoCloseable {
