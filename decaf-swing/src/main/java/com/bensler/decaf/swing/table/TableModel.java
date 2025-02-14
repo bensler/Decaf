@@ -9,6 +9,7 @@ import java.util.Optional;
 import java.util.stream.IntStream;
 
 import javax.swing.table.AbstractTableModel;
+import javax.swing.table.TableColumn;
 
 import com.bensler.decaf.util.Pair;
 
@@ -41,7 +42,7 @@ public class TableModel<E> extends AbstractTableModel {
     return entityList_.get(row);
   }
 
-  Optional<Pair<Sorting, Integer>> getSorting(Column<?> column) {
+  Optional<Pair<Sorting, Integer>> getSorting(TableColumn column) {
     return comparator_.getSorting(column);
   }
 

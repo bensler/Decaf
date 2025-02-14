@@ -33,7 +33,6 @@ public class TableComponent<E> extends JTable {
   private final TableModel<E> tableModel_;
 
   private final ColumnsController<E> columnsCtrl_;
-  private final ColumnModel<E> columnModel_;
 
   private final TableView<E> view_;
 
@@ -58,7 +57,6 @@ public class TableComponent<E> extends JTable {
     visibleRows_ = new int[] {10, 10};
     view_ = view;
     tableModel_ = model;
-    columnModel_ = colCtrl.getColumnModel();
     colCtrl.configure(tableHeader, selectionCtrl_);
     gapBorder_ = BorderFactory.createEmptyBorder(0, 3, 0, 3);
   }
@@ -176,7 +174,7 @@ public class TableComponent<E> extends JTable {
   }
 
   String getColumnWidthPrefs() {
-    return columnModel_.getSizes();
+    return columnsCtrl_.getSizes();
   }
 
   String getSortPrefs() {
@@ -184,7 +182,7 @@ public class TableComponent<E> extends JTable {
   }
 
   void applySortPrefs(String sortings) {
-    tableModel_.applySortPrefs(sortings, columnModel_.getColumnsById());
+    tableModel_.applySortPrefs(sortings, columnsCtrl_.getColumnsById());
   }
 
   public E getViewable(int row) {

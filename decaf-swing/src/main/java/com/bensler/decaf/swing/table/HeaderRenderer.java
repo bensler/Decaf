@@ -12,6 +12,7 @@ import javax.swing.Icon;
 import javax.swing.JButton;
 import javax.swing.JTable;
 import javax.swing.table.TableCellRenderer;
+import javax.swing.table.TableColumn;
 
 import com.bensler.decaf.util.Pair;
 
@@ -39,7 +40,7 @@ class HeaderRenderer<E> extends JButton implements TableCellRenderer {
     JTable table, Object value, boolean isSelected, boolean hasFocus,
     int row, int colIndex
   ) {
-    final Column<?> column = colCtrl_.getColumn(colIndex);
+    final TableColumn column = colCtrl_.getColumn(colIndex);
     final Optional<Pair<Sorting, Integer>> sorting = model_.getSorting(column);
     final boolean pressed = colCtrl_.isColumnPressed(colIndex);
     final String valueStr = (value == null) ? "" : value.toString();

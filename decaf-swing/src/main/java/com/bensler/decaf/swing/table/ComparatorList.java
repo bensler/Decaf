@@ -7,6 +7,8 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import javax.swing.table.TableColumn;
+
 import com.bensler.decaf.util.Pair;
 
 
@@ -28,7 +30,7 @@ final class ComparatorList<E> extends Object implements Comparator<E> {
       .findFirst().orElse(0);
   }
 
-  Optional<Pair<Sorting, Integer>> getSorting(Column<?> column) {
+  Optional<Pair<Sorting, Integer>> getSorting(TableColumn column) {
     return Optional.ofNullable(sorting_.get(column)).map(cmpWrapper -> new Pair<>(
       cmpWrapper.getSorting(), List.copyOf(sorting_.sequencedKeySet()).indexOf(column)
     ));
