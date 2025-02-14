@@ -38,7 +38,7 @@ public class ColumnsController<E> {
     headerRenderer_ = new HeaderRenderer<>(tableModel, this);
     pressedColumn_ = null;
     viewColumnMap_ = IntStream.range(0, view.getColumnCount())
-      .mapToObj(i -> new Column<>(view.getColumnView(i), i))
+      .mapToObj(i -> createColumn(view, i))
       .map(ForEachMapperAdapter.forEachMapper(columnModel_::addColumn))
       .collect(Collectors.toMap(Column::getView, Function.identity()));
     columnViewMap_ = viewColumnMap_.entrySet().stream()
@@ -58,6 +58,15 @@ public class ColumnsController<E> {
       sum += sizes[i];
     }
     setPrefSizes(sizes, sum);
+  }
+
+  private static <E> Column<E> createColumn(TableView<E> view, int index) {
+    final TablePropertyView<E, ?> columnView = view.getColumnView(index);
+    final Column<E> column = new Column<>(columnView, index);
+
+    column.setHeaderValue(columnView.getName());
+    column.setCellRenderer(columnView);
+    return column;
   }
 
   String getSizes() {
