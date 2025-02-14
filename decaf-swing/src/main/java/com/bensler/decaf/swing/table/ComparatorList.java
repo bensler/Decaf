@@ -16,7 +16,7 @@ import com.bensler.decaf.util.Pair;
  */
 final class ComparatorList<E> extends Object implements Comparator<E> {
 
-  private final LinkedHashMap<Column<E>, ComparatorWrapper<E>> sorting_;
+  private final LinkedHashMap<TableColumn, ComparatorWrapper<E>> sorting_;
 
   ComparatorList() {
     sorting_ = new LinkedHashMap<>();
@@ -36,14 +36,14 @@ final class ComparatorList<E> extends Object implements Comparator<E> {
     ));
   }
 
-  Sorting getNewSorting(Column<E> column) {
+  Sorting getNewSorting(TableColumn column) {
     return getSorting(column).map(
       pair -> (pair.getRight() == 0) ? pair.getLeft().getOpposite() : pair.getLeft()
     ).orElse(Sorting.ASCENDING);
   }
 
   void sortByColumn(Column<E> column, Sorting sorting) {
-    sorting_.putFirst(column, new ComparatorWrapper<>(column, sorting));
+    sorting_.putFirst(column, new ComparatorWrapper<>(column.getView(), sorting));
   }
 
   boolean isEmpty() {
@@ -55,8 +55,8 @@ final class ComparatorList<E> extends Object implements Comparator<E> {
   }
 
   String getSortPrefs() {
-    return sorting_.entrySet().stream()
-      .map(entry -> entry.getKey().getId() + ":" + entry.getValue().sorting_)
+    return sorting_.values().stream()
+      .map(wrapper -> wrapper.view_.getId() + ":" + wrapper.sorting_)
       .collect(Collectors.joining(","));
   }
 
@@ -75,13 +75,11 @@ final class ComparatorList<E> extends Object implements Comparator<E> {
 
   final static class ComparatorWrapper<E> extends Object implements Comparator<E> {
 
-    final Column<E> column_;
+    final TablePropertyView<E, ?> view_;
     final Sorting sorting_;
 
-    ComparatorWrapper(
-      Column<E> column, Sorting sorting
-    ) {
-      column_ = column;
+    ComparatorWrapper(TablePropertyView<E, ?> view, Sorting sorting) {
+      view_ = view;
       sorting_ = sorting;
     }
 
@@ -91,7 +89,7 @@ final class ComparatorList<E> extends Object implements Comparator<E> {
 
     @Override
     public int compare(E o1, E o2) {
-      return (sorting_.getFactor() * column_.getView().compare(o1, o2));
+      return (sorting_.getFactor() * view_.compare(o1, o2));
     }
 
   }

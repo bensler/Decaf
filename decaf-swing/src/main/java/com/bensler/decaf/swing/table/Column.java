@@ -29,8 +29,4 @@ class Column<E> extends TableColumn {
     return view_;
   }
 
-  public boolean isSortable() {
-    return view_.isSortable();
-  }
-
 }

@@ -63,8 +63,7 @@ public class ColumnsController<E> {
   String getSizes() {
     return IntStream.range(0, columnModel_.getColumnCount())
       .mapToObj(this::getColumn)
-      .map(Column.class::cast)
-      .map(column -> column.getId() + ":" + column.getWidth())
+      .map(column -> columnViewMap_.get(column).getId() + ":" + column.getWidth())
       .collect(Collectors.joining(","));
   }
 
@@ -145,7 +144,7 @@ public class ColumnsController<E> {
 
     private void sortByColumn(Column<E> column) {
       try (var s = selectionCtrl_.createSelectionKeeper()) {
-        if (column.isSortable()) {
+        if (columnViewMap_.get(column).isSortable()) {
           tableModel_.sortByColumn(column, tableModel_.getNewSorting(column));
         }
       }
@@ -164,7 +163,7 @@ public class ColumnsController<E> {
       ) {
         final Column<E> column = getEColumn(tableHeader_.columnAtPoint(evt.getPoint()));
 
-        if (column.isSortable()) {
+        if (columnViewMap_.get(column).isSortable()) {
           setPressedColumn(column, tableHeader_);
         }
       }
