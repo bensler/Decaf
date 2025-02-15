@@ -6,6 +6,7 @@ import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
@@ -57,6 +58,27 @@ public class ColumnsController<E> {
     setPrefSizes(sizes, sum);
   }
 
+  void setPrefSizes(int[] sizes, int sum) {
+    prefSizes_ = sizes;
+    final int   prefWidth = IntStream.of(prefSizes_).sum();
+
+    if ((sum > 0) && (prefWidth > 0)) {
+      final float ratio = ((float)sum) / prefWidth;
+
+      if (prefSizes_.length == columnModel_.getColumnCount()) {
+        for (int i = 0; i < prefSizes_.length; i++) {
+          getColumn(i).setPreferredWidth(Math.round(prefSizes_[i] * ratio));
+        }
+      }
+    }
+  }
+
+
+  public void applyColumnWidthPrefs(List<Pair<String, Integer>> list) {
+    // TODO Auto-generated method stub
+
+  }
+
   private static <E> Pair<TablePropertyView<E, ?>, TableColumn> createColumn(TableView<E> view, int index) {
     final TablePropertyView<E, ?> columnView = view.getColumnView(index);
     final TableColumn column = new TableColumn(index);
@@ -75,31 +97,6 @@ public class ColumnsController<E> {
       .mapToObj(this::getColumn)
       .map(column -> columnViewMap_.get(column).getId() + ":" + column.getWidth())
       .collect(Collectors.joining(","));
-  }
-
-  void setPrefSizes(int[] sizes, int sum) {
-    prefSizes_ = sizes;
-    final int   prefWidth = getPrefWidth();
-
-    if ((sum > 0) && (prefWidth > 0)) {
-      final float ratio = ((float)sum) / prefWidth;
-
-      if (prefSizes_.length == columnModel_.getColumnCount()) {
-        for (int i = 0; i < prefSizes_.length; i++) {
-          getColumn(i).setPreferredWidth(Math.round(prefSizes_[i] * ratio));
-        }
-      }
-    }
-
-  }
-
-  private int getPrefWidth() {
-    int   prefSizeSum = 0;
-
-    for (int i = 0; i < prefSizes_.length; i++) {
-      prefSizeSum += prefSizes_[i];
-    }
-    return prefSizeSum;
   }
 
   TableColumn getColumn(int col) {

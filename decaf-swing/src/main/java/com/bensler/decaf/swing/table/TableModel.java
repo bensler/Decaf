@@ -1,6 +1,7 @@
 package com.bensler.decaf.swing.table;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -13,6 +14,7 @@ import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableColumn;
 
 import com.bensler.decaf.util.Pair;
+import com.bensler.decaf.util.prefs.Prefs;
 
 /**
  */
@@ -130,6 +132,16 @@ public class TableModel<E> extends AbstractTableModel {
     return (index < 0) ? Optional.empty() : Optional.of(entityList_.get(index));
   }
 
+  void applyColumnWidthPrefs(String widths) {
+    colCtrl_.applyColumnWidthPrefs(Arrays.stream(widths.split(","))
+      .map(str -> str.split(":"))
+      .filter(idWidth -> idWidth.length == 2)
+      .map(idWidth -> new Pair<>(idWidth[0], Prefs.tryParseInt(idWidth[1])))
+      .filter(idWidth -> idWidth.getRight().isPresent())
+      .map(idWidth -> idWidth.map(Function.identity(), Optional::get))
+      .toList());
+  }
+
   String getSortPrefs() {
     return comparator_.getSorting().stream()
       .map(pair -> pair.map(colCtrl_::getView, Function.identity()))
@@ -143,12 +155,12 @@ public class TableModel<E> extends AbstractTableModel {
         .map(str -> str.split(":"))
         .filter(idSorting -> idSorting.length == 2)
         .map(idSorting -> new Pair<>(idSorting[0], idSorting[1]))
-        .map(idSorting -> idSorting.map(colCtrl_::getColumn, Sorting::valueOf))
-        .filter(propViewSorting -> propViewSorting.getLeft().isPresent())
+        .map(idSorting -> idSorting.map(colCtrl_::getColumn, sortStr -> Prefs.tryParseEnum(Sorting.class, sortStr)))
+        .filter(propViewSorting -> propViewSorting.getLeft().isPresent() && propViewSorting.getRight().isPresent())
         .forEach(propViewSorting -> {
-          sortByColumn(propViewSorting.getLeft().get(), propViewSorting.getRight());
+          sortByColumn(propViewSorting.getLeft().get(), propViewSorting.getRight().get());
         });
-    } catch (IllegalArgumentException iae) { /* idSorting[1] did not match a Sorting enum value */ }
+    }
   }
 
   class SortingChangedNotifier implements AutoCloseable {

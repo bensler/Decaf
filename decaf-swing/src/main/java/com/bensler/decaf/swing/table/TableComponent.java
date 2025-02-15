@@ -173,6 +173,10 @@ public class TableComponent<E> extends JTable {
     return view_.getColumnView(convertColumnIndexToModel(column));
   }
 
+  void applyColumnWidthPrefs(String widths) {
+    tableModel_.applyColumnWidthPrefs(widths);
+  }
+
   String getColumnWidthPrefs() {
     return columnsCtrl_.getSizes();
   }

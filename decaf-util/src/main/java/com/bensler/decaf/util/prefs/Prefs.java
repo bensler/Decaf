@@ -125,6 +125,14 @@ public class Prefs {
     }
   }
 
+  public static <E extends Enum<E>> Optional<E> tryParseEnum(Class<E> enumClass, String value) {
+    try {
+      return Optional.of(Enum.valueOf(enumClass, value));
+    } catch (IllegalArgumentException iae) {
+      return Optional.empty();
+    }
+  }
+
   public static Optional<Integer> tryParseInt(String value) {
     try {
         return Optional.of(Integer.parseInt(value));

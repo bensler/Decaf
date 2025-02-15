@@ -21,6 +21,7 @@ public class TablePrefPersister implements PrefPersister {
 
   @Override
   public void apply(Prefs prefs) {
+    prefs.get(prefKeySizes_).ifPresent(table_::applyColumnWidthPrefs);
     prefs.get(prefKeySort_).ifPresent(table_::applySortPrefs);
   }
 
