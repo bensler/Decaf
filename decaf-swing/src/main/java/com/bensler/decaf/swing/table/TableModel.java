@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
@@ -138,8 +139,10 @@ public class TableModel<E> extends AbstractTableModel {
       .filter(idWidth -> idWidth.length == 2)
       .map(idWidth -> new Pair<>(idWidth[0], Prefs.tryParseInt(idWidth[1])))
       .filter(idWidth -> idWidth.getRight().isPresent())
-      .map(idWidth -> idWidth.map(Function.identity(), Optional::get))
-      .toList());
+      .collect(Collectors.toMap(
+        Pair::getLeft, idWidth -> idWidth.getRight().get(), (v1, v2) -> {throw new IllegalStateException("duplicate keys");}, LinkedHashMap::new
+      ))
+    );
   }
 
   String getSortPrefs() {

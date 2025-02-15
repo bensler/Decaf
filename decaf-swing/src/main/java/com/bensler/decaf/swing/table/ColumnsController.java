@@ -1,11 +1,13 @@
 package com.bensler.decaf.swing.table;
 
 import static com.bensler.decaf.util.function.ForEachMapperAdapter.forEachMapper;
+import static java.util.function.Predicate.not;
 
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -73,10 +75,23 @@ public class ColumnsController<E> {
     }
   }
 
+  void applyColumnWidthPrefs(LinkedHashMap<String, Integer> idWidths) {
+    final List<String> validColIds = idWidths.keySet().stream()
+      .filter(viewIdColumnMap_::containsKey).toList();
 
-  public void applyColumnWidthPrefs(List<Pair<String, Integer>> list) {
-    // TODO Auto-generated method stub
+    if (!validColIds.isEmpty()) {
+      viewIdColumnMap_.keySet().stream()
+        .filter(not(validColIds::contains))
+        .map(viewIdColumnMap_::get)
+        .forEach(columnModel_::removeColumn);
+      validColIds.stream()
+      .forEach(colId -> setColWidth(viewIdColumnMap_.get(colId), idWidths.get(colId)));
+    }
+  }
 
+  private void setColWidth(TableColumn column, int width) {
+    column.setPreferredWidth(width);
+    column.setWidth(width);
   }
 
   private static <E> Pair<TablePropertyView<E, ?>, TableColumn> createColumn(TableView<E> view, int index) {
