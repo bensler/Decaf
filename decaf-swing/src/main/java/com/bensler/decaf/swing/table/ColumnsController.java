@@ -1,6 +1,5 @@
 package com.bensler.decaf.swing.table;
 
-import static com.bensler.decaf.util.function.ForEachMapperAdapter.forEachMapper;
 import static java.util.function.Predicate.not;
 
 import java.awt.event.MouseAdapter;
@@ -38,38 +37,9 @@ public class ColumnsController<E> {
     pressedColumn_ = null;
     columnViewMap_ = IntStream.range(0, view.getColumnCount())
       .mapToObj(i -> createColumn(view, i))
-      .map(forEachMapper(pair -> columnModel_.addColumn(pair.getRight())))
       .collect(Collectors.toMap(Pair::getRight, Pair::getLeft));
     viewIdColumnMap_ = columnViewMap_.entrySet().stream()
       .collect(Collectors.toMap(entry -> entry.getValue().getId(), Entry::getKey));
-
-    final int[] sizes = new int[view.getColumnCount()];
-          int   sum   = 0;
-
-    for (int i = 0; i < view.getColumnCount(); i++) {
-      final String name = view.getColumnView(i).getName();
-
-      sizes[i] = headerRenderer_.getTableCellRendererComponent(
-        null, name, false, false, -1, i
-      ).getPreferredSize().width * 10;
-      sum += sizes[i];
-    }
-    setPrefSizes(sizes, sum);
-  }
-
-  void setPrefSizes(int[] sizes, int sum) {
-    prefSizes_ = sizes;
-    final int   prefWidth = IntStream.of(prefSizes_).sum();
-
-    if ((sum > 0) && (prefWidth > 0)) {
-      final float ratio = ((float)sum) / prefWidth;
-
-      if (prefSizes_.length == columnModel_.getColumnCount()) {
-        for (int i = 0; i < prefSizes_.length; i++) {
-          getColumn(i).setPreferredWidth(Math.round(prefSizes_[i] * ratio));
-        }
-      }
-    }
   }
 
   void applyColumnWidthPrefs(LinkedHashMap<String, Integer> idWidths) {
@@ -91,10 +61,14 @@ public class ColumnsController<E> {
     column.setWidth(width);
   }
 
-  private static <E> Pair<TablePropertyView<E, ?>, TableColumn> createColumn(TableView<E> view, int index) {
+  private Pair<TablePropertyView<E, ?>, TableColumn> createColumn(TableView<E> view, int index) {
     final TablePropertyView<E, ?> columnView = view.getColumnView(index);
     final TableColumn column = new TableColumn(index);
 
+    columnModel_.addColumn(column);
+    setColWidth(column, headerRenderer_.getTableCellRendererComponent(
+      null, columnView.getName(), false, false, -1, index
+    ).getPreferredSize().width * 10);
     column.setHeaderValue(columnView.getName());
     column.setCellRenderer(columnView);
     return new Pair<>(columnView, column);
