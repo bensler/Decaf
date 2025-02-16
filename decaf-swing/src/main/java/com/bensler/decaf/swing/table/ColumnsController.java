@@ -27,7 +27,6 @@ public class ColumnsController<E> {
   private final Map<String, TableColumn> viewIdColumnMap_;
   private final Map<TableColumn, TablePropertyView<E, ?>> columnViewMap_;
   private TableColumn pressedColumn_;
-  private int[] prefSizes_;
 
   ColumnsController(TableModel<E> tableModel) {
     final TableView<E> view = (tableModel_ = tableModel).getView();
@@ -51,14 +50,8 @@ public class ColumnsController<E> {
         .filter(not(validColIds::contains))
         .map(viewIdColumnMap_::get)
         .forEach(columnModel_::removeColumn);
-      validColIds.stream()
-      .forEach(colId -> setColWidth(viewIdColumnMap_.get(colId), idWidths.get(colId)));
+      validColIds.forEach(colId -> setColWidth(viewIdColumnMap_.get(colId), idWidths.get(colId)));
     }
-  }
-
-  private void setColWidth(TableColumn column, int width) {
-    column.setPreferredWidth(width);
-    column.setWidth(width);
   }
 
   private Pair<TablePropertyView<E, ?>, TableColumn> createColumn(TableView<E> view, int index) {
@@ -72,6 +65,11 @@ public class ColumnsController<E> {
     column.setHeaderValue(columnView.getName());
     column.setCellRenderer(columnView);
     return new Pair<>(columnView, column);
+  }
+
+  private void setColWidth(TableColumn column, int width) {
+    column.setPreferredWidth(width);
+    column.setWidth(width);
   }
 
   TablePropertyView<E, ?> getView(TableColumn column) {

@@ -8,17 +8,14 @@ import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.MouseEvent;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
 import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JTable;
 import javax.swing.JViewport;
 
 import com.bensler.decaf.swing.EntityComponent;
@@ -32,22 +29,18 @@ import com.jgoodies.forms.layout.FormLayout;
  */
 public class EntityTable<E> extends Object implements FocusListener, EntityComponent<E> {
 
-  private   final         Set<FocusListener>  focusListeners_;
+  private final Set<FocusListener> focusListeners_;
 
-  protected final         JScrollPane         scrollPane_;
+  protected final JScrollPane scrollPane_;
 
-  protected final         TableComponent<E>   table_;
+  protected final TableComponent<E> table_;
 
-  private   final         TableModel<E>       model_;
+  private final TableModel<E> model_;
 
-  private   final         TableView<E>        view_;
-
-  private   final         Map<PopupListener, PopupListenerWrapper> popupListeners_;
-
-  private                 Color               enabledBgColor_;
+  private final TableView<E> view_;
 
   /** May be null! If not null it is shown when the table empty. */
-  private                 Background          emptyBackgroundComp_;
+  private Background emptyBackgroundComp_;
 
   public EntityTable(TableView<E> view) {
     view_ = view;
@@ -55,7 +48,6 @@ public class EntityTable<E> extends Object implements FocusListener, EntityCompo
     table_ = new TableComponent<>(this, model_ = new TableModel<>(view_), view_);
     table_.addFocusListener(this);
     scrollPane_ = createScrollPane(table_);
-    popupListeners_ = new HashMap<>(1);
     scrollPane_.getViewport().setBackground(table_.getBackground());
     setSelectionMode(SelectionMode.SINGLE);
   }
@@ -196,20 +188,6 @@ public class EntityTable<E> extends Object implements FocusListener, EntityCompo
     table_.selectionCtrl_.addSelectionListener(listener);
   }
 
-  public void addPopupListener(PopupListener listener) {
-    addPopupListener(listener, false);
-  }
-
-  public void addPopupListener(PopupListener listener, boolean includeViewport) {
-    if (listener != null) {
-      popupListeners_.put(listener, new PopupListenerWrapper(listener, includeViewport));
-    }
-  }
-
-  public void removePopupListener(PopupListener listener) {
-    popupListeners_.remove(listener);
-  }
-
   @Override
   public void select(Object subject) {
     select(List.of(subject));
@@ -248,27 +226,6 @@ public class EntityTable<E> extends Object implements FocusListener, EntityCompo
 //        }
       }
     }
-  }
-
-  public static interface PopupListener {
-
-    public void popupTriggered(EntityTable<?> source, JTable table, MouseEvent evt);
-
-  }
-
-  private final static class PopupListenerWrapper extends Object {
-
-    private   final         PopupListener   listener_;
-
-    private   final         boolean         includeViewport_;
-
-    private PopupListenerWrapper(
-      PopupListener listener, boolean includeViewport
-    ) {
-      listener_ = listener;
-      includeViewport_ = includeViewport;
-    }
-
   }
 
   public void setSelectionBackground(Color color) {
