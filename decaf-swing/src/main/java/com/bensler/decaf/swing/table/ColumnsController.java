@@ -3,8 +3,6 @@ package com.bensler.decaf.swing.table;
 import static com.bensler.decaf.util.function.ForEachMapperAdapter.forEachMapper;
 import static java.util.function.Predicate.not;
 
-import java.awt.Point;
-import java.awt.Rectangle;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.LinkedHashMap;
@@ -18,7 +16,6 @@ import java.util.stream.IntStream;
 import javax.swing.table.DefaultTableColumnModel;
 import javax.swing.table.JTableHeader;
 import javax.swing.table.TableColumn;
-import javax.swing.table.TableColumnModel;
 
 import com.bensler.decaf.util.Pair;
 
@@ -36,7 +33,7 @@ public class ColumnsController<E> {
   ColumnsController(TableModel<E> tableModel) {
     final TableView<E> view = (tableModel_ = tableModel).getView();
 
-    columnModel_ = new DefaultTableColumnModel();
+    columnModel_ = new TableColumnModel();
     headerRenderer_ = new HeaderRenderer<>(tableModel, this);
     pressedColumn_ = null;
     columnViewMap_ = IntStream.range(0, view.getColumnCount())
@@ -176,10 +173,7 @@ public class ColumnsController<E> {
 
     @Override
     public void mousePressed(MouseEvent evt) {
-      if (
-        (evt.getButton() == MouseEvent.BUTTON1)
-        && (getResizeColumnIndex(evt.getPoint()) < 0)
-      ) {
+      if ((evt.getButton() == MouseEvent.BUTTON1)) {
         final TableColumn column = columnModel_.getColumn(tableHeader_.columnAtPoint(evt.getPoint()));
 
         if (columnViewMap_.get(column).isSortable()) {
@@ -190,42 +184,25 @@ public class ColumnsController<E> {
 
     @Override
     public void mouseReleased(MouseEvent evt) {
-      if (
-        (evt.getButton() == MouseEvent.BUTTON1)
-        && (getResizeColumnIndex(evt.getPoint()) < 0)
-      ) {
+      if ((evt.getButton() == MouseEvent.BUTTON1)) {
         setPressedColumn(null, tableHeader_);
       }
     }
 
     @Override
     public void mouseClicked(MouseEvent evt) {
-      final Point point             = evt.getPoint();
-      final int   resizeColumnIndex = getResizeColumnIndex(point);
-
-      if ((resizeColumnIndex < 0) && (evt.getButton() == MouseEvent.BUTTON1)) {
+      if ((evt.getButton() == MouseEvent.BUTTON1)) {
         sortByColumn(columnModel_.getColumn(tableHeader_.columnAtPoint(evt.getPoint())));
       }
     }
 
-    private int getResizeColumnIndex(Point point) {
-      int columnIndex = tableHeader_.columnAtPoint(point);
+  }
 
-      if (columnIndex >= 0) {
-        final Rectangle   rect = tableHeader_.getHeaderRect(columnIndex);
+  /** making protected tableColumns property accessible ... */
+  private static class TableColumnModel extends DefaultTableColumnModel {
 
-        rect.grow(-3, 0);
-        if (rect.contains(point)) {
-          columnIndex = -1;
-        } else {
-          final int center = rect.x + (rect.width / 2);
-
-          columnIndex += (
-            (tableHeader_.getComponentOrientation().isLeftToRight() ^ (point.x < center)) ? 0 : -1
-          );
-        }
-      }
-      return columnIndex;
+    boolean containsColumn(TableColumn column) {
+      return tableColumns.contains(column);
     }
 
   }

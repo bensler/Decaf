@@ -2,12 +2,12 @@ package com.bensler.decaf.swing.table;
 
 import java.util.Map;
 
-/** Represents a sort direction: {@link #ASCENDING}, {@link #DESCENDING} or {@link #NONE} .
+/** Represents a sort direction: {@link #ASCENDING}, {@link #DESCENDING}.
  */
 public enum Sorting {
 
-  ASCENDING("ascending", true, 1),
-  DESCENDING("descending", false, -1);
+  ASCENDING("ascending", 1),
+  DESCENDING("descending", -1);
 
   public final static Map<Sorting, Sorting> OPPOSITES = Map.of(
     ASCENDING,  DESCENDING,
@@ -15,12 +15,10 @@ public enum Sorting {
   );
 
   private final         String    id_;
-  private final         boolean   ascending_;
   private final         int       factor_;
 
-  Sorting(String key, boolean ascending, int factor) {
+  Sorting(String key, int factor) {
     id_ = key;
-    ascending_ = ascending;
     factor_ = factor;
   }
 
@@ -30,10 +28,6 @@ public enum Sorting {
 
   public int getFactor() {
     return factor_;
-  }
-
-  public boolean isAscending() {
-    return ascending_;
   }
 
   public Sorting getOpposite() {

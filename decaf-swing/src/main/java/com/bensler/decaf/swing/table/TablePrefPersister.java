@@ -27,8 +27,8 @@ public class TablePrefPersister implements PrefPersister {
 
   @Override
   public void store(Prefs prefs) {
-    prefs.put(prefKeySizes_, String.valueOf(table_.getColumnWidthPrefs()));
-    prefs.put(prefKeySort_, String.valueOf(table_.getSortPrefs()));
+    prefs.put(prefKeySizes_, table_.getColumnWidthPrefs());
+    prefs.put(prefKeySort_, table_.getSortPrefs());
   }
 
 }
