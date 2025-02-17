@@ -319,7 +319,9 @@ public class EntityTable<E> extends Object implements FocusListener, EntityCompo
   }
 
   @Override
-  public void focusLost(FocusEvent e) { }
+  public void focusLost(FocusEvent e) {
+    table_.repaintSelection();
+  }
 
   public void focusLost() {
     table_.repaintSelection();

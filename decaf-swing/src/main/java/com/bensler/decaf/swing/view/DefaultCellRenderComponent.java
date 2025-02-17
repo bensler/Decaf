@@ -1,7 +1,5 @@
 package com.bensler.decaf.swing.view;
 
-import java.awt.Color;
-
 import javax.swing.JList;
 import javax.swing.JTable;
 import javax.swing.UIManager;
@@ -35,16 +33,6 @@ public class DefaultCellRenderComponent implements RenderComponent {
       }
       if (border == null) {
         border = UIManager.getBorder("Table.focusCellHighlightBorder");
-      }
-      if (!selected && table.isCellEditable(row, column)) {
-        Color col = UIManager.getColor("Table.focusCellForeground");
-        if (col != null) {
-          compListTable_.setForeground(col);
-        }
-        col = UIManager.getColor("Table.focusCellBackground");
-        if (col != null) {
-          compListTable_.setBackground(col);
-        }
       }
     }
     compListTable_.setBorder(border);
