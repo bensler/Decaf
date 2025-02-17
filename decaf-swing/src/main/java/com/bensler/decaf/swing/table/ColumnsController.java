@@ -182,7 +182,10 @@ public class ColumnsController<E> {
     visibleCols.stream().forEach(column -> {
       var menuItem = new JCheckBoxMenuItem(columnViewMap_.get(column).getName(), true);
 
-      menuItem.addActionListener(evt -> columnModel_.removeColumn(column));
+      menuItem.addActionListener(evt -> {
+        tableModel_.removeColumnFromSorting(column);
+        columnModel_.removeColumn(column);
+      });
       if (visibleCols.size() < 2) {
         menuItem.setEnabled(false);
       }
@@ -200,7 +203,7 @@ public class ColumnsController<E> {
   }
 
   /** making protected tableColumns property accessible ... */
-  private static class TableColumnModel extends DefaultTableColumnModel {
+  static class TableColumnModel extends DefaultTableColumnModel {
 
     boolean containsColumn(TableColumn column) {
       return tableColumns.contains(column);

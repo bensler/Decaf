@@ -58,6 +58,10 @@ final class ComparatorList<E> extends Object implements Comparator<E> {
       .toList();
   }
 
+  public void removeColumnFromSorting(TableColumn column) {
+    sorting_.remove(column);
+  }
+
   final static class ComparatorWrapper<E> extends Object implements Comparator<E> {
 
     final Comparator<E> comparator_;

@@ -61,9 +61,17 @@ public class TableModel<E> extends AbstractTableModel {
     return comparator_.getNewSorting(column);
   }
 
+  void removeColumnFromSorting(TableColumn column) {
+    try (var notifier = new SortingChangedNotifier(false)) {
+      comparator_.removeColumnFromSorting(column);
+    }
+  }
+
   void sortByColumn(TableColumn column, Sorting sorting) {
     try (var notifier = new SortingChangedNotifier(false)) {
-      comparator_.sortByColumn(column, colCtrl_.getView(column), sorting);
+      if (colCtrl_.getColumnModel().containsColumn(column)) {
+        comparator_.sortByColumn(column, colCtrl_.getView(column), sorting);
+      }
     }
   }
 
