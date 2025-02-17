@@ -2,6 +2,8 @@ package com.bensler.decaf.swing.table;
 
 import static java.util.function.Predicate.not;
 
+import java.awt.Component;
+import java.awt.Point;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.LinkedHashMap;
@@ -147,15 +149,22 @@ public class ColumnsController<E> {
 
     @Override
     public void mousePressed(MouseEvent evt) {
+      final int colIndex = tableHeader_.columnAtPoint(evt.getPoint());
       if ((evt.getButton() == MouseEvent.BUTTON1)) {
-        final TableColumn column = columnModel_.getColumn(tableHeader_.columnAtPoint(evt.getPoint()));
+        final TableColumn column = columnModel_.getColumn(colIndex);
 
         if (columnViewMap_.get(column).isSortable()) {
           setPressedColumn(column, tableHeader_);
         }
       }
       if ((evt.getButton() == MouseEvent.BUTTON3  )) {
-        createColumnContextMenu().show(tableHeader_, evt.getX(), evt.getY());
+        final JPopupMenu menu = createColumnContextMenu();
+        final Component itemToCenter = menu.getComponent(colIndex);
+        final Point screenLocation;
+
+        menu.show(tableHeader_, evt.getX(), evt.getY());
+        screenLocation = menu.getLocationOnScreen();
+        menu.setLocation(screenLocation.x, screenLocation.y - (itemToCenter.getY() + (itemToCenter.getHeight() / 2)));
       }
     }
 
