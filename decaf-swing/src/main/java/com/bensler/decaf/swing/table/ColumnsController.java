@@ -12,6 +12,8 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import javax.swing.JCheckBoxMenuItem;
+import javax.swing.JPopupMenu;
 import javax.swing.table.DefaultTableColumnModel;
 import javax.swing.table.JTableHeader;
 import javax.swing.table.TableColumn;
@@ -152,6 +154,9 @@ public class ColumnsController<E> {
           setPressedColumn(column, tableHeader_);
         }
       }
+      if ((evt.getButton() == MouseEvent.BUTTON3  )) {
+        createColumnContextMenu().show(tableHeader_, evt.getX(), evt.getY());
+      }
     }
 
     @Override
@@ -170,11 +175,39 @@ public class ColumnsController<E> {
 
   }
 
+  JPopupMenu createColumnContextMenu() {
+    final JPopupMenu menu = new JPopupMenu();
+    final List<TableColumn> visibleCols = columnModel_.getTableColumns();
+
+    visibleCols.stream().forEach(column -> {
+      var menuItem = new JCheckBoxMenuItem(columnViewMap_.get(column).getName(), true);
+
+      menuItem.addActionListener(evt -> columnModel_.removeColumn(column));
+      if (visibleCols.size() < 2) {
+        menuItem.setEnabled(false);
+      }
+      menu.add(menuItem);
+    });
+    columnViewMap_.keySet().stream()
+      .filter(not(columnModel_::containsColumn))
+      .forEach(column -> {
+        var menuItem = new JCheckBoxMenuItem(columnViewMap_.get(column).getName(), false);
+
+        menuItem.addActionListener(evt -> columnModel_.addColumn(column));
+        menu.add(menuItem);
+      });
+    return menu;
+  }
+
   /** making protected tableColumns property accessible ... */
   private static class TableColumnModel extends DefaultTableColumnModel {
 
     boolean containsColumn(TableColumn column) {
       return tableColumns.contains(column);
+    }
+
+    List<TableColumn> getTableColumns() {
+      return List.copyOf(tableColumns);
     }
 
   }
