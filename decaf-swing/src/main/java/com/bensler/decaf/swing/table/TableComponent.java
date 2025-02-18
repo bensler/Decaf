@@ -8,7 +8,6 @@ import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseMotionListener;
 import java.util.Collection;
 import java.util.List;
 
@@ -17,7 +16,6 @@ import javax.swing.JComponent;
 import javax.swing.JTable;
 import javax.swing.UIManager;
 import javax.swing.border.Border;
-import javax.swing.plaf.basic.BasicTableUI;
 import javax.swing.table.TableCellRenderer;
 
 import com.bensler.decaf.swing.awt.ColorHelper;
@@ -82,15 +80,6 @@ public class TableComponent<E> extends JTable {
       (row > -1)
       && isRowSelected(row)
     );
-  }
-
-  @Override
-  public void addMouseMotionListener(MouseMotionListener l) {
-    if (!(l instanceof BasicTableUI.MouseInputHandler)) {
-      super.addMouseMotionListener(l);
-    } else {
-      System.out.println("trap");
-    }
   }
 
   /** Selects the row at the given position */

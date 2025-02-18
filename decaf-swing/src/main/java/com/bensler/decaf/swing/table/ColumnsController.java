@@ -164,7 +164,7 @@ public class ColumnsController<E> {
 
         menu.show(tableHeader_, evt.getX(), evt.getY());
         screenLocation = menu.getLocationOnScreen();
-        menu.setLocation(screenLocation.x, screenLocation.y - (itemToCenter.getY() + (itemToCenter.getHeight() / 2)));
+        menu.setLocation(screenLocation.x - 5, screenLocation.y - (itemToCenter.getY() + (itemToCenter.getHeight() / 2)));
       }
     }
 
