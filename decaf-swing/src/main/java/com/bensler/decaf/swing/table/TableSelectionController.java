@@ -52,7 +52,7 @@ class TableSelectionController<E> implements ListSelectionListener {
     selectionListeners_.remove(listener);
   }
 
-  private void fireSelectionChanged() {
+  void fireSelectionChanged() {
     final List<E> selection = List.copyOf(selection_);
 
     selectionListeners_.forEach(listener -> listener.selectionChanged(owner_, selection));

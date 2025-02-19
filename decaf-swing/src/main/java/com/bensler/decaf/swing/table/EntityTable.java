@@ -188,6 +188,10 @@ public class EntityTable<E> extends Object implements FocusListener, EntityCompo
     table_.selectionCtrl_.addSelectionListener(listener);
   }
 
+  void fireSelectionChanged() {
+    table_.selectionCtrl_.fireSelectionChanged();
+  }
+
   @Override
   public void select(Object subject) {
     select(List.of(subject));
