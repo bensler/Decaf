@@ -44,6 +44,7 @@ public class AbstractHierarchy<H extends Hierarchical<H>, C extends Collection<H
    * new node is the new root. If null root keeps one child that will become the new root.
    */
   public void add(final H newNode) {
+    final List<H> oldRoots = new ArrayList<>(children_.get(null));
     final H oldNode;
     final H parent;
 
@@ -66,15 +67,14 @@ public class AbstractHierarchy<H extends Hierarchical<H>, C extends Collection<H
     parent = resolve(newNode.getParent());
     children_.put(parent, childCollectionMaintainer_.addChild(newNode, children_.get(parent)));
 
-    final C roots = children_.get(null);
     final Set<H> noLongerRoot = new HashSet<>();
-    for (H root : roots) {
-      if (newNode.equals(root.getParent())) {
+    for (H root : oldRoots) {
+      if (newNode == resolve(root.getParent())) {
         addChild(newNode, root);
         noLongerRoot.add(root);
       }
     };
-    HashSet<H> newRoots = new HashSet<>(roots);
+    final Set<H> newRoots = new HashSet<>(children_.get(null));
     newRoots.removeAll(noLongerRoot);
     children_.put(null, childCollectionMaintainer_.createCopy(newRoots));
   }
@@ -97,7 +97,7 @@ public class AbstractHierarchy<H extends Hierarchical<H>, C extends Collection<H
       final int refHash = ref.hashCode();
 
       for (H node : children_.keySet()) {
-        if ((node != null) && (refHash == node.hashCode()) && node.equals(ref)) {
+        if ((node == ref) || ((node != null) && (refHash == node.hashCode()) && node.equals(ref))) {
           return node;
         }
       }
