@@ -71,17 +71,20 @@ public class EntityTreeModel<H extends Hierarchical<H>> implements TreeModel {
   }
 
   public void addNode(H node) {
-    final H newParent = data_.resolve(node.getParent());
-
     if (data_.contains(node)) {
-      int oldIndex  = getChildren(newParent).indexOf(node);
+      final H oldNode = data_.resolve(node);
+      final H oldParent = data_.resolve(oldNode.getParent());
+      final int oldIndex = getChildren(oldParent).indexOf(oldNode);
 
-      data_.removeNode(node);
+      data_.removeNode(oldNode);
       fireNodeRemoved(new TreeModelEvent(
-        this, getPathAsObjectArray(newParent),
+        this, getPathAsObjectArray(oldParent),
         new int[] {oldIndex}, null
       ));
     }
+
+    final H newParent = data_.resolve(node.getParent());
+
     data_.add(node);
     fireNodeInserted(new TreeModelEvent(
       this, getPathAsObjectArray(newParent),

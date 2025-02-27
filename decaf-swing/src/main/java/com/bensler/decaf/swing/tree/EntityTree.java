@@ -260,8 +260,7 @@ TreeSelectionListener, FocusListener {
       for (H node : entities) {
         if (model_.contains(node)) {
           final TreePath selPath = model_.getTreePath(node);
-
-          tree_.expandPath(selPath);
+          expandCollapse(node, true);
         	tree_.addSelectionPath(selPath);
         	tree_.scrollPathToVisible(selPath);
         };
