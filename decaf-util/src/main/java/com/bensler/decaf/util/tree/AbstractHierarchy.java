@@ -1,5 +1,6 @@
 package com.bensler.decaf.util.tree;
 
+import static com.bensler.decaf.util.function.ForEachMapperAdapter.forEachMapper;
 import static java.util.Objects.requireNonNull;
 
 import java.io.Serializable;
@@ -9,6 +10,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -21,6 +23,7 @@ import com.bensler.decaf.util.CanceledException;
  */
 public class AbstractHierarchy<H extends Hierarchical<H>, C extends Collection<H>> extends Object implements Serializable {
 
+  private final Map<H, H> members_;
   private final ChildrenCollectionMaintainer<H, C> childCollectionMaintainer_;
   /**
    * Keys are all members of this hierarchy, values are the child nodes. <code>null</code> values are leaf nodes,
@@ -33,7 +36,9 @@ public class AbstractHierarchy<H extends Hierarchical<H>, C extends Collection<H
    */
   public AbstractHierarchy(ChildrenCollectionMaintainer<H, C> childCollectionMaintainer) {
     childCollectionMaintainer_ = childCollectionMaintainer;
+    members_ = new HashMap<>();
     children_ = new HashMap<>();
+    children_.put(null, null);
     children_.put(null, childCollectionMaintainer_.createEmptyCollection());
   }
 
@@ -45,64 +50,42 @@ public class AbstractHierarchy<H extends Hierarchical<H>, C extends Collection<H
    */
   public void add(final H newNode) {
     final List<H> oldRoots = new ArrayList<>(children_.get(null));
-    final H oldNode;
-    final H parent;
+    final Set<H> newRoots;
+    final List<H> noLongerRoot;
 
     requireNonNull(newNode, "Cannot add null");
-    if ((oldNode = resolve(newNode)) != null) {
-      // node is allready in this hierarchy
-      final H oldParent = oldNode.getParent();
-      final H newParent = newNode.getParent();
-
-      if (((oldParent != null) && oldParent.equals(newParent)) || ((oldParent == null) && (newParent == null))) {
-        // at the same position -> only replace the value
-        children_.put(newNode, children_.get(oldNode));
-        return;
-      } else {
-        remove(newNode, false);
-      }
-    }
-
+    remove(newNode, false);
+    addChild(newNode);
+    members_.put(newNode, newNode);
     children_.put(newNode, childCollectionMaintainer_.createEmptyCollection());
-    parent = resolve(newNode.getParent());
-    children_.put(parent, childCollectionMaintainer_.addChild(newNode, children_.get(parent)));
 
-    final Set<H> noLongerRoot = new HashSet<>();
-    for (H root : oldRoots) {
-      if (newNode == resolve(root.getParent())) {
-        addChild(newNode, root);
-        noLongerRoot.add(root);
-      }
-    };
-    final Set<H> newRoots = new HashSet<>(children_.get(null));
+    oldRoots.remove(newNode);
+    noLongerRoot = oldRoots.stream()
+      .filter(oldRoot -> newNode == resolve(oldRoot.getParent()))
+      .map(forEachMapper(this::addChild))
+      .toList();
+
+    newRoots = new HashSet<>(children_.get(null));
     newRoots.removeAll(noLongerRoot);
     children_.put(null, childCollectionMaintainer_.createCopy(newRoots));
+  }
+
+  private H addChild(final H newNode) {
+    final H parent = resolve(newNode.getParent());
+
+    children_.put(parent, childCollectionMaintainer_.addChild(newNode, children_.get(parent)));
+    return parent;
   }
 
   /**
    * Adds all collection member to this hierarchy.
    */
   public void addAll(final Collection<? extends H> nodes) {
-    for (H newNode : nodes) {
-      add(newNode);
-    }
-  }
-
-  private void addChild(final H parent, final H child) {
-    children_.put(parent, childCollectionMaintainer_.addChild(child, children_.get(parent)));
+    nodes.forEach(this::add);
   }
 
   public H resolve(final Object ref) {
-    if (ref != null) {
-      final int refHash = ref.hashCode();
-
-      for (H node : children_.keySet()) {
-        if ((node == ref) || ((node != null) && (refHash == node.hashCode()) && node.equals(ref))) {
-          return node;
-        }
-      }
-    }
-    return null;
+    return members_.get(ref);
   }
 
   /**
@@ -133,14 +116,14 @@ public class AbstractHierarchy<H extends Hierarchical<H>, C extends Collection<H
    * @return  the member count of this hierarchy.
    */
   public int size() {
-    return children_.size() - (children_.containsKey(null) ? 1 : 0);
+    return members_.size();
   }
 
   /**
    * @return  all members of this Hierarchy in undefined order
    */
   public Set<H> getMembers() {
-    return children_.values().stream().flatMap(Collection::stream).collect(Collectors.toSet());
+    return members_.keySet().stream().filter(Objects::nonNull).collect(Collectors.toSet());
   }
 
   public void removeNode(final H member) {
@@ -151,24 +134,27 @@ public class AbstractHierarchy<H extends Hierarchical<H>, C extends Collection<H
     remove(member, true);
   }
 
-  protected void remove(final H member, final boolean recursive) {
-    requireNonNull(member, "Cannot remove null");
+  protected void remove(H toRemove, final boolean recursive) {
+    toRemove = resolve(toRemove);
 
-    final C orphans = children_.get(member);
-    children_.remove(member);
-    if (recursive) {
-      orphans.forEach(orphan -> remove(orphan, true));
-    } else {
-      orphans.forEach(orphan -> addChild(null, orphan));
+    if (toRemove != null) {
+      final C orphans = children_.remove(toRemove);
+
+      members_.remove(toRemove);
+      if (recursive) {
+        orphans.forEach(orphan -> remove(orphan, true));
+      } else {
+        orphans.forEach(orphan -> children_.put(null, childCollectionMaintainer_.addChild(orphan, children_.get(null))));
+      }
+
+      children_.get(resolve(toRemove.getParent())).remove(toRemove);
     }
-
-    children_.get(resolve(member.getParent())).remove(member);
   }
 
   public C getChildren(final H member) {
     return Optional.ofNullable(children_.get(member))
-        .map(childCollectionMaintainer_::createCopy)
-        .orElseGet(childCollectionMaintainer_::createEmptyCollection);
+      .map(childCollectionMaintainer_::createCopy)
+      .orElseGet(childCollectionMaintainer_::createEmptyCollection);
   }
 
   /** used by TreeModel */
@@ -193,14 +179,16 @@ public class AbstractHierarchy<H extends Hierarchical<H>, C extends Collection<H
    * used by TreeModel <p>
    * Checks if a node is a member of this hierarchy.
    */
-  public boolean contains(final Object node) {
-    return children_.containsKey(node);
+  public Optional<H> contains(final Object node) {
+    return Optional.ofNullable(members_.get(node));
   }
 
   /**
    * Makes this hierarchy empty.
    */
   public void clear() {
+    members_.clear();
+    members_.put(null, null);
     children_.clear();
     children_.put(null, childCollectionMaintainer_.createEmptyCollection());
   }
@@ -315,11 +303,9 @@ public class AbstractHierarchy<H extends Hierarchical<H>, C extends Collection<H
    * @return  a sub tree of a given node.
    */
   public List<H> getSubHierarchyMembers(final H subRoot) {
-    if (contains(subRoot)) {
-      return visitDown(new Collector<H>(), subRoot).getList();
-    } else {
-      throw new IllegalArgumentException(subRoot + " is not member of this Hierarchy");
-    }
+    return contains(subRoot)
+      .map(node -> visitDown(new Collector<H>(), subRoot).getList())
+      .orElseThrow(() -> new IllegalArgumentException(subRoot + " is not member of this Hierarchy"));
   }
 
   /**

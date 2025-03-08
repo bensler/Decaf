@@ -244,7 +244,7 @@ TreeSelectionListener, FocusListener {
 
   @Override
   public Optional<H> contains(Object entity) {
-    return (model_.contains(entity) ? Optional.of((H)entity) : Optional.empty());
+    return model_.contains(entity);
   }
 
   @Override
@@ -257,14 +257,13 @@ TreeSelectionListener, FocusListener {
     try {
       silentSelectionChange_ = true;
       tree_.clearSelection();
-      for (H node : entities) {
-        if (model_.contains(node)) {
-          final TreePath selPath = model_.getTreePath(node);
-          expandCollapse(node, true);
-        	tree_.addSelectionPath(selPath);
-        	tree_.scrollPathToVisible(selPath);
-        };
-      }
+      entities.stream().flatMap(node -> model_.contains(node).stream()).forEach(node -> {
+        final TreePath selPath = model_.getTreePath(node);
+
+        expandCollapse(node, true);
+        tree_.addSelectionPath(selPath);
+        tree_.scrollPathToVisible(selPath);
+      });
     } finally {
       silentSelectionChange_ = false;
     }

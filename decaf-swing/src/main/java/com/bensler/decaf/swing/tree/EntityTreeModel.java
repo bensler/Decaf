@@ -3,6 +3,7 @@ package com.bensler.decaf.swing.tree;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Consumer;
 
 import javax.swing.event.TreeModelEvent;
@@ -56,7 +57,7 @@ public class EntityTreeModel<H extends Hierarchical<H>> implements TreeModel {
     // (TODO) there is currently no in-place-editing of nodes ...
   }
 
-  public boolean contains(Object entity) {
+  public Optional<H> contains(Object entity) {
     return data_.contains(entity);
   }
 
@@ -71,8 +72,7 @@ public class EntityTreeModel<H extends Hierarchical<H>> implements TreeModel {
   }
 
   public void addNode(H node) {
-    if (data_.contains(node)) {
-      final H oldNode = data_.resolve(node);
+    data_.contains(node).ifPresent(oldNode -> {
       final H oldParent = data_.resolve(oldNode.getParent());
       final int oldIndex = getChildren(oldParent).indexOf(oldNode);
 
@@ -81,7 +81,7 @@ public class EntityTreeModel<H extends Hierarchical<H>> implements TreeModel {
         this, getPathAsObjectArray(oldParent),
         new int[] {oldIndex}, null
       ));
-    }
+    });
 
     final H newParent = data_.resolve(node.getParent());
 
@@ -93,14 +93,14 @@ public class EntityTreeModel<H extends Hierarchical<H>> implements TreeModel {
   }
 
   /** Removes leaf nodes only! */
-  public void removeNode(H node) {
-    if (contains(node) && isLeaf(node)) {
+  public void removeNode(H nodeToRemove) {
+    contains(nodeToRemove).filter(this::isLeaf).ifPresent(node -> {
       final TreePath parentPath = getTreePath(node).getParentPath();
       final int removedIndex = getIndexOfChild(parentPath.getLastPathComponent(), node);
 
       data_.removeNode(node);
       fireNodeRemoved(new TreeModelEvent(this, parentPath, new int[] {removedIndex}, null));
-    }
+    });
   }
 
   Object[] getPathAsObjectArray(H node) {
