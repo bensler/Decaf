@@ -55,6 +55,7 @@ public class EntityTreeModel<H extends Hierarchical<H>> implements TreeModel {
   @Override
   public void valueForPathChanged(TreePath path, Object newValue) {
     // (TODO) there is currently no in-place-editing of nodes ...
+    throw new UnsupportedOperationException();
   }
 
   public Optional<H> contains(Object entity) {
@@ -72,34 +73,45 @@ public class EntityTreeModel<H extends Hierarchical<H>> implements TreeModel {
   }
 
   public void addNode(H node) {
-    data_.contains(node).ifPresent(oldNode -> {
-      final H oldParent = data_.resolve(oldNode.getParent());
-      final int oldIndex = getChildren(oldParent).indexOf(oldNode);
+    final H newParent;
+    final List<H> children;
 
-      data_.removeNode(oldNode);
-      fireNodeRemoved(new TreeModelEvent(
-        this, getPathAsObjectArray(oldParent),
-        new int[] {oldIndex}, null
-      ));
-    });
-
-    final H newParent = data_.resolve(node.getParent());
-
+    removeData(node, false);
+    newParent = data_.resolve(node.getParent());
     data_.add(node);
-    fireNodeInserted(new TreeModelEvent(
-      this, getPathAsObjectArray(newParent),
-      new int[] {getChildren(newParent).indexOf(node)}, null
-    ));
+    children = data_.getChildren(newParent);
+    fireNodeInserted(new TreeModelEvent(this, getPathAsObjectArray(newParent), new int[] {children.indexOf(node)}, new Object[] {node}));
   }
 
-  /** Removes leaf nodes only! */
-  public void removeNode(H nodeToRemove) {
-    contains(nodeToRemove).filter(this::isLeaf).ifPresent(node -> {
-      final TreePath parentPath = getTreePath(node).getParentPath();
-      final int removedIndex = getIndexOfChild(parentPath.getLastPathComponent(), node);
+  public void removeTree(H subTreeParentToRemove) {
+    removeData(subTreeParentToRemove, true);
+  }
 
-      data_.removeNode(node);
-      fireNodeRemoved(new TreeModelEvent(this, parentPath, new int[] {removedIndex}, null));
+  public void removeNode(H nodeToRemove) {
+    removeData(nodeToRemove, false);
+  }
+
+  private void removeData(H nodeToRemove, boolean recursive) {
+    contains(nodeToRemove).ifPresent(node -> {
+      final TreePath parentPath = getTreePath(node).getParentPath();
+      final List<H> children = data_.getChildren(data_.resolve(parentPath.getLastPathComponent()));
+      final int removedIndex = children.indexOf(node);
+
+      if (recursive) {
+        data_.removeTree(node);
+      } else {
+        final List<H> addedRootChildren = data_.getChildren(node);
+        final List<H> rootChildren;
+
+        data_.removeNode(node);
+        rootChildren = data_.getChildren(null);
+        fireNodeInserted(new TreeModelEvent(
+          this, new Object[] {invisibleRoot_},
+          addedRootChildren.stream().mapToInt(rootChildren::indexOf).toArray(),
+          addedRootChildren.toArray()
+        ));
+      }
+      fireNodeRemoved(new TreeModelEvent(this, parentPath, new int[] {removedIndex}, children.toArray()));
     });
   }
 

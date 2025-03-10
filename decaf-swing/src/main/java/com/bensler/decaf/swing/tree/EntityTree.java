@@ -221,16 +221,13 @@ TreeSelectionListener, FocusListener {
 //  public void updateData(H hierarchical) {
 //    model_.updateNode(hierarchical);
 //  }
-//
-//  public void removeData(H ref) {
-//    model_.removeNode(ref);
-//  }
+
+  public void removeData(H ref) {
+    model_.removeNode(ref);
+  }
 
   public void setData(Hierarchy<H> hierarchy) {
     model_.setData(hierarchy);
-//    tree_.setRootVisible(!hierarchy.hasNullRoot());
-    // try to expand the tree in the same manner as before.
-//    applyState();
   }
 
   public Hierarchy<H> getData() {

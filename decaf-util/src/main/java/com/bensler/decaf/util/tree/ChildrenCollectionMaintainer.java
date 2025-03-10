@@ -62,14 +62,6 @@ public interface ChildrenCollectionMaintainer<H extends Hierarchical<?>, C exten
     }
 
     @Override
-    public List<H> createCopy(Collection<H> collectionContents) {
-      final List<H> createdCollection = super.createCopy(collectionContents);
-
-      Collections.sort(createdCollection, comparator_);
-      return createdCollection;
-    }
-
-    @Override
     public List<H> addChild(H child, List<H> target) {
       if (target.isEmpty()) {
         target = new ArrayList<>(1);

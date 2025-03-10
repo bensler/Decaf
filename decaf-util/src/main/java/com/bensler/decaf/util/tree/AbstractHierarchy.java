@@ -7,7 +7,6 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -50,7 +49,6 @@ public class AbstractHierarchy<H extends Hierarchical<H>, C extends Collection<H
    */
   public void add(final H newNode) {
     final List<H> oldRoots = new ArrayList<>(children_.get(null));
-    final Set<H> newRoots;
     final List<H> noLongerRoot;
 
     requireNonNull(newNode, "Cannot add null");
@@ -65,9 +63,7 @@ public class AbstractHierarchy<H extends Hierarchical<H>, C extends Collection<H
       .map(forEachMapper(this::addChild))
       .toList();
 
-    newRoots = new HashSet<>(children_.get(null));
-    newRoots.removeAll(noLongerRoot);
-    children_.put(null, childCollectionMaintainer_.createCopy(newRoots));
+    children_.get(null).removeAll(noLongerRoot);
   }
 
   private H addChild(final H newNode) {
