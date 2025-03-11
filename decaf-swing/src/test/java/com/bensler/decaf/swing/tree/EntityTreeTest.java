@@ -15,7 +15,7 @@ class EntityTreeTest {
 
   private final Bender bender_;
 
-  public EntityTreeTest() throws AWTException {
+  EntityTreeTest() throws AWTException {
     bender_ = new Bender("target/surefire-reports");
   }
 

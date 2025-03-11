@@ -12,7 +12,7 @@ class CheckboxTreeTest {
 
   private final Bender bender_;
 
-  public CheckboxTreeTest() throws AWTException {
+  CheckboxTreeTest() throws AWTException {
     bender_ = new Bender("target/surefire-reports");
   }
 
