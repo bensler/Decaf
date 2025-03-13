@@ -9,7 +9,7 @@ public class ConfirmationDialog extends BasicContentPanel<Void, Boolean>{
   private final DialogAppearance appearance_;
 
   public ConfirmationDialog(DialogAppearance appearance) {
-    super(new FormLayout("f:p:g", "f:p:g"));
+    super(appearance, new FormLayout("f:p:g", "f:p:g"));
     appearance_ = appearance;
   }
 
@@ -27,11 +27,6 @@ public class ConfirmationDialog extends BasicContentPanel<Void, Boolean>{
   protected void setData(Void inData) {
     ctx_.setOkButtonText("Yes");
     ctx_.setCancelButtonText("No");
-  }
-
-  @Override
-  protected boolean validateContent(Object eventSource) {
-    return true;
   }
 
   public boolean show(Component parent) {

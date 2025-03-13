@@ -13,12 +13,19 @@ public abstract class BasicContentPanel<IN, OUT> extends JPanel implements Conte
 
   protected final FormLayout layout_;
 
+  protected final DialogAppearance appearance_;
   protected IN inData_;
   protected Context ctx_;
 
-  protected BasicContentPanel(FormLayout layout) {
+  protected BasicContentPanel(DialogAppearance appearance, FormLayout layout) {
     super(layout);
+    appearance_ = appearance;
     layout_ = layout;
+  }
+
+  @Override
+  public DialogAppearance getAppearance() {
+    return appearance_;
   }
 
   @Override
@@ -41,7 +48,9 @@ public abstract class BasicContentPanel<IN, OUT> extends JPanel implements Conte
     validate(null);
   }
 
-  protected abstract boolean validateContent(Object eventSource);
+  protected boolean validateContent(Object eventSource) {
+    return true;
+  }
 
   protected void addValidationSource(EntityComponent<?> entityComponent) {
     entityComponent.setSelectionListener((source, selection) -> validate(entityComponent));
