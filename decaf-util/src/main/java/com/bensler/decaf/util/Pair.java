@@ -1,5 +1,6 @@
 package com.bensler.decaf.util;
 
+import java.util.function.BiFunction;
 import java.util.function.Function;
 
 public class Pair<L, R> {
@@ -25,6 +26,10 @@ public class Pair<L, R> {
     Function<? super R, ? extends RP> rightMapper
   ) {
     return new Pair<>(leftMapper.apply(left_), rightMapper.apply(right_));
+  }
+
+  public <RESULT> RESULT map(BiFunction<? super L, ? super R, RESULT> mapper) {
+    return mapper.apply(left_, right_);
   }
 
   @Override
