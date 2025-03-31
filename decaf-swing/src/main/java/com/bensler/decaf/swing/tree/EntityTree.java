@@ -222,8 +222,12 @@ TreeSelectionListener, FocusListener {
 //    model_.updateNode(hierarchical);
 //  }
 
-  public void removeData(H ref) {
+  public void removeNode(H ref) {
     model_.removeNode(ref);
+  }
+
+  public void removeTree(H ref) {
+    model_.removeTree(ref);
   }
 
   public void setData(Hierarchy<H> hierarchy) {
