@@ -1,8 +1,8 @@
 package com.bensler.decaf.swing.tree;
 
-import static com.bensler.decaf.swing.view.SimplePropertyGetter.createComparablePropertyGetter;
+import static com.bensler.decaf.swing.view.SimplePropertyGetter.chain;
+import static com.bensler.decaf.swing.view.SimplePropertyGetter.createComparableGetter;
 import static com.bensler.decaf.util.cmp.CollatorComparator.COLLATOR_COMPARATOR;
-import static com.bensler.decaf.util.cmp.NopComparator.NOP_COMPARATOR;
 
 import java.awt.Dialog.ModalityType;
 import java.awt.Dimension;
@@ -21,7 +21,6 @@ import com.bensler.decaf.swing.table.EntityTable;
 import com.bensler.decaf.swing.table.TablePropertyView;
 import com.bensler.decaf.swing.table.TableView;
 import com.bensler.decaf.swing.view.PropertyViewImpl;
-import com.bensler.decaf.swing.view.QueueGetter;
 import com.bensler.decaf.swing.view.SimplePropertyGetter;
 import com.bensler.decaf.util.tree.Folder;
 import com.bensler.decaf.util.tree.Hierarchy;
@@ -42,7 +41,7 @@ class SampleTreeDialog {
   final EntityTable<Folder> table_;
   final JButton button_;
 
-  SampleTreeDialog() throws UnsupportedLookAndFeelException {
+   SampleTreeDialog() throws UnsupportedLookAndFeelException {
     final Hierarchy<Folder> data = createFolderData();
 
     Plastic3DLookAndFeel.setCurrentTheme(new DesertYellow());
@@ -55,12 +54,12 @@ class SampleTreeDialog {
     final PropertyViewImpl<Folder, String> nameView = new PropertyViewImpl<>(
       new SimplePropertyGetter<>(Folder::getName, COLLATOR_COMPARATOR)
     );
-    final PropertyViewImpl<Folder, String> parentNameView = new PropertyViewImpl<>(new QueueGetter<>(
-      new SimplePropertyGetter<>(Folder::getParent, NOP_COMPARATOR),
-      new SimplePropertyGetter<>(Folder::getName, COLLATOR_COMPARATOR)
-    ));
+    final PropertyViewImpl<Folder, String> parentNameView = new PropertyViewImpl<>(
+      new SimplePropertyGetter<>(chain(Folder::getParent, Folder::getName), COLLATOR_COMPARATOR)
+    );
+
     final PropertyViewImpl<Folder, Integer> sizeView = new PropertyViewImpl<>(
-      createComparablePropertyGetter(this::getFolderSize)
+      createComparableGetter(this::getFolderSize)
     );
 
     tree_ = new EntityTree<>(nameView);

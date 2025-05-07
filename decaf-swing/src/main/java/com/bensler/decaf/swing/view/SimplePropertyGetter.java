@@ -1,32 +1,43 @@
 package com.bensler.decaf.swing.view;
 
-import static com.bensler.decaf.util.cmp.CollatorComparator.COLLATOR_COMPARATOR;
-
 import java.util.Comparator;
+import java.util.Optional;
 import java.util.function.Function;
 
 import com.bensler.decaf.util.cmp.ComparableComparator;
+import com.bensler.decaf.util.cmp.NullSafeComparator;
 
-public class SimplePropertyGetter<E, P> extends PropertyGetter<E, P> {
+public class SimplePropertyGetter<E, P> implements PropertyGetter<E, P> {
 
-  public static <E1> SimplePropertyGetter<E1, String> createStringPropertyGetter(Function<E1, String> getter) {
-    return new SimplePropertyGetter<>(getter, COLLATOR_COMPARATOR);
+  public static <T, IR, R> Function<T, R> chain(Function<T, IR> first, Function<IR, R> second) {
+    return t -> Optional.ofNullable(first.apply(t)).map(second).orElse(null);
   }
 
-  public static <E1, P1  extends Comparable<P1>> SimplePropertyGetter<E1, P1> createComparablePropertyGetter(Function<E1, P1> getter) {
+  public static <E1, P1  extends Comparable<P1>> SimplePropertyGetter<E1, P1> createComparableGetter(Function<E1, P1> getter) {
     return new SimplePropertyGetter<>(getter, new ComparableComparator<>());
   }
 
-  protected final Function<E, P> getter_;
+  private final Function<E, P> getter_;
 
-  public SimplePropertyGetter(Function<E, P> getter, Comparator<? super P> comparatorDelegate) {
-    super(comparatorDelegate);
+  private final Comparator<E> entityComparator_;
+
+  public SimplePropertyGetter(Function<E, P> getter, Comparator<? super P> propertyComparator) {
+    final Comparator<P> nullSafePropCmp = new NullSafeComparator<>(propertyComparator);
+
     getter_ = getter;
+    entityComparator_ = new NullSafeComparator<>(
+      (e1, e2) -> nullSafePropCmp.compare(getProperty(e1), getProperty(e2))
+    );
   }
 
   @Override
   public P getProperty(E viewable) {
     return getter_.apply(viewable);
+  }
+
+  @Override
+  public int compare(E e1, E e2) {
+    return entityComparator_.compare(e1, e2);
   }
 
 }

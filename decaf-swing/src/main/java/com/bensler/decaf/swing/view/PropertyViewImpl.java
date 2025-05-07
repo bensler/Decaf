@@ -1,6 +1,9 @@
 package com.bensler.decaf.swing.view;
 
+import static com.bensler.decaf.util.cmp.CollatorComparator.COLLATOR_COMPARATOR;
+
 import java.awt.Component;
+import java.util.Optional;
 
 import javax.swing.Icon;
 import javax.swing.JLabel;
@@ -10,35 +13,16 @@ import javax.swing.JTree;
 import javax.swing.tree.TreeCellRenderer;
 
 import com.bensler.decaf.util.Named;
-import com.bensler.decaf.util.cmp.CollatorComparator;
 
 
 public class PropertyViewImpl<E, P> extends Object implements PropertyView<E, P> {
 
-  public static class ToStringGetter<E> extends PropertyGetter<E, String> {
-
-    public ToStringGetter() {
-      super(CollatorComparator.COLLATOR_COMPARATOR);
-    }
-
-    @Override
-    public String getProperty(E viewable) {
-      return viewable.toString();
-    }
-
-  }
-
-  public    final static  PropertyViewImpl<Object, String> OBJECT = new PropertyViewImpl<>(
-    new ToStringGetter<>()
+  public final static  PropertyViewImpl<Object, String> OBJECT = new PropertyViewImpl<>(
+    new SimplePropertyGetter<>(entity -> entity.toString(), COLLATOR_COMPARATOR)
   );
 
   public    final static  PropertyViewImpl<Named, String> NAMED = new PropertyViewImpl<>(
-    new PropertyGetter<Named, String>(CollatorComparator.COLLATOR_COMPARATOR) {
-      @Override
-      public String getProperty(Named viewable) {
-        return viewable.getName();
-      }
-    }
+    new SimplePropertyGetter<>(Named::getName, COLLATOR_COMPARATOR)
   );
 
   private   final         RenderComponentFactory  compFactory_;
@@ -128,7 +112,7 @@ public class PropertyViewImpl<E, P> extends Object implements PropertyView<E, P>
 
   @Override
   public String getPropertyString(E entity) {
-    return getter_.getPropertyString(entity);
+    return Optional.of(getProperty(entity)).map(P::toString).orElse("");
   }
 
   @Override
@@ -144,7 +128,7 @@ public class PropertyViewImpl<E, P> extends Object implements PropertyView<E, P>
 
   @Override
   public int compare(E v1, E v2) {
-    return getter_.getEntityComparator().compare(v1, v2);
+    return getter_.compare(v1, v2);
   }
 
   @Override
