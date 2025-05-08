@@ -19,15 +19,16 @@ public class SimplePropertyGetter<E, P> implements PropertyGetter<E, P> {
 
   private final Function<E, P> getter_;
 
-  private final Comparator<E> entityComparator_;
+  private final Comparator<E> comparator_;
+
+  public SimplePropertyGetter(Function<E, P> getter, EntityComparator<? super E> comparator) {
+    getter_ = getter;
+    comparator_ = new NullSafeComparator<>(comparator);
+  }
 
   public SimplePropertyGetter(Function<E, P> getter, Comparator<? super P> propertyComparator) {
-    final Comparator<P> nullSafePropCmp = new NullSafeComparator<>(propertyComparator);
-
     getter_ = getter;
-    entityComparator_ = new NullSafeComparator<>(
-      (e1, e2) -> nullSafePropCmp.compare(getProperty(e1), getProperty(e2))
-    );
+    comparator_ = new EntityComparator<>(getter, propertyComparator);
   }
 
   @Override
@@ -37,7 +38,7 @@ public class SimplePropertyGetter<E, P> implements PropertyGetter<E, P> {
 
   @Override
   public int compare(E e1, E e2) {
-    return entityComparator_.compare(e1, e2);
+    return comparator_.compare(e1, e2);
   }
 
 }

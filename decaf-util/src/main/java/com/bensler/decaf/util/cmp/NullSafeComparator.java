@@ -52,12 +52,4 @@ public class NullSafeComparator<T> extends Object implements Comparator<T> {
     }
   }
 
-  public Comparator<? super T> getDelegate() {
-    return delegate_;
-  }
-
-  public NullPolicy getNullPolicy() {
-    return nullPolicy_;
-  }
-
 }
