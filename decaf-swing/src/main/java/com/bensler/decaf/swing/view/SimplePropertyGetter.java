@@ -13,27 +13,34 @@ public class SimplePropertyGetter<E, P> implements PropertyGetter<E, P> {
     return t -> Optional.ofNullable(first.apply(t)).map(second).orElse(null);
   }
 
+  public static <E1, P1> SimplePropertyGetter<E1, P1> createGetterComparator(Function<E1, P1> getter, Comparator<P1> propertyComparator) {
+    return new SimplePropertyGetter<>(new EntityPropertyComparator<>(getter, propertyComparator));
+  }
+
+  public static <E1, P1> SimplePropertyGetter<E1, P1> createGetter(Function<E1, P1> getter, Comparator<E1> comparator) {
+    return new SimplePropertyGetter<>(getter, new NullSafeComparator<>(comparator));
+  }
+
   public static <E1, P1  extends Comparable<P1>> SimplePropertyGetter<E1, P1> createComparableGetter(Function<E1, P1> getter) {
-    return new SimplePropertyGetter<>(getter, new ComparableComparator<>());
+    return createGetterComparator(getter, new ComparableComparator<>());
   }
 
   private final Function<E, P> getter_;
-
   private final Comparator<E> comparator_;
 
-  public SimplePropertyGetter(Function<E, P> getter, EntityComparator<? super E> comparator) {
+  public SimplePropertyGetter(Function<E, P> getter, Comparator<E> comparator) {
     getter_ = getter;
-    comparator_ = new NullSafeComparator<>(comparator);
+    comparator_ = comparator;
   }
 
-  public SimplePropertyGetter(Function<E, P> getter, Comparator<? super P> propertyComparator) {
-    getter_ = getter;
-    comparator_ = new EntityComparator<>(getter, propertyComparator);
+  public SimplePropertyGetter(EntityPropertyComparator<E, P> entityComparator) {
+    getter_ = entityComparator;
+    comparator_ = entityComparator;
   }
 
   @Override
-  public P getProperty(E viewable) {
-    return getter_.apply(viewable);
+  public P getProperty(E entity) {
+    return getter_.apply(entity);
   }
 
   @Override

@@ -1,5 +1,6 @@
 package com.bensler.decaf.swing.tree;
 
+import static com.bensler.decaf.swing.view.SimplePropertyGetter.createGetterComparator;
 import static com.bensler.decaf.util.cmp.CollatorComparator.COLLATOR_COMPARATOR;
 
 import java.awt.Dialog.ModalityType;
@@ -13,7 +14,6 @@ import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
 import com.bensler.decaf.swing.view.PropertyViewImpl;
-import com.bensler.decaf.swing.view.SimplePropertyGetter;
 import com.bensler.decaf.util.tree.Folder;
 import com.bensler.decaf.util.tree.Hierarchy;
 import com.jgoodies.forms.layout.CellConstraints;
@@ -42,7 +42,7 @@ class CheckboxTreeDialog {
       "3dlu, f:p:g, 3dlu, f:p:g, 3dlu"
     ));
     final PropertyViewImpl<Folder, String> nameView = new PropertyViewImpl<>(
-      new SimplePropertyGetter<>(Folder::getName, COLLATOR_COMPARATOR)
+      createGetterComparator(Folder::getName, COLLATOR_COMPARATOR)
     );
 
     cbTree_ = new CheckboxTree<>(nameView);

@@ -2,6 +2,7 @@ package com.bensler.decaf.swing.tree;
 
 import static com.bensler.decaf.swing.view.SimplePropertyGetter.chain;
 import static com.bensler.decaf.swing.view.SimplePropertyGetter.createComparableGetter;
+import static com.bensler.decaf.swing.view.SimplePropertyGetter.createGetterComparator;
 import static com.bensler.decaf.util.cmp.CollatorComparator.COLLATOR_COMPARATOR;
 
 import java.awt.Dialog.ModalityType;
@@ -21,7 +22,6 @@ import com.bensler.decaf.swing.table.EntityTable;
 import com.bensler.decaf.swing.table.TablePropertyView;
 import com.bensler.decaf.swing.table.TableView;
 import com.bensler.decaf.swing.view.PropertyViewImpl;
-import com.bensler.decaf.swing.view.SimplePropertyGetter;
 import com.bensler.decaf.util.tree.Folder;
 import com.bensler.decaf.util.tree.Hierarchy;
 import com.jgoodies.forms.layout.CellConstraints;
@@ -52,10 +52,10 @@ class SampleTreeDialog {
       "3dlu, f:p:g, 3dlu, f:p:g, 3dlu, f:p:g, 3dlu, p, 3dlu"
     ));
     final PropertyViewImpl<Folder, String> nameView = new PropertyViewImpl<>(
-      new SimplePropertyGetter<>(Folder::getName, COLLATOR_COMPARATOR)
+      createGetterComparator(Folder::getName, COLLATOR_COMPARATOR)
     );
     final PropertyViewImpl<Folder, String> parentNameView = new PropertyViewImpl<>(
-      new SimplePropertyGetter<>(chain(Folder::getParent, Folder::getName), COLLATOR_COMPARATOR)
+      createGetterComparator(chain(Folder::getParent, Folder::getName), COLLATOR_COMPARATOR)
     );
 
     final PropertyViewImpl<Folder, Integer> sizeView = new PropertyViewImpl<>(

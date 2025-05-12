@@ -1,5 +1,6 @@
 package com.bensler.decaf.swing.view;
 
+import static com.bensler.decaf.swing.view.SimplePropertyGetter.createGetterComparator;
 import static com.bensler.decaf.util.cmp.CollatorComparator.COLLATOR_COMPARATOR;
 
 import java.awt.Component;
@@ -18,11 +19,11 @@ import com.bensler.decaf.util.Named;
 public class PropertyViewImpl<E, P> extends Object implements PropertyView<E, P> {
 
   public final static  PropertyViewImpl<Object, String> OBJECT = new PropertyViewImpl<>(
-    new SimplePropertyGetter<>(entity -> entity.toString(), COLLATOR_COMPARATOR)
+    createGetterComparator(Object::toString, COLLATOR_COMPARATOR)
   );
 
   public    final static  PropertyViewImpl<Named, String> NAMED = new PropertyViewImpl<>(
-    new SimplePropertyGetter<>(Named::getName, COLLATOR_COMPARATOR)
+    createGetterComparator(Named::getName, COLLATOR_COMPARATOR)
   );
 
   private   final         RenderComponentFactory  compFactory_;
