@@ -59,7 +59,7 @@ public class PropertyViewImpl<E, P> extends Object implements PropertyView<E, P>
     renderer_ = cellRenderer;
     getter_ = propertyGetter;
     compFactory_ = componentFactory;
-    nullPolicy_ = new DefaultNullPolicy<>();
+    nullPolicy_ = new NullPolicy<>();
   }
 
   @Override
@@ -130,11 +130,6 @@ public class PropertyViewImpl<E, P> extends Object implements PropertyView<E, P>
   @Override
   public int compare(E v1, E v2) {
     return getter_.compare(v1, v2);
-  }
-
-  @Override
-  public RenderComponentFactory getRenderComponentFactory() {
-    return compFactory_;
   }
 
 }
