@@ -49,7 +49,7 @@ public class PropertyViewImpl<E, P> extends Object implements PropertyView<E, P>
   public PropertyViewImpl(
     CellRenderer<E, P> cellRenderer, PropertyGetter<E, P> propertyGetter
   ) {
-    this(cellRenderer, propertyGetter, RenderComponentFactory.DEFAULT_INSTANCE);
+    this(cellRenderer, propertyGetter, RenderComponentFactory.INSTANCE);
   }
 
   public PropertyViewImpl(

@@ -1,12 +1,25 @@
 package com.bensler.decaf.swing.view;
 
+import com.bensler.decaf.swing.tree.DefaultTreeCellRenderComponent;
 
-public interface RenderComponentFactory {
 
-  public    final static  RenderComponentFactory    DEFAULT_INSTANCE = new DefaultRenderComponentFactory();
 
-  public TreeRenderComponent createTreeComponent();
+public class RenderComponentFactory {
 
-  public RenderComponent getListTableComponent();
+  public static final RenderComponentFactory INSTANCE = new RenderComponentFactory();
+
+  private final RenderComponent listComp_;
+
+  private RenderComponentFactory() {
+    listComp_ = new DefaultCellRenderComponent();
+  }
+
+  public RenderComponent getListTableComponent() {
+    return listComp_;
+  }
+
+  public TreeRenderComponent createTreeComponent() {
+    return new DefaultTreeCellRenderComponent();
+  }
 
 }
