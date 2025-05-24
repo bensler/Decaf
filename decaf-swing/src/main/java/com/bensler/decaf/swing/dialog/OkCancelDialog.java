@@ -37,7 +37,7 @@ public class OkCancelDialog<IN, OUT> extends JDialog implements ContentPanel.Con
 
   private Optional<JComponent> compToFocus_;
 
-  private OUT outData_;
+  private Optional<OUT> outData_;
 
   private Optional<BulkPrefPersister> prefs_;
 
@@ -100,7 +100,7 @@ public class OkCancelDialog<IN, OUT> extends JDialog implements ContentPanel.Con
     buttonLayout.setColumnGroup(3, 5);
     buttonPanel.add(cancelButton, cc.xy(3,  1));
     okButton.addActionListener(evt -> {
-      outData_ = contentPanel_.getData();
+      outData_ = Optional.ofNullable(contentPanel_.getData());
       setVisible(false);
     });
     cancelButton.addActionListener(evt -> setVisible(false));
@@ -108,7 +108,7 @@ public class OkCancelDialog<IN, OUT> extends JDialog implements ContentPanel.Con
     return buttonPanel;
   }
 
-  public Optional<OUT> show(IN input) {
+  public Optional<Optional<OUT>> show(IN input) {
     show(input, none -> {});
     return Optional.ofNullable(outData_);
   }
@@ -120,7 +120,9 @@ public class OkCancelDialog<IN, OUT> extends JDialog implements ContentPanel.Con
     SwingUtilities.invokeLater(() -> compToFocus_.ifPresent(JComponent::requestFocusInWindow));
     setVisible(true);
     prefs_.ifPresent(BulkPrefPersister::store);
-    Optional.ofNullable(outData_).ifPresent(action);
+    if (outData_ != null) {
+      outData_.ifPresent(action);
+    }
     dispose();
   }
 
