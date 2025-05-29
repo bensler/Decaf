@@ -32,7 +32,7 @@ public class PropertyViewImpl<E, P> extends Object implements PropertyView<E, P>
 
   private   final         PropertyGetter<E, P>    getter_;
 
-  private   final         NullPolicy<E>           nullPolicy_;
+  private   final         NullPolicy<E, P>        nullPolicy_;
 
   public PropertyViewImpl(
     PropertyGetter<E, P> getter
@@ -105,8 +105,9 @@ public class PropertyViewImpl<E, P> extends Object implements PropertyView<E, P>
     JList<? extends E> list, E value, int index,
     boolean selected, boolean hasFocus
   ) {
-    final RenderComponent   listComponent   = compFactory_.getListTableComponent();
-    final JLabel            label = listComponent.prepareForList(list, selected, index, hasFocus);
+    final RenderComponent listComponent = compFactory_.getListTableComponent();
+    final JLabel label = listComponent.prepareForList(list, selected, index, hasFocus);
+
     nullPolicy_.render(value, label, renderer_, getter_);
     return label;
   }
@@ -114,12 +115,6 @@ public class PropertyViewImpl<E, P> extends Object implements PropertyView<E, P>
   @Override
   public String getPropertyString(E entity) {
     return Optional.of(getProperty(entity)).map(P::toString).orElse("");
-  }
-
-  @Override
-  public JLabel renderLabel(JLabel label, E viewable) {
-    nullPolicy_.render(viewable, label, renderer_, getter_);
-    return label;
   }
 
   @Override

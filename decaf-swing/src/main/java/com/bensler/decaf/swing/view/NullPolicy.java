@@ -4,12 +4,12 @@ import javax.swing.JLabel;
 
 import com.bensler.decaf.swing.tree.SynthRoot;
 
-public class NullPolicy<E> extends Object {
+public class NullPolicy<E, P> extends Object {
 
-  public    final static  SimpleCellRenderer      NULL_RENDERER   = new SimpleCellRenderer();
+  public final SimpleCellRenderer<E, String> NULL_RENDERER   = new SimpleCellRenderer<>();
 
   public void render(
-    E value, JLabel label, CellRenderer renderer, PropertyGetter<E, ?> getter
+    E value, JLabel label, CellRenderer<E, P> renderer, PropertyGetter<E, P> getter
   ) {
     if (
       (value == null)
