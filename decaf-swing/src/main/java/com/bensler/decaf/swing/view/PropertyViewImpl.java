@@ -29,7 +29,7 @@ public class PropertyViewImpl<E, P> extends Object implements PropertyView<E, P>
 
   private final RenderComponentFactory compFactory_;
 
-  private final CellRenderer<E, P> renderer_;
+  private final CellRenderer<E, P, JLabel> renderer_;
 
   private final PropertyGetter<E, P> getter_;
 
@@ -48,13 +48,13 @@ public class PropertyViewImpl<E, P> extends Object implements PropertyView<E, P>
   }
 
   public PropertyViewImpl(
-    CellRenderer<E, P> cellRenderer, PropertyGetter<E, P> propertyGetter
+    CellRenderer<E, P, JLabel> cellRenderer, PropertyGetter<E, P> propertyGetter
   ) {
     this(cellRenderer, propertyGetter, RenderComponentFactory.INSTANCE);
   }
 
   public PropertyViewImpl(
-    CellRenderer<E, P> cellRenderer,
+    CellRenderer<E, P, JLabel> cellRenderer,
     PropertyGetter<E, P> propertyGetter, RenderComponentFactory componentFactory
   ) {
     renderer_ = cellRenderer;
@@ -114,7 +114,7 @@ public class PropertyViewImpl<E, P> extends Object implements PropertyView<E, P>
   }
 
   private void renderNullSafe(
-    E value, JLabel label, CellRenderer<E, P> renderer, PropertyGetter<E, P> getter
+    E value, JLabel label, CellRenderer<E, P, JLabel> renderer, PropertyGetter<E, P> getter
   ) {
     if (
       (value == null)

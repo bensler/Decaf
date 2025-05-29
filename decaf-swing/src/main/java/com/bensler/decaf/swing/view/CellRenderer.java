@@ -1,10 +1,10 @@
 package com.bensler.decaf.swing.view;
 
-import javax.swing.JLabel;
+import javax.swing.JComponent;
 
 
-public interface CellRenderer<E, P> {
+public interface CellRenderer<E, P, C extends JComponent> {
 
-  public void render(E viewable, P cellValue, JLabel comp);
+  public C render(E viewable, P cellValue, C comp);
 
 }
