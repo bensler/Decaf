@@ -13,6 +13,7 @@ import javax.swing.JTable;
 import javax.swing.JTree;
 import javax.swing.tree.TreeCellRenderer;
 
+import com.bensler.decaf.swing.tree.SynthRoot;
 import com.bensler.decaf.util.Named;
 
 
@@ -22,17 +23,17 @@ public class PropertyViewImpl<E, P> extends Object implements PropertyView<E, P>
     createGetterComparator(Object::toString, COLLATOR_COMPARATOR)
   );
 
-  public    final static  PropertyViewImpl<Named, String> NAMED = new PropertyViewImpl<>(
+  public  final static  PropertyViewImpl<Named, String> NAMED = new PropertyViewImpl<>(
     createGetterComparator(Named::getName, COLLATOR_COMPARATOR)
   );
 
-  private   final         RenderComponentFactory  compFactory_;
+  private final RenderComponentFactory compFactory_;
 
-  private   final         CellRenderer<E, P>      renderer_;
+  private final CellRenderer<E, P> renderer_;
 
-  private   final         PropertyGetter<E, P>    getter_;
+  private final PropertyGetter<E, P> getter_;
 
-  private   final         NullPolicy<E, P>        nullPolicy_;
+  private final SimpleCellRenderer<E, String> nullRenderer_;
 
   public PropertyViewImpl(
     PropertyGetter<E, P> getter
@@ -59,7 +60,7 @@ public class PropertyViewImpl<E, P> extends Object implements PropertyView<E, P>
     renderer_ = cellRenderer;
     getter_ = propertyGetter;
     compFactory_ = componentFactory;
-    nullPolicy_ = new NullPolicy<>();
+    nullRenderer_ = new SimpleCellRenderer<>();
   }
 
   @Override
@@ -83,7 +84,7 @@ public class PropertyViewImpl<E, P> extends Object implements PropertyView<E, P>
     ) {
       final JLabel label = treeRenderComponent_.prepareForTree(tree, selected, expanded, leaf, row, hasFocus);
 
-      nullPolicy_.render((E)value, label, renderer_, getter_);
+      renderNullSafe((E)value, label, renderer_, getter_);
       return label;
     }
   }
@@ -108,8 +109,26 @@ public class PropertyViewImpl<E, P> extends Object implements PropertyView<E, P>
     final RenderComponent listComponent = compFactory_.getListTableComponent();
     final JLabel label = listComponent.prepareForList(list, selected, index, hasFocus);
 
-    nullPolicy_.render(value, label, renderer_, getter_);
+    renderNullSafe(value, label, renderer_, getter_);
     return label;
+  }
+
+  private void renderNullSafe(
+    E value, JLabel label, CellRenderer<E, P> renderer, PropertyGetter<E, P> getter
+  ) {
+    if (
+      (value == null)
+      || (value instanceof SynthRoot)
+    ) {
+      nullRenderer_.render(null, " ", label);
+    } else {
+      try {
+        renderer.render(value, getter.getProperty(value), label);
+      } catch (Exception e) {
+        e.printStackTrace(); // TODO
+        nullRenderer_.render(value, " ", label);
+      }
+    }
   }
 
   @Override
