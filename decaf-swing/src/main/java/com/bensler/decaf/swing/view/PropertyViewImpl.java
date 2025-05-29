@@ -13,6 +13,7 @@ import javax.swing.JTable;
 import javax.swing.JTree;
 import javax.swing.tree.TreeCellRenderer;
 
+import com.bensler.decaf.swing.tree.DefaultTreeCellRenderComponent;
 import com.bensler.decaf.swing.tree.SynthRoot;
 import com.bensler.decaf.util.Named;
 
@@ -27,7 +28,7 @@ public class PropertyViewImpl<E, P> extends Object implements PropertyView<E, P>
     createGetterComparator(Named::getName, COLLATOR_COMPARATOR)
   );
 
-  private final RenderComponentFactory compFactory_;
+  private final RenderComponent listComp_;
 
   private final CellRenderer<E, P, JLabel> renderer_;
 
@@ -50,16 +51,16 @@ public class PropertyViewImpl<E, P> extends Object implements PropertyView<E, P>
   public PropertyViewImpl(
     CellRenderer<E, P, JLabel> cellRenderer, PropertyGetter<E, P> propertyGetter
   ) {
-    this(cellRenderer, propertyGetter, RenderComponentFactory.INSTANCE);
+    this(cellRenderer, propertyGetter, new DefaultCellRenderComponent());
   }
 
   public PropertyViewImpl(
     CellRenderer<E, P, JLabel> cellRenderer,
-    PropertyGetter<E, P> propertyGetter, RenderComponentFactory componentFactory
+    PropertyGetter<E, P> propertyGetter, RenderComponent renderComponent
   ) {
     renderer_ = cellRenderer;
     getter_ = propertyGetter;
-    compFactory_ = componentFactory;
+    listComp_ = renderComponent;
     nullRenderer_ = new SimpleCellRenderer<>();
   }
 
@@ -70,10 +71,10 @@ public class PropertyViewImpl<E, P> extends Object implements PropertyView<E, P>
 
   class PropertyTreeCellRenderer implements TreeCellRenderer {
 
-    private final TreeRenderComponent treeRenderComponent_;
+    private final TreeRenderComponent<RendererLabel> treeRenderComponent_;
 
     PropertyTreeCellRenderer() {
-      treeRenderComponent_ = compFactory_.createTreeComponent();
+      treeRenderComponent_ = new DefaultTreeCellRenderComponent();
     }
 
     @SuppressWarnings("unchecked")
@@ -94,8 +95,7 @@ public class PropertyViewImpl<E, P> extends Object implements PropertyView<E, P>
     JTable table, E viewable, P cellValue, boolean selected,
     boolean hasFocus, int row, int column
   ) {
-    final RenderComponent tableComponent = compFactory_.getListTableComponent();
-    final JLabel label = tableComponent.prepareForTable(table, selected, row, column, hasFocus);
+    final JLabel label = listComp_.prepareForTable(table, selected, row, column, hasFocus);
 
     renderer_.render(viewable, cellValue, label);
     return label;
@@ -106,8 +106,7 @@ public class PropertyViewImpl<E, P> extends Object implements PropertyView<E, P>
     JList<? extends E> list, E value, int index,
     boolean selected, boolean hasFocus
   ) {
-    final RenderComponent listComponent = compFactory_.getListTableComponent();
-    final JLabel label = listComponent.prepareForList(list, selected, index, hasFocus);
+    final JLabel label = listComp_.prepareForList(list, selected, index, hasFocus);
 
     renderNullSafe(value, label, renderer_, getter_);
     return label;

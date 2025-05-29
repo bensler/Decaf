@@ -13,7 +13,7 @@ import com.bensler.decaf.swing.view.TreeRenderComponent;
 
 /**
  */
-public class DefaultTreeCellRenderComponent implements TreeRenderComponent {
+public class DefaultTreeCellRenderComponent implements TreeRenderComponent<RendererLabel> {
 
   private   final         RendererLabel compTree_;
   /** True if draws focus border around icon as well. */
