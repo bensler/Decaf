@@ -15,20 +15,20 @@ import com.bensler.decaf.swing.view.TreeRenderComponent;
  */
 public class DefaultTreeCellRenderComponent implements TreeRenderComponent<RendererLabel> {
 
-  private   final         RendererLabel compTree_;
+  private final RendererLabel component_;
   /** True if draws focus border around icon as well. */
-  private   final         boolean       drawsFocusBorderAroundIcon_;
+  private final boolean drawsFocusBorderAroundIcon_;
   /** Color to use for the focus indicator when the node has focus. */
-  private   final         Color         borderSelectionColor_;
+  private final Color borderSelectionColor_;
   /** Is the value currently selected. */
-  protected               boolean       selected_;
+  private boolean selected_;
 
   public DefaultTreeCellRenderComponent() {
     final Object drawsFocusBorderAroundIcon = UIManager.get("Tree.drawsFocusBorderAroundIcon");
 
     borderSelectionColor_ = UIManager.getColor("Tree.selectionBorderColor");
     drawsFocusBorderAroundIcon_ = (drawsFocusBorderAroundIcon != null && ((Boolean)drawsFocusBorderAroundIcon).booleanValue());
-    compTree_ = new RendererLabel() {
+    component_ = new RendererLabel() {
       @Override
       public void paint(Graphics g) {
         final Color   bsColor     = borderSelectionColor_;
@@ -59,8 +59,8 @@ public class DefaultTreeCellRenderComponent implements TreeRenderComponent<Rende
         }
       }
     };
-    compTree_.setOpaque(false);
-    compTree_.setBorder(new EmptyBorder(0, 2, 0, 3));
+    component_.setOpaque(false);
+    component_.setBorder(new EmptyBorder(0, 2, 0, 3));
   }
 
   @Override
@@ -71,24 +71,24 @@ public class DefaultTreeCellRenderComponent implements TreeRenderComponent<Rende
     final TreeComponent<?> tree = (TreeComponent<?>)aTree;
 
     selected_ = selected;
-    compTree_.setFont(tree.getFont());
-    compTree_.setForeground(
+    component_.setFont(tree.getFont());
+    component_.setForeground(
       selected_ ? tree.getForegroundSelectionColor() : tree.getForeground()
     );
     // There needs to be a way to specify disabled icons.
-    compTree_.setEnabled(tree.isEnabled());
+    component_.setEnabled(tree.isEnabled());
 //    if (tree.isEnabled()) {
 //      component_.setIcon(icon_);
 //    } else {
 //      component_.setDisabledIcon(icon_);
 //    }
-    compTree_.setComponentOrientation(tree.getComponentOrientation());
+    component_.setComponentOrientation(tree.getComponentOrientation());
     if (selected_) {
-      compTree_.setBackground(tree.hasFocus() ? tree.getBackgroundSelectionColor() : tree.getBackgroundSelectionColorUnfocused());
+      component_.setBackground(tree.hasFocus() ? tree.getBackgroundSelectionColor() : tree.getBackgroundSelectionColorUnfocused());
     } else {
-      compTree_.setBackground(tree.getBackground());
+      component_.setBackground(tree.getBackground());
     }
-    return compTree_;
+    return component_;
   }
 
 }

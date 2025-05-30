@@ -85,8 +85,8 @@ public class PropertyViewImpl<E, P> extends Object implements PropertyView<E, P>
     ) {
       final JLabel label = treeRenderComponent_.prepareForTree(tree, selected, expanded, leaf, row, hasFocus);
 
-      renderNullSafe((E)value, label, renderer_, getter_);
-      return label;
+      value = (value instanceof SynthRoot) ? null : value;
+      return renderNullSafe((E)value, label, renderer_, getter_);
     }
   }
 
@@ -108,17 +108,13 @@ public class PropertyViewImpl<E, P> extends Object implements PropertyView<E, P>
   ) {
     final JLabel label = listComp_.prepareForList(list, selected, index, hasFocus);
 
-    renderNullSafe(value, label, renderer_, getter_);
-    return label;
+    return renderNullSafe(value, label, renderer_, getter_);
   }
 
-  private void renderNullSafe(
+  private JLabel renderNullSafe(
     E value, JLabel label, CellRenderer<E, P, JLabel> renderer, PropertyGetter<E, P> getter
   ) {
-    if (
-      (value == null)
-      || (value instanceof SynthRoot)
-    ) {
+    if (value == null) {
       nullRenderer_.render(null, " ", label);
     } else {
       try {
@@ -128,6 +124,7 @@ public class PropertyViewImpl<E, P> extends Object implements PropertyView<E, P>
         nullRenderer_.render(value, " ", label);
       }
     }
+    return label;
   }
 
   @Override
