@@ -104,7 +104,7 @@ public class CheckboxTreeComponent<H extends Hierarchical<H>> extends TreeCompon
       final Component delegateComp = delegate_.getTreeCellRendererComponent(tree, value, selected, expanded, leaf, row, hasFocus);
 
       delegateComp.setFont(delegateComp.getFont().deriveFont(checked ? Font.BOLD : Font.PLAIN));
-      rendererComponent.setContent(isEnabled(), checked,delegateComp);
+      rendererComponent.setContent(isEnabled(), checked, delegateComp);
       return rendererComponent;
     }
 
