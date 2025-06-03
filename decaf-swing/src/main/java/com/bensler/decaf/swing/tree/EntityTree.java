@@ -154,17 +154,6 @@ TreeSelectionListener, FocusListener {
     tree_.clearSelection();
   }
 
-//  public void showAll(Collection<H> bosToShow) {
-//    for (H item : bosToShow) {
-//      final Object[]  path  = model_.getPathAsObjectArray(item);
-//
-//      if (path.length > 1) {
-//        tree_.expandPath(new TreePath(path).getParentPath());
-//      }
-//    }
-//    tree_.clearSelection();
-//  }
-
   /** @return the JTable component wrapped by a JScrollpane
    * @see com.bensler.flob.gui.EntityComponent#getComponent()
    */
@@ -217,10 +206,6 @@ TreeSelectionListener, FocusListener {
       select(entity);
     }
   }
-
-//  public void updateData(H hierarchical) {
-//    model_.updateNode(hierarchical);
-//  }
 
   public void removeNode(H ref) {
     model_.removeNode(ref);
@@ -295,15 +280,6 @@ TreeSelectionListener, FocusListener {
       tree_.collapsePath(path);
     }
   }
-
-//  /** making node visible by expanding its parent path */
-//  public void makeVisible(H node) {
-//    final Object[] path = model_.getPathAsObjectArray(node);
-//
-//    if (path.length > 1) {
-//      tree_.expandPath(new TreePath(path).getParentPath());
-//    }
-//  }
 
 //  public TreeState<H> getState() {
 //    if (!model_.data_.isEmpty()) {
