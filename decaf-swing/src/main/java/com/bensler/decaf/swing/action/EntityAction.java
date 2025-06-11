@@ -19,21 +19,21 @@ import com.bensler.decaf.swing.EntityComponent;
  */
 public class EntityAction<E> {
 
-  public static <X> EntityActionFilter<X> allwaysOnFilter() {
+  public static <X> EntitiesActionFilter<X> allwaysOnFilter() {
     return (x -> ActionState.ENABLED);
   }
 
-  public static <X> EntityActionFilter<X> atLeastOneFilter(ActionState zeroElementsState) {
+  public static <X> EntitiesActionFilter<X> atLeastOneFilter(ActionState zeroElementsState) {
     return (x -> ((x.size() < 1) ? zeroElementsState : ActionState.ENABLED));
   }
 
   private final ActionAppearance appearance_;
-  private final EntityActionFilter<E> filter_;
+  private final EntitiesActionFilter<E> filter_;
   private final EntityActionListener<E> action_;
 
   /** @param filter <code>null</code> means always on */
   public EntityAction(
-    ActionAppearance appearance, EntityActionFilter<E> filter, EntityActionListener<E> action
+    ActionAppearance appearance, EntitiesActionFilter<E> filter, EntityActionListener<E> action
   ) {
     appearance_ = requireNonNull(appearance);
     filter_ = Optional.ofNullable(filter).orElseGet(EntityAction::allwaysOnFilter);

@@ -4,12 +4,12 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.List;
 
-public class MultiEntityFilter<E> implements EntityActionFilter<E>  {
+public class MultiEntityFilter<E> implements EntitiesActionFilter<E>  {
 
   private final ActionState defaultState_;
-  private final EntityActionFilter<E> filterDelegate_;
+  private final EntitiesActionFilter<E> filterDelegate_;
 
-  public MultiEntityFilter(ActionState defaultState, EntityActionFilter<E> filterDelegate) {
+  public MultiEntityFilter(ActionState defaultState, EntitiesActionFilter<E> filterDelegate) {
     defaultState_ = requireNonNull(defaultState);
     filterDelegate_ = requireNonNull(filterDelegate);
   }
