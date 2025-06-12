@@ -1,5 +1,8 @@
 package com.bensler.decaf.swing.dialog;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.swing.JComponent;
 import javax.swing.JDialog;
 
@@ -17,6 +20,28 @@ public interface ContentPanel<IN, OUT> {
 
   OUT getData();
 
+  class ValidationContext {
+
+    private final List<String> errorMessages_;
+
+    public ValidationContext() {
+      errorMessages_ = new ArrayList<>();
+    }
+
+    public void addErrorMsg(String errorMsg) {
+      errorMessages_.add(errorMsg);
+    }
+
+    public String popFirstErrorMsg() {
+      return errorMessages_.remove(0);
+    }
+
+    public boolean isValid() {
+      return errorMessages_.isEmpty();
+    }
+
+  }
+
   interface Context {
 
     JDialog getDialog();
@@ -25,7 +50,7 @@ public interface ContentPanel<IN, OUT> {
 
     void setPrefs(BulkPrefPersister prefs);
 
-    void setValid(boolean valid);
+    void setValid(ValidationContext validationCtx);
 
     void setOkButtonText(String okButtonText);
 

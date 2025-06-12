@@ -4,9 +4,7 @@ import static java.awt.Dialog.ModalityType.TOOLKIT_MODAL;
 import static java.awt.event.KeyEvent.VK_ESCAPE;
 import static javax.swing.JComponent.WHEN_IN_FOCUSED_WINDOW;
 
-import java.awt.Color;
 import java.awt.Component;
-import java.awt.Font;
 import java.awt.Rectangle;
 import java.awt.Window;
 import java.util.Optional;
@@ -15,12 +13,11 @@ import java.util.function.Consumer;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JDialog;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
 
-import com.bensler.decaf.swing.awt.IconComponent;
+import com.bensler.decaf.swing.dialog.ContentPanel.ValidationContext;
 import com.bensler.decaf.util.prefs.BulkPrefPersister;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
@@ -31,7 +28,7 @@ public class OkCancelDialog<IN, OUT> extends JDialog implements ContentPanel.Con
 
   private final JButton cancelButton_;
 
-  private final JPanel headerPanel_;
+  private final HeaderPanel headerPanel_;
 
   private final ContentPanel<IN, OUT> contentPanel_;
 
@@ -52,7 +49,7 @@ public class OkCancelDialog<IN, OUT> extends JDialog implements ContentPanel.Con
 
     compToFocus_ = Optional.empty();
     prefs_ = Optional.empty();
-    mainPanel.add((headerPanel_ = createHeaderPanel(contentPanel.getAppearance())), cc.xy(2, 2));
+    mainPanel.add((headerPanel_ = new HeaderPanel(contentPanel.getAppearance())).getComponent(), cc.xy(2, 2));
     mainPanel.add((contentPanel_ = contentPanel).getComponent(), cc.xy(2, 4));
     mainPanel.add(createButtonPanel(okButton_ = new JButton("Ok"), cancelButton_ = new JButton("Cancel")), cc.xy(2, 6));
     setContentPane(mainPanel);
@@ -71,22 +68,6 @@ public class OkCancelDialog<IN, OUT> extends JDialog implements ContentPanel.Con
     dialogBounds.x = (int)(parentBounds.getCenterX() - (dialogBounds.width / 2.0));
     dialogBounds.y = (int)(parentBounds.getCenterY() - (dialogBounds.height / 2.0));
     setBounds(dialogBounds);
-  }
-
-  private JPanel createHeaderPanel(DialogAppearance appearance) {
-    final JLabel titleLabel = new JLabel(appearance.getTitle());
-    final Font titleFont = titleLabel.getFont();
-    final CellConstraints cc = new CellConstraints();
-    final JPanel headerPanel = new JPanel(new FormLayout(
-      "3dlu, f:p:g, 3dlu, f:p, 3dlu",
-      "3dlu, f:p, 3dlu"
-    ));
-
-    titleLabel.setFont(titleFont.deriveFont(titleFont.getSize() * 1.3f).deriveFont(Font.BOLD));
-    headerPanel.add(titleLabel, cc.xy(2, 2, "l, c"));
-    headerPanel.add(new IconComponent(appearance.getIcon()), cc.xy(4, 2));
-    headerPanel.setBackground(Color.WHITE);
-    return headerPanel;
   }
 
   private JPanel createButtonPanel(JButton okButton, JButton cancelButton) {
@@ -114,7 +95,7 @@ public class OkCancelDialog<IN, OUT> extends JDialog implements ContentPanel.Con
   }
 
   public void show(IN input, Consumer<OUT> action) {
-    setValid(false);
+    setValid(new ValidationContext());
     outData_ = null;
     contentPanel_.setInData(input);
     SwingUtilities.invokeLater(() -> compToFocus_.ifPresent(JComponent::requestFocusInWindow));
@@ -142,8 +123,9 @@ public class OkCancelDialog<IN, OUT> extends JDialog implements ContentPanel.Con
   }
 
   @Override
-  public void setValid(boolean valid) {
-    okButton_.setEnabled(valid);
+  public void setValid(ValidationContext validationCtx) {
+    okButton_.setEnabled(validationCtx.isValid());
+    headerPanel_.setErrors(validationCtx);
   }
 
   @Override

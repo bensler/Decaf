@@ -48,9 +48,7 @@ public abstract class BasicContentPanel<IN, OUT> extends JPanel implements Conte
     validate(null);
   }
 
-  protected boolean validateContent(Object eventSource) {
-    return true;
-  }
+  protected void validateContent(ValidationContext ctx, Object eventSource) { /* noop */ }
 
   protected void addValidationSource(EntityComponent<?> entityComponent) {
     entityComponent.setSelectionListener((source, selection) -> validate(entityComponent));
@@ -76,7 +74,10 @@ public abstract class BasicContentPanel<IN, OUT> extends JPanel implements Conte
   }
 
   void validate(Object validationSource) {
-    ctx_.setValid(validateContent(validationSource));
+    final ValidationContext validationCtx = new ValidationContext();
+
+    validateContent(validationCtx, validationSource);
+    ctx_.setValid(validationCtx);
   }
 
 }

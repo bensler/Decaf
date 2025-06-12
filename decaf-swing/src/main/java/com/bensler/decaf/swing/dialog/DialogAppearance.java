@@ -9,11 +9,17 @@ public class DialogAppearance {
   private final Icon icon_;
   private final String windowTitle_;
   private final String title_;
+  private final boolean validate_;
 
   public DialogAppearance(Icon icon, String windowTitle, String title) {
+    this(icon, windowTitle, title, false);
+  }
+
+  public DialogAppearance(Icon icon, String windowTitle, String title, boolean validate) {
     icon_ = icon;
     windowTitle_= windowTitle;
     title_ = title;
+    validate_ = validate;
   }
 
   public Icon getIcon() {
@@ -26,6 +32,10 @@ public class DialogAppearance {
 
   public String getTitle() {
     return title_;
+  }
+
+  public boolean isValidating() {
+    return validate_;
   }
 
 }
