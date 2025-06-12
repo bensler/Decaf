@@ -40,7 +40,7 @@ public abstract class BasicContentPanel<IN, OUT> extends JPanel implements Conte
 
   protected void contextSet(Context ctx) { /* noop */ }
 
-  protected abstract void setData(IN inData);
+  protected void setData(IN inData) { /* noop */ }
 
   @Override
   public final void setInData(IN inData) {
