@@ -70,12 +70,6 @@ public class EntityTable<E> extends Object implements FocusListener, EntityCompo
     return view_;
   }
 
-  public void setCustomizeButtonAlwaysVisible(boolean flag) {
-    scrollPane_.setVerticalScrollBarPolicy(
-      flag ? JScrollPane.VERTICAL_SCROLLBAR_ALWAYS : JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED
-    );
-  }
-
   public void clear() {
     removeData(getValues());
   }
