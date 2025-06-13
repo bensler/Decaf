@@ -118,8 +118,10 @@ public class TableComponent<E> extends JTable {
 
   @Override
   public Dimension getMinimumSize() {
-    return new Dimension(
-      columnModel.getColumnCount() * 10 , super.getMinimumSize().height
+    return (isMinimumSizeSet() ? super.getMinimumSize()
+      : new Dimension(
+        columnModel.getColumnCount() * 10 , super.getMinimumSize().height
+      )
     );
   }
 
@@ -208,6 +210,11 @@ public class TableComponent<E> extends JTable {
         repaint(dirtyRect);
       }
     }
+  }
+
+  void sortByColumn(TablePropertyView<E, ?> column, Sorting sorting) {
+//    columnsCtrl_... TODO only if col is currently displayed
+    columnsCtrl_.getColumn(column.getId()).ifPresent(col -> tableModel_.sortByColumn(col, sorting));
   }
 
 }

@@ -6,7 +6,9 @@ import java.util.Comparator;
 import javax.swing.JTable;
 import javax.swing.table.TableCellRenderer;
 
+import com.bensler.decaf.swing.view.PropertyGetter;
 import com.bensler.decaf.swing.view.PropertyView;
+import com.bensler.decaf.swing.view.PropertyViewImpl;
 import com.bensler.decaf.util.Named;
 
 
@@ -16,6 +18,12 @@ public final class TablePropertyView<E, P> implements TableCellRenderer, Named, 
   private   final           String            name_;
 
   private   final           PropertyView<? super E, P>  propertyView_;
+
+  public TablePropertyView(
+    String id, String name, PropertyGetter<? super E, P> propertyGetter
+  ) {
+    this(id, name, new PropertyViewImpl<>(propertyGetter));
+  }
 
   public TablePropertyView(
     String id, String name, PropertyView<? super E, P> propertyView

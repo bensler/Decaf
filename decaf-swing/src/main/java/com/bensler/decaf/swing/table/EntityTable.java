@@ -74,66 +74,6 @@ public class EntityTable<E> extends Object implements FocusListener, EntityCompo
     removeData(getValues());
   }
 
-//  private void showDefaultVisibleColumns() {
-////    setProperties(view_.getDefaultVisibleViews().toArray(new String[0]));
-//    table_.setSizesFromHeaderLabel();
-//  }
-
-  /** Call setPreferences(Preferences) before! */
-  public void loadState() {
-    {
-//      final List<TablePropertyView> views = setProperties(PreferencesUtil.loadStrings(new PrefKey(prefs_, COL_KEY)));
-//      final String[] sizeStrings = PreferencesUtil.loadStrings(new PrefKey(prefs_, SIZE_KEY));
-//
-//      if ((sizeStrings.length > 0) && (sizeStrings.length == views.size())) {
-//        try {
-//          setSizes(sizeStrings);
-//          autoColumnResize_ = false;
-//        } catch (NumberFormatException nfe) {}
-//      }
-//      if (autoColumnResize_) {
-//        table_.setSizesFromHeaderLabel();
-//      }
-//      if (isSortable()) {
-//        table_.loadSortPrefs(PreferencesUtil.loadStrings(new PrefKey(prefs_, SORT_KEY)));
-//      }
-    }
-  }
-
-//  public void setSizesFromData() {
-//    if (autoColumnResize_) {
-//      table_.setSizesFromData();
-//    }
-//  }
-//
-//  private void setSizes(String[] sizeStrings) {
-//    final int[] sizes   = new int[sizeStrings.length];
-//
-//    for (int i = 0; i < sizeStrings.length; i++) {
-//      sizes[i] = Integer.parseInt(sizeStrings[i].trim());
-//      if (sizes[i] < 1) {
-//        throw new NumberFormatException("size must be positive");
-//      }
-//    }
-//    columnModel_.setPrefSizes(sizes);
-//  }
-//
-//  private List<TablePropertyView> setProperties(String[] propNames) {
-//    final List<TablePropertyView>   views = new ArrayList<TablePropertyView>(propNames.length);
-//
-//    for (int i = 0; i < propNames.length; i++) {
-//      final TablePropertyView view = view_.resolve(
-//        new StaticRef(TablePropertyView.class, propNames[i])
-//      );
-//
-//      if (view != null) {
-//        views.add(view);
-//      }
-//    }
-//    columnModel_.setProperties(views);
-//    return views;
-//  }
-
   public void setSelectionMode(SelectionMode mode) {
     table_.selectionCtrl_.setSelectionMode(mode);
   }
@@ -175,6 +115,14 @@ public class EntityTable<E> extends Object implements FocusListener, EntityCompo
       (vertikal ? spacing.width : 0),
       (horizontal ? spacing.height : 0)
     ));
+  }
+
+  public void sortByColumn(TablePropertyView<E, ?> column) {
+    sortByColumn(column, Sorting.ASCENDING);
+  }
+
+  public void sortByColumn(TablePropertyView<E, ?> column, Sorting sorting) {
+    table_.sortByColumn(column, sorting);
   }
 
   @Override
