@@ -5,7 +5,6 @@ import static java.awt.event.KeyEvent.VK_ESCAPE;
 import static javax.swing.JComponent.WHEN_IN_FOCUSED_WINDOW;
 
 import java.awt.Component;
-import java.awt.Rectangle;
 import java.awt.Window;
 import java.util.Optional;
 import java.util.function.Consumer;
@@ -17,6 +16,7 @@ import javax.swing.JPanel;
 import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
 
+import com.bensler.decaf.swing.awt.WindowHelper;
 import com.bensler.decaf.swing.dialog.ContentPanel.ValidationContext;
 import com.bensler.decaf.util.prefs.BulkPrefPersister;
 import com.jgoodies.forms.layout.CellConstraints;
@@ -54,20 +54,11 @@ public class OkCancelDialog<IN, OUT> extends JDialog implements ContentPanel.Con
     mainPanel.add(createButtonPanel(okButton_ = new JButton("Ok"), cancelButton_ = new JButton("Cancel")), cc.xy(2, 6));
     setContentPane(mainPanel);
     pack();
-    centerOnParent();
+    WindowHelper.centerOnParent(this);
     contentPanel_.setContext(this);
     rootPane.setDefaultButton(okButton_);
     rootPane.registerKeyboardAction(evt -> setVisible(false), KeyStroke.getKeyStroke(VK_ESCAPE, 0), WHEN_IN_FOCUSED_WINDOW);
     setMinimumSize(getPreferredSize());
-  }
-
-  private void centerOnParent() {
-    final Rectangle dialogBounds = getBounds();
-    final Rectangle parentBounds = getParent().getBounds();
-
-    dialogBounds.x = (int)(parentBounds.getCenterX() - (dialogBounds.width / 2.0));
-    dialogBounds.y = (int)(parentBounds.getCenterY() - (dialogBounds.height / 2.0));
-    setBounds(dialogBounds);
   }
 
   private JPanel createButtonPanel(JButton okButton, JButton cancelButton) {
