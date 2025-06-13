@@ -6,7 +6,7 @@ import java.util.List;
 import javax.swing.JComponent;
 import javax.swing.JDialog;
 
-import com.bensler.decaf.util.prefs.BulkPrefPersister;
+import com.bensler.decaf.util.prefs.PrefPersisterImpl;
 
 public interface ContentPanel<IN, OUT> {
 
@@ -48,7 +48,7 @@ public interface ContentPanel<IN, OUT> {
 
     void setComponentToFocus(JComponent comp);
 
-    void setPrefs(BulkPrefPersister prefs);
+    void setPrefs(PrefPersisterImpl prefs);
 
     void setValid(ValidationContext validationCtx);
 

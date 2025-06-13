@@ -18,7 +18,7 @@ import javax.swing.SwingUtilities;
 
 import com.bensler.decaf.swing.awt.WindowHelper;
 import com.bensler.decaf.swing.dialog.ContentPanel.ValidationContext;
-import com.bensler.decaf.util.prefs.BulkPrefPersister;
+import com.bensler.decaf.util.prefs.PrefPersisterImpl;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
@@ -36,7 +36,7 @@ public class OkCancelDialog<IN, OUT> extends JDialog implements ContentPanel.Con
 
   private Optional<OUT> outData_;
 
-  private Optional<BulkPrefPersister> prefs_;
+  private Optional<PrefPersisterImpl> prefs_;
 
   public OkCancelDialog(Component ownerComponent, ContentPanel<IN, OUT> contentPanel) {
     super((Window)SwingUtilities.getRoot(ownerComponent), contentPanel.getAppearance().getWindowTitle(), TOOLKIT_MODAL);
@@ -91,7 +91,7 @@ public class OkCancelDialog<IN, OUT> extends JDialog implements ContentPanel.Con
     contentPanel_.setInData(input);
     SwingUtilities.invokeLater(() -> compToFocus_.ifPresent(JComponent::requestFocusInWindow));
     setVisible(true);
-    prefs_.ifPresent(BulkPrefPersister::store);
+    prefs_.ifPresent(PrefPersisterImpl::store);
     if (outData_ != null) {
       outData_.ifPresent(action);
     }
@@ -125,7 +125,7 @@ public class OkCancelDialog<IN, OUT> extends JDialog implements ContentPanel.Con
   }
 
   @Override
-  public void setPrefs(BulkPrefPersister prefs) {
+  public void setPrefs(PrefPersisterImpl prefs) {
     prefs_ = Optional.ofNullable(prefs);
   }
 
