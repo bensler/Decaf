@@ -22,8 +22,8 @@ public class HeaderPanel {
     final CellConstraints cc = new CellConstraints();
 
     component_ = new JPanel(new FormLayout(
-      "3dlu, l:p:g, 3dlu, p,   3dlu",
-      "3dlu, c:p:g, 3dlu, c:p:g, 3dlu"
+      "3dlu, l:p:g, 10dlu, p,   3dlu",
+      "3dlu, c:p:g,  3dlu, c:p:g, 3dlu"
     ));
     titleLabel.setFont(titleFont.deriveFont(titleFont.getSize() * 1.2f).deriveFont(Font.BOLD));
     component_.setBackground(Color.WHITE);
