@@ -14,9 +14,9 @@ public class TablePrefPersister implements PrefPersister {
   private final TableComponent<?> table_;
 
   public TablePrefPersister(PrefKey prefKey, TableComponent<?> table) {
-     prefKeySort_ = new PrefKey(prefKey, SORT_KEY);
-     prefKeySizes_ = new PrefKey(prefKey, SIZE_KEY);
-     table_ = table;
+    prefKeySort_ = new PrefKey(prefKey, SORT_KEY);
+    prefKeySizes_ = new PrefKey(prefKey, SIZE_KEY);
+    table_ = table;
   }
 
   @Override
