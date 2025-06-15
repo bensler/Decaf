@@ -22,12 +22,13 @@ public class HeaderPanel {
     final CellConstraints cc = new CellConstraints();
 
     component_ = new JPanel(new FormLayout(
-      "3dlu, l:p:g, 10dlu, p,   3dlu",
+      "3dlu, l:p:g, 10dlu,   p,   3dlu",
       "3dlu, c:p:g,  3dlu, c:p:g, 3dlu"
     ));
     titleLabel.setFont(titleFont.deriveFont(titleFont.getSize() * 1.2f).deriveFont(Font.BOLD));
     component_.setBackground(Color.WHITE);
     errorLabel_ = new JLabel();
+    errorLabel_.setForeground(new Color(0xC00000));
 
     if (appearance.isValidating()) {
       component_.add(titleLabel,  cc.xy(2, 2));
@@ -46,7 +47,7 @@ public class HeaderPanel {
     if (validationCtx.isValid()) {
       errorLabel_.setText(" ");
     } else {
-      errorLabel_.setText("<html><font color=\"red\">%s</font></html>".formatted(validationCtx.popFirstErrorMsg()));
+      errorLabel_.setText(validationCtx.popFirstErrorMsg());
     }
   }
 
