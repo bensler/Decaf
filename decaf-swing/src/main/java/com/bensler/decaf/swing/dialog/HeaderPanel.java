@@ -28,7 +28,7 @@ public class HeaderPanel {
     titleLabel.setFont(titleFont.deriveFont(titleFont.getSize() * 1.2f).deriveFont(Font.BOLD));
     component_.setBackground(Color.WHITE);
     errorLabel_ = new JLabel();
-    errorLabel_.setForeground(new Color(0xC00000));
+    errorLabel_.setForeground(OkCancelDialog.RED_DARK);
 
     if (appearance.isValidating()) {
       component_.add(titleLabel,  cc.xy(2, 2));

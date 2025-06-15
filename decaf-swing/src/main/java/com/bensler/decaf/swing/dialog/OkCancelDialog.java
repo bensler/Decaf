@@ -4,6 +4,7 @@ import static java.awt.Dialog.ModalityType.TOOLKIT_MODAL;
 import static java.awt.event.KeyEvent.VK_ESCAPE;
 import static javax.swing.JComponent.WHEN_IN_FOCUSED_WINDOW;
 
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Window;
 import java.util.Optional;
@@ -23,6 +24,9 @@ import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
 public class OkCancelDialog<IN, OUT> extends JDialog implements ContentPanel.Context {
+
+  /** Used as font color in error messages. */
+  public static final Color RED_DARK = new Color(0xC00000);
 
   private final JButton okButton_;
 
