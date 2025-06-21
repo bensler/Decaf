@@ -1,5 +1,7 @@
 package com.bensler.decaf.swing.tree;
 
+import static java.util.Objects.requireNonNull;
+
 import java.awt.Color;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
@@ -44,7 +46,7 @@ TreeSelectionListener, FocusListener {
 
   protected final         TreeComponent<H>    tree_;
 
-  private                 EntitySelectionListener<H> selectionListener_;
+  private final Set<EntitySelectionListener<H>> selectionListeners_;
 
   private                 boolean             silentSelectionChange_;
 
@@ -72,7 +74,7 @@ TreeSelectionListener, FocusListener {
     selection_ = new ArrayList<>(1);
     silentSelectionChange_ = false;
     setSelectionMode(SelectionMode.SINGLE);
-    setSelectionListener(null);
+    selectionListeners_ = new HashSet<>();
     contextActions_ = new ActionGroup<>();
     tree_.addMouseListener(new ContextMenuMouseAdapter(this::triggerContextMenu));
   }
@@ -176,8 +178,9 @@ TreeSelectionListener, FocusListener {
 
   protected void fireSelectionChanged() {
     if (!silentSelectionChange_) {
-      final List<H> selection = Collections.unmodifiableList(selection_);
-      selectionListener_.selectionChanged(this, selection);
+      final List<H> selection = List.copyOf(selection_);
+
+      selectionListeners_.forEach(l -> l.selectionChanged(this, selection));
     }
   }
 
@@ -234,8 +237,8 @@ TreeSelectionListener, FocusListener {
   }
 
   @Override
-  public void setSelectionListener(EntitySelectionListener<H> listener) {
-    selectionListener_ = ((listener != null) ? listener : EntitySelectionListener.getNopInstance());
+  public void addSelectionListener(EntitySelectionListener<H> listener) {
+    selectionListeners_.add(requireNonNull(listener));
   }
 
   @Override

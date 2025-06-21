@@ -126,7 +126,7 @@ public class EntityTable<E> extends Object implements FocusListener, EntityCompo
   }
 
   @Override
-  public void setSelectionListener(EntitySelectionListener<E> listener) {
+  public void addSelectionListener(EntitySelectionListener<E> listener) {
     table_.selectionCtrl_.addSelectionListener(listener);
   }
 

@@ -9,7 +9,7 @@ public interface SelectionHolder<E> {
 
   public E getSingleSelection();
 
-  public void setSelectionListener(EntitySelectionListener<E> listener);
+  public void addSelectionListener(EntitySelectionListener<E> listener);
 
   public void clearSelection();
 

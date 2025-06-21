@@ -1,5 +1,7 @@
 package com.bensler.decaf.swing.list;
 
+import static java.util.Objects.requireNonNull;
+
 import java.awt.Color;
 import java.awt.Point;
 import java.awt.event.MouseEvent;
@@ -7,8 +9,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import javax.swing.DefaultListSelectionModel;
 import javax.swing.JComponent;
@@ -38,7 +42,7 @@ public class EntityList<E> extends Object implements ListSelectionListener, Enti
 
   private   final         PropertyView<? super E, ?>  view_;
 
-  private                 EntitySelectionListener<E> selectionListener_;
+  private final Set<EntitySelectionListener<E>> selectionListeners_;
 
   private   final         List<E>             selection_;
 
@@ -67,7 +71,7 @@ public class EntityList<E> extends Object implements ListSelectionListener, Enti
     list_.setCellRenderer(view_);
     scrollPane_ = new JScrollPane(list_);
     setVisibleRowCount(4, false);
-    setSelectionListener(null);
+    selectionListeners_ = new HashSet<>();
     silentSelectionChange_ = false;
     setVisibleRowCount();
     scrollPane_.getViewport().setBackground(list_.getBackground());
@@ -176,8 +180,8 @@ public class EntityList<E> extends Object implements ListSelectionListener, Enti
   }
 
   @Override
-  public void setSelectionListener(EntitySelectionListener<E> listener) {
-    selectionListener_ = ((listener != null) ? listener : EntitySelectionListener.getNopInstance());
+  public void addSelectionListener(EntitySelectionListener<E> listener) {
+    selectionListeners_.add(requireNonNull(listener));
   }
 
   @Override
@@ -228,7 +232,7 @@ public class EntityList<E> extends Object implements ListSelectionListener, Enti
 
   private void fireSelectionChanged() {
     if (!silentSelectionChange_) {
-      selectionListener_.selectionChanged(this, new ArrayList<>(selection_));
+      selectionListeners_.forEach(l -> l.selectionChanged(this, new ArrayList<>(selection_)));
     }
   }
 

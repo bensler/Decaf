@@ -10,9 +10,9 @@ public class ActionBinding<E> implements EntitySelectionListener<E> {
   private final EntityAction<E> action_;
   private List<E> selection_;
 
-  public ActionBinding (SelectionHolder<E> comp, EntityAction<E> action) {
+  public ActionBinding(SelectionHolder<E> comp, EntityAction<E> action) {
     selection_ = List.of();
-    comp.setSelectionListener(this);
+    comp.addSelectionListener(this);
     action_ = action;
   }
 
