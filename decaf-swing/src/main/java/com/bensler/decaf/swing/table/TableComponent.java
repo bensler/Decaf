@@ -8,6 +8,7 @@ import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.event.MouseEvent;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
@@ -197,19 +198,18 @@ public class TableComponent<E> extends JTable {
   }
 
   void repaintSelection() {
+    final Rectangle rightestCell = getCellRect(0, getColumnCount() - 1, false);
+    final int rightEdge = rightestCell.x + rightestCell.width;
     final int[] selectedRows = getSelectedRows();
 
-    if (selectedRows.length > 0) {
-      final Rectangle rightestCell = getCellRect(0, getColumnCount() - 1, false);
-      final int       rightEdge    = rightestCell.x + rightestCell.width;
+    Arrays.stream(selectedRows).forEach(row -> repaintRow(row, rightEdge));
+  }
 
-      for (int row : selectedRows) {
-        final Rectangle dirtyRect = getCellRect(row, 0, false);
+  private void repaintRow(int row, int width) {
+    final Rectangle dirtyRect = getCellRect(row, 0, false);
 
-        dirtyRect.width = rightEdge;
-        repaint(dirtyRect);
-      }
-    }
+    dirtyRect.width = width;
+    repaint(dirtyRect);
   }
 
   void sortByColumn(TablePropertyView<E, ?> column, Sorting sorting) {

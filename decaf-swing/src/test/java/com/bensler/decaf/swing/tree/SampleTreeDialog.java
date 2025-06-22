@@ -62,14 +62,14 @@ class SampleTreeDialog {
       createComparableGetter(this::getFolderSize)
     );
 
-    tree_ = new EntityTree<>(nameView);
+    tree_ = new EntityTree<>(nameView, Folder.class);
     tree_.setVisibleRowCount(15, 1);
-    list_ = new EntityList<>(nameView);
+    list_ = new EntityList<>(nameView, Folder.class);
     table_ = new EntityTable<>(new TableView<>(
       new TablePropertyView<>("parentName", "Parent", parentNameView),
       new TablePropertyView<>("name", "Name", nameView),
       new TablePropertyView<>("size", "Size", sizeView)
-    ));
+    ), Folder.class);
     table_.setSelectionMode(SelectionMode.MULTIPLE_INTERVAL);
     dialog_.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
     tree_.setData(data);

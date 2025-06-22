@@ -31,7 +31,8 @@ import com.jgoodies.forms.layout.FormLayout;
  */
 public class EntityTable<E> extends Object implements FocusListener, EntityComponent<E> {
 
-  private final Set<FocusListener<E>> focusListeners_;
+  private final Class<E> entityClass_;
+  private final Set<FocusListener> focusListeners_;
 
   protected final JScrollPane scrollPane_;
 
@@ -44,7 +45,8 @@ public class EntityTable<E> extends Object implements FocusListener, EntityCompo
   /** May be null! If not null it is shown when the table empty. */
   private Background emptyBackgroundComp_;
 
-  public EntityTable(TableView<E> view) {
+  public EntityTable(TableView<E> view, Class<E> anEntityClass) {
+    entityClass_ = anEntityClass;
     view_ = view;
     focusListeners_ = new HashSet<>();
     table_ = new TableComponent<>(this, model_ = new TableModel<>(view_), view_);
@@ -52,6 +54,11 @@ public class EntityTable<E> extends Object implements FocusListener, EntityCompo
     scrollPane_ = createScrollPane(table_);
     scrollPane_.getViewport().setBackground(table_.getBackground());
     setSelectionMode(SelectionMode.SINGLE);
+  }
+
+  @Override
+  public Class<E> getEntityClass() {
+    return entityClass_;
   }
 
   protected JScrollPane createScrollPane(TableComponent<E> tableComponent) {
@@ -268,10 +275,6 @@ public class EntityTable<E> extends Object implements FocusListener, EntityCompo
 
   @Override
   public void focusLost(FocusEvent e) {
-    focusLost();
-  }
-
-  public void focusLost() {
     table_.repaintSelection();
   }
 
@@ -282,11 +285,11 @@ public class EntityTable<E> extends Object implements FocusListener, EntityCompo
   }
 
   @Override
-  public void addFocusListener(FocusListener<E> listener) {
+  public void addFocusListener(FocusListener listener) {
     focusListeners_.add(requireNonNull(listener));
   }
 
-  public void removeFocusListener(FocusListener<E> listener) {
+  public void removeFocusListener(FocusListener listener) {
     focusListeners_.remove(listener);
   }
 

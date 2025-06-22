@@ -38,7 +38,8 @@ import com.bensler.decaf.util.tree.Hierarchy;
 public class EntityTree<H extends Hierarchical<H>> extends Object implements EntityComponent<H>,
 TreeSelectionListener, FocusListener {
 
-  private final Set<FocusListener<H>> focusListeners_;
+  private final Class<H> entityClass_;
+  private final Set<FocusListener> focusListeners_;
 
   private   final         JScrollPane         scrollPane_;
 
@@ -60,7 +61,8 @@ TreeSelectionListener, FocusListener {
 
   private                 ActionGroup<H>      contextActions_;
 
-  public EntityTree(PropertyView<H, ?> view) {
+  public EntityTree(PropertyView<H, ?> view, Class<H> anEntityClass) {
+    entityClass_ = anEntityClass;
     focusListeners_ = new HashSet<>();
     tree_ = createComponent(model_ = new EntityTreeModel<>(view), view);
     // update the selection BEFORE any listener is notified!
@@ -77,6 +79,11 @@ TreeSelectionListener, FocusListener {
     selectionListeners_ = new HashSet<>();
     contextActions_ = new ActionGroup<>();
     tree_.addMouseListener(new ContextMenuMouseAdapter(this::triggerContextMenu));
+  }
+
+  @Override
+  public Class<H> getEntityClass() {
+    return entityClass_;
   }
 
   protected TreeComponent<H> createComponent(EntityTreeModel<H> model, PropertyView<H, ?> view) {
@@ -327,11 +334,11 @@ TreeSelectionListener, FocusListener {
   }
 
   @Override
-  public void addFocusListener(FocusListener<H> listener) {
+  public void addFocusListener(FocusListener listener) {
     focusListeners_.add(requireNonNull(listener));
   }
 
-  public void removeFocusListener(FocusListener<H> listener) {
+  public void removeFocusListener(FocusListener listener) {
     focusListeners_.remove(listener);
   }
 

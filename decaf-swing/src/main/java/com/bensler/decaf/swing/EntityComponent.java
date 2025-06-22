@@ -12,18 +12,20 @@ import com.bensler.decaf.swing.selection.SelectionHolder;
  */
 public interface EntityComponent<E> extends SelectionHolder<E> {
 
+  public Class<E> getEntityClass();
+
   public JComponent getComponent();
 
   public JScrollPane getScrollPane();
 
   public Optional<E> contains(Object entity);
 
-  public void addFocusListener(FocusListener<E> listener);
+  public void addFocusListener(FocusListener listener);
 
   @FunctionalInterface
-  public interface FocusListener<E> {
+  public interface FocusListener {
 
-    public void focusGained(EntityComponent<E> component, List<E> selection);
+    public void focusGained(EntityComponent<?> component, List<?> selection);
 
   }
 

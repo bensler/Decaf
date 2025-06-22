@@ -34,7 +34,8 @@ import com.bensler.decaf.swing.view.PropertyView;
  */
 public class EntityList<E> extends Object implements ListSelectionListener, EntityComponent<E> {
 
-  private final Set<FocusListener<E>> focusListeners_;
+  private final Class<E> entityClass_;
+  private final Set<FocusListener> focusListeners_;
 
   private   final         JScrollPane         scrollPane_;
 
@@ -60,8 +61,8 @@ public class EntityList<E> extends Object implements ListSelectionListener, Enti
 
   private                 DefaultListSelectionModel defSelModel_;
 
-  public EntityList(PropertyView<? super E, ?> view) {
-    super();
+  public EntityList(PropertyView<? super E, ?> view, Class<E> anEntityClass) {
+    entityClass_ = anEntityClass;
     focusListeners_ = new HashSet<>();
     view_ = view;
     visibleRowCount_ = 10;
@@ -79,6 +80,11 @@ public class EntityList<E> extends Object implements ListSelectionListener, Enti
     scrollPane_.getViewport().setBackground(list_.getBackground());
     setSelectionMode(SelectionMode.SINGLE);
     list_.getSelectionModel().addListSelectionListener(this);
+  }
+
+  @Override
+  public Class<E> getEntityClass() {
+    return entityClass_;
   }
 
   /** @return the JList component wrapped by a JScrollpane
@@ -314,7 +320,7 @@ public class EntityList<E> extends Object implements ListSelectionListener, Enti
   }
 
   @Override
-  public void addFocusListener(FocusListener<E> listener) {
+  public void addFocusListener(FocusListener listener) {
     focusListeners_.add(requireNonNull(listener));
   }
 

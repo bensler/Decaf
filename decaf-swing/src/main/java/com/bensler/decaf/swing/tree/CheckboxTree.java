@@ -13,8 +13,8 @@ import com.bensler.decaf.util.tree.Hierarchical;
  */
 public class CheckboxTree<H extends Hierarchical<H>> extends EntityTree<H> {
 
-  public CheckboxTree(PropertyView<H, ?> view) {
-    super(view);
+  public CheckboxTree(PropertyView<H, ?> view, Class<H> entityClass) {
+    super(view, entityClass);
     setSelectionMode(MULTIPLE_INTERVAL);
   }
 

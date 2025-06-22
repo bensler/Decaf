@@ -45,8 +45,8 @@ class CheckboxTreeDialog {
       createGetterComparator(Folder::getName, COLLATOR_COMPARATOR)
     );
 
-    cbTree_ = new CheckboxTree<>(nameView);
-    resultTree_ = new EntityTree<>(nameView);
+    cbTree_ = new CheckboxTree<>(nameView, Folder.class);
+    resultTree_ = new EntityTree<>(nameView, Folder.class);
     cbTree_.addCheckedListener(checkedFolders -> {
       resultTree_.setData(new Hierarchy<>(checkedFolders));
       resultTree_.expandCollapseAll(true);
