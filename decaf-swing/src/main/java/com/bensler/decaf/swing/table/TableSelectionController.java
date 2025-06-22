@@ -59,7 +59,7 @@ class TableSelectionController<E> implements ListSelectionListener {
   }
 
   public List<E> getSelection() {
-    return  List.copyOf(selection_);
+    return List.copyOf(selection_);
   }
 
   TableSelectionController<E>.SelectionKeeper createSelectionKeeper() {

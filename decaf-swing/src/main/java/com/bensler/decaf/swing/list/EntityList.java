@@ -34,6 +34,8 @@ import com.bensler.decaf.swing.view.PropertyView;
  */
 public class EntityList<E> extends Object implements ListSelectionListener, EntityComponent<E> {
 
+  private final Set<FocusListener<E>> focusListeners_;
+
   private   final         JScrollPane         scrollPane_;
 
   protected final         JList<E>            list_;
@@ -60,7 +62,7 @@ public class EntityList<E> extends Object implements ListSelectionListener, Enti
 
   public EntityList(PropertyView<? super E, ?> view) {
     super();
-
+    focusListeners_ = new HashSet<>();
     view_ = view;
     visibleRowCount_ = 10;
     shrinkIfPossible_ = true;
@@ -232,7 +234,9 @@ public class EntityList<E> extends Object implements ListSelectionListener, Enti
 
   private void fireSelectionChanged() {
     if (!silentSelectionChange_) {
-      selectionListeners_.forEach(l -> l.selectionChanged(this, new ArrayList<>(selection_)));
+      final List<E> selection = List.copyOf(selection_);
+
+      selectionListeners_.forEach(l -> l.selectionChanged(this, selection));
     }
   }
 
@@ -307,6 +311,11 @@ public class EntityList<E> extends Object implements ListSelectionListener, Enti
     if (!isEmpty()) {
       list_.setSelectedIndex(0);
     }
+  }
+
+  @Override
+  public void addFocusListener(FocusListener<E> listener) {
+    focusListeners_.add(requireNonNull(listener));
   }
 
 }

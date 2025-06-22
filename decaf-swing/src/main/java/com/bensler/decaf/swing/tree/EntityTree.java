@@ -38,7 +38,7 @@ import com.bensler.decaf.util.tree.Hierarchy;
 public class EntityTree<H extends Hierarchical<H>> extends Object implements EntityComponent<H>,
 TreeSelectionListener, FocusListener {
 
-  private   final         Set<FocusListener>  focusListeners_;
+  private final Set<FocusListener<H>> focusListeners_;
 
   private   final         JScrollPane         scrollPane_;
 
@@ -200,7 +200,7 @@ TreeSelectionListener, FocusListener {
 
   @Override
   public List<H> getSelection() {
-    return new ArrayList<>(selection_);
+    return List.copyOf(selection_);
   }
 
   public void addData(H entity, boolean select) {
@@ -321,16 +321,17 @@ TreeSelectionListener, FocusListener {
   }
 
   private void fireFocusGained() {
-    for (FocusListener listener : focusListeners_) {
-      listener.focusGained(this);
-    }
+    final List<H> selection = getSelection();
+
+    focusListeners_.forEach(l -> l.focusGained(this, selection));
   }
 
-  public void addFocusListener(FocusListener listener) {
-    focusListeners_.add(listener);
+  @Override
+  public void addFocusListener(FocusListener<H> listener) {
+    focusListeners_.add(requireNonNull(listener));
   }
 
-  public void removeFocusListener(FocusListener listener) {
+  public void removeFocusListener(FocusListener<H> listener) {
     focusListeners_.remove(listener);
   }
 

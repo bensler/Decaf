@@ -1,5 +1,7 @@
 package com.bensler.decaf.swing.table;
 
+import static java.util.Objects.requireNonNull;
+
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
@@ -29,7 +31,7 @@ import com.jgoodies.forms.layout.FormLayout;
  */
 public class EntityTable<E> extends Object implements FocusListener, EntityComponent<E> {
 
-  private final Set<FocusListener> focusListeners_;
+  private final Set<FocusListener<E>> focusListeners_;
 
   protected final JScrollPane scrollPane_;
 
@@ -266,7 +268,7 @@ public class EntityTable<E> extends Object implements FocusListener, EntityCompo
 
   @Override
   public void focusLost(FocusEvent e) {
-    table_.repaintSelection();
+    focusLost();
   }
 
   public void focusLost() {
@@ -274,16 +276,17 @@ public class EntityTable<E> extends Object implements FocusListener, EntityCompo
   }
 
   private void fireFocusGained() {
-    for (FocusListener listener : focusListeners_) {
-      listener.focusGained(this);
-    }
+    final List<E> selection = getSelection();
+
+    focusListeners_.forEach(l -> l.focusGained(this, selection));
   }
 
-  public void addFocusListener(FocusListener listener) {
-    focusListeners_.add(listener);
+  @Override
+  public void addFocusListener(FocusListener<E> listener) {
+    focusListeners_.add(requireNonNull(listener));
   }
 
-  public void removeFocusListener(FocusListener listener) {
+  public void removeFocusListener(FocusListener<E> listener) {
     focusListeners_.remove(listener);
   }
 
