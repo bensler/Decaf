@@ -142,13 +142,6 @@ public class EntityList<E> extends Object implements ListSelectionListener, Enti
     return list_.getSelectedValuesList();
   }
 
-  @Override
-  public E getSingleSelection() {
-    final List<E> selection = getSelection();
-
-    return ((selection.isEmpty() ? null : selection.get(0)));
-  }
-
   public List<E> getValues() {
     return model_.getData();
   }

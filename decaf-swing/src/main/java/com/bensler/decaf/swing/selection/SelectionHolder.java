@@ -7,7 +7,11 @@ public interface SelectionHolder<E> {
 
   public List<E> getSelection();
 
-  public E getSingleSelection();
+  public default E getSingleSelection() {
+    final List<E> selection = getSelection();
+
+    return ((selection.isEmpty()) ? null : selection.get(0));
+  }
 
   public void addSelectionListener(EntitySelectionListener<E> listener);
 

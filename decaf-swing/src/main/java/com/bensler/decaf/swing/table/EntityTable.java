@@ -92,13 +92,6 @@ public class EntityTable<E> extends Object implements FocusListener, EntityCompo
     return table_.selectionCtrl_.getSelection();
   }
 
-  @Override
-  public E getSingleSelection() {
-    final List<E> selection = table_.getSelectedValues();
-
-    return ((selection.isEmpty() ? null : selection.get(0)));
-  }
-
   public List<E> getValues() {
     return model_.getValues();
   }

@@ -270,11 +270,6 @@ TreeSelectionListener, FocusListener {
     tree_.requestFocus();
   }
 
-  @Override
-  public H getSingleSelection() {
-    return ((selection_.isEmpty() ? null : selection_.get(0)));
-  }
-
   public Hierarchical<?> getRootNode() {
     return model_.getRoot();
   }
