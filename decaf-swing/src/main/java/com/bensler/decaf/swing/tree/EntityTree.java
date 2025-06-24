@@ -311,21 +311,19 @@ TreeSelectionListener, FocusListener {
 
   @Override
   public void focusGained(FocusEvent evt) {
-    fireFocusGained();
+    focusListeners_.forEach(l -> l.focusGained(this));
     repaint();
   }
 
   @Override
-  public void focusLost(FocusEvent evt) { }
-
-  public void focusLost() {
+  public void focusLost(FocusEvent evt) {
+    focusListeners_.forEach(l -> l.focusGained(this));
     repaint();
   }
 
-  private void fireFocusGained() {
-    final List<H> selection = getSelection();
-
-    focusListeners_.forEach(l -> l.focusGained(this, selection));
+  public void focusLost() {
+    focusListeners_.forEach(l -> l.focusLost(this));
+    repaint();
   }
 
   @Override

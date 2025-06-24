@@ -262,19 +262,14 @@ public class EntityTable<E> extends Object implements FocusListener, EntityCompo
 
   @Override
   public void focusGained(FocusEvent e) {
-    fireFocusGained();
+    focusListeners_.forEach(l -> l.focusGained(this));
     table_.repaintSelection();
   }
 
   @Override
   public void focusLost(FocusEvent e) {
+    focusListeners_.forEach(l -> l.focusLost(this));
     table_.repaintSelection();
-  }
-
-  private void fireFocusGained() {
-    final List<E> selection = getSelection();
-
-    focusListeners_.forEach(l -> l.focusGained(this, selection));
   }
 
   @Override

@@ -1,6 +1,5 @@
 package com.bensler.decaf.swing;
 
-import java.util.List;
 import java.util.Optional;
 
 import javax.swing.JComponent;
@@ -22,10 +21,11 @@ public interface EntityComponent<E> extends SelectionHolder<E> {
 
   public void addFocusListener(FocusListener listener);
 
-  @FunctionalInterface
   public interface FocusListener {
 
-    public void focusGained(EntityComponent<?> component, List<?> selection);
+    public void focusGained(EntityComponent<?> component);
+
+    public void focusLost(EntityComponent<?> component);
 
   }
 
