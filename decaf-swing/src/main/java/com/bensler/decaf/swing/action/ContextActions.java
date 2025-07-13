@@ -9,20 +9,20 @@ import javax.swing.JPopupMenu;
 import com.bensler.decaf.swing.EntityComponent;
 import com.bensler.decaf.util.Pair;
 
-public class ContextActions<E> {
+public class ContextActions {
 
-  private final EntityComponent<E> comp_;
+  private final EntityComponent<?> comp_;
 
-  private final List<E> selection_;
+  private final List<?> selection_;
 
-  private final List<Pair<EntityAction<E>, ActionState>> actions_;
+  private final List<Pair<Action, ActionState>> actions_;
 
-  private final Optional<EntityAction<E>> primaryAction_;
+  private final Optional<Action> primaryAction_;
 
-  public ContextActions(List<EntityAction<E>> actions, EntityComponent<E> comp) {
+  public ContextActions(List<Action> actions, EntityComponent<?> comp) {
     selection_ = (comp_ = comp).getSelection();
     actions_ = actions.stream()
-      .map(action -> new Pair<>(action, action.getActionState(selection_)))
+      .map(action -> new Pair<>(action, action.computeState(selection_)))
       .filter(pair -> (pair.getRight() != ActionState.HIDDEN))
       .toList();
     primaryAction_ = actions_.stream().filter(pair -> pair.getRight() == ActionState.ENABLED).map(Pair::getLeft).findFirst();

@@ -59,7 +59,7 @@ TreeSelectionListener, FocusListener {
 
   protected               boolean             editable_;
 
-  private                 ActionGroup<H>      contextActions_;
+  private                 ActionGroup      contextActions_;
 
   public EntityTree(PropertyView<H, ?> view, Class<H> anEntityClass) {
     entityClass_ = anEntityClass;
@@ -77,7 +77,7 @@ TreeSelectionListener, FocusListener {
     silentSelectionChange_ = false;
     setSelectionMode(SelectionMode.SINGLE);
     selectionListeners_ = new HashSet<>();
-    contextActions_ = new ActionGroup<>();
+    contextActions_ = new ActionGroup();
     tree_.addMouseListener(new ContextMenuMouseAdapter(this::triggerContextMenu));
   }
 
@@ -335,7 +335,7 @@ TreeSelectionListener, FocusListener {
     focusListeners_.remove(listener);
   }
 
-  public void setContextActions(ActionGroup<H> contextActions) {
+  public void setContextActions(ActionGroup contextActions) {
     contextActions_ = contextActions;
   }
 
