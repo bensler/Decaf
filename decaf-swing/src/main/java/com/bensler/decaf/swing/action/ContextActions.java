@@ -33,9 +33,9 @@ public class ContextActions {
   }
 
   public void showPopupMenu(MouseEvent evt) {
-    final Optional<JPopupMenu> popupMenu = actions_.isEmpty() ? Optional.empty() : Optional.of(addItems(new JPopupMenu()));
-
-    popupMenu.ifPresent(popup -> popup.show(comp_.getComponent(), evt.getX(), evt.getY()));
+    if (!actions_.isEmpty()) {
+      addItems(new JPopupMenu()).show(comp_.getComponent(), evt.getX(), evt.getY());
+    }
   }
 
   private JPopupMenu addItems(JPopupMenu menu) {

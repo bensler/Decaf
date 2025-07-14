@@ -55,7 +55,7 @@ public class ActionGroup implements Action {
   }
 
   @Override
-  public JComponent createPopupmenuItem(EntityComponent<?> comp, List<?> selection, boolean present) {
+  public JComponent createPopupmenuItem(EntityComponent<?> comp, List<?> selection, boolean primary) {
     // TODO Auto-generated method stub
     return null;
   }

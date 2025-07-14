@@ -13,7 +13,7 @@ public interface Action {
 
   JComponent createToolbarComponent(Supplier<EntityComponent<?>> sourceSupplier, Supplier<List<?>> entitiesSupplier);
 
-  JComponent createPopupmenuItem(EntityComponent<?> comp, List<?> selection, boolean present);
+  JComponent createPopupmenuItem(EntityComponent<?> comp, List<?> selection, boolean primary);
 
   void doAction(EntityComponent<?> comp, List<?> selection);
 
