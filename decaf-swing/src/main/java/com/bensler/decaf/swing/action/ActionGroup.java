@@ -58,8 +58,14 @@ public class ActionGroup implements Action {
   }
 
   @Override
-  public void createPopupmenuItem(Consumer<JMenuItem> parentAdder, EntityComponent<?> comp, List<?> selection, Action primaryAction) {
-    actions_.stream().forEach(action -> action.createPopupmenuItem(parentAdder, comp, selection, primaryAction));
+  public void createPopupmenuItem(
+    Consumer<JMenuItem> parentAdder, EntityComponent<?> comp, List<?> selection,
+    Map<Action, ActionState> states, Action primaryAction
+  ) {
+    if (states.get(this) != ActionState.HIDDEN) {
+      actions_.stream().filter(action -> states.get(action) != ActionState.HIDDEN)
+      .forEach(action -> action.createPopupmenuItem(parentAdder, comp, selection, states, primaryAction));
+    }
   }
 
   public void triggerPrimaryAction(EntityComponent<?> focusedComp, List<?> selection) {

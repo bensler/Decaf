@@ -17,7 +17,10 @@ public interface Action {
 
   JComponent createToolbarComponent(Supplier<EntityComponent<?>> sourceSupplier, Supplier<List<?>> entitiesSupplier);
 
-  void createPopupmenuItem(Consumer<JMenuItem> parentAdder, EntityComponent<?> comp, List<?> selection, Action primaryAction);
+  void createPopupmenuItem(
+    Consumer<JMenuItem> parentAdder, EntityComponent<?> comp, List<?> selection,
+    Map<Action, ActionState> states, Action primaryAction
+  );
 
   Optional<EntityAction<?>> isEntityAction();
 

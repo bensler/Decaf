@@ -27,7 +27,7 @@ public class FocusedComponentActionController implements FocusListener, EntitySe
     actions_ = actions;
     components_.forEach(comp -> comp.addFocusListener(this));
     components_.forEach(comp -> ((EntityComponent<Object>)comp).addSelectionListener(this));
-    reevaluate(List.of());
+    focusGained(components_.iterator().next());
   }
 
   public void triggerPrimaryAction() {
@@ -39,22 +39,11 @@ public class FocusedComponentActionController implements FocusListener, EntitySe
     final ActionState state = actions_.computeState(currentSelection_, states);
 
     if (state != ActionState.HIDDEN) {
-      addItems(new JPopupMenu(), states).show(focusedComp_.getComponent(), evt.getX(), evt.getY());
+      final JPopupMenu menu = new JPopupMenu();
+      // TODO primaryAction -----------------------------------------------------------vvvv
+      actions_.createPopupmenuItem(menu::add, focusedComp_, currentSelection_, states, null);
+      menu.show(focusedComp_.getComponent(), evt.getX(), evt.getY());
     }
-  }
-
-  private JPopupMenu addItems(JPopupMenu menu, Map<Action, ActionState> states) {
-    // TODO primaryAction ---------------------------------------------------vvvv
-    actions_.createPopupmenuItem(menu::add, focusedComp_, currentSelection_, null);
-//
-//    List<Pair<Action, ActionState>> actions;
-//
-//    actions.stream().forEach(pair -> {
-//      menu.add(pair.getRight().applyTo(pair.getLeft().createPopupmenuItem(
-//        focusedComp_, currentSelection_, false //primaryAction_.filter(entityAction -> entityAction.equals(pair.getLeft())).isPresent()
-//      )));
-//    });
-    return menu;
   }
 
   @Override
@@ -68,9 +57,6 @@ public class FocusedComponentActionController implements FocusListener, EntitySe
   public void focusGained(EntityComponent<?> component) {
     if (components_.contains(component)) {
       reevaluate((focusedComp_ = component).getSelection());
-    } else {
-      focusedComp_ = null;
-      reevaluate(List.of());
     }
   }
 

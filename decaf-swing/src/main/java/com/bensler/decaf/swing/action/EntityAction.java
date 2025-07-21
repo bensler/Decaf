@@ -69,7 +69,10 @@ public class EntityAction<E> implements Action {
   }
 
   @Override
-  public void createPopupmenuItem(Consumer<JMenuItem> parentAdder, EntityComponent<?> comp, List<?> selection, Action primaryAction) {
+  public void createPopupmenuItem(
+    Consumer<JMenuItem> parentAdder, EntityComponent<?> comp, List<?> selection,
+    Map<Action, ActionState> states, Action primaryAction
+  ) {
     final JMenuItem menuItem = appearance_.createPopupmenuItem(primaryAction == this);
 
     menuItem.addActionListener(evt -> doAction(comp, selection));
