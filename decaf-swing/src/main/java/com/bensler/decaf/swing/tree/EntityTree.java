@@ -23,8 +23,8 @@ import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 
 import com.bensler.decaf.swing.EntityComponent;
-import com.bensler.decaf.swing.action.ActionGroup;
 import com.bensler.decaf.swing.action.ContextMenuMouseAdapter;
+import com.bensler.decaf.swing.action.FocusedComponentActionController;
 import com.bensler.decaf.swing.selection.EntitySelectionListener;
 import com.bensler.decaf.swing.selection.SelectionMode;
 import com.bensler.decaf.swing.view.NoSelectionModel;
@@ -59,7 +59,7 @@ TreeSelectionListener, FocusListener {
 
   protected               boolean             editable_;
 
-  private                 ActionGroup      contextActions_;
+  private Optional<FocusedComponentActionController> contextActions_;
 
   public EntityTree(PropertyView<H, ?> view, Class<H> anEntityClass) {
     entityClass_ = anEntityClass;
@@ -77,7 +77,7 @@ TreeSelectionListener, FocusListener {
     silentSelectionChange_ = false;
     setSelectionMode(SelectionMode.SINGLE);
     selectionListeners_ = new HashSet<>();
-    contextActions_ = new ActionGroup();
+    contextActions_ = Optional.empty();
     tree_.addMouseListener(new ContextMenuMouseAdapter(this::triggerContextMenu));
   }
 
@@ -335,15 +335,17 @@ TreeSelectionListener, FocusListener {
     focusListeners_.remove(listener);
   }
 
-  public void setContextActions(ActionGroup contextActions) {
-    contextActions_ = contextActions;
+  public void setContextActions(FocusedComponentActionController contextActions) {
+    contextActions_ = Optional.of(contextActions);
   }
 
   void triggerContextMenu(MouseEvent evt) {
+
     final int selRow = tree_.getRowForLocation(evt.getX(), evt.getY());
 
     tree_.setSelectionRows((selRow > -1) ? new int[] {selRow} : new int[0]);
-    contextActions_.createContextMenu(this).showPopupMenu(evt);
+    contextActions_.ifPresent(ctrl -> ctrl.showPopupMenu(evt));
+//    contextActions_.createContextMenu(this).showPopupMenu(evt);
   }
 
 }

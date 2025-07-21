@@ -41,9 +41,10 @@ public class ContextActions {
 
   private JPopupMenu addItems(JPopupMenu menu) {
     actions_.stream().forEach(pair -> {
-      pair.getRight().applyTo(pair.getLeft().createPopupmenuItem(
-        menu::add, comp_, selection_, primaryAction_.orElse(null)
-      ));
+      // TODO ActionState.apply
+//      pair.getRight().applyTo(pair.getLeft().createPopupmenuItem(
+//        menu::add, comp_, selection_, primaryAction_.orElse(null)
+//      ));
     });
     return menu;
   }

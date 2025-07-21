@@ -35,10 +35,6 @@ public class ActionGroup implements Action {
     return actions_.isEmpty();
   }
 
-  public ContextActions createContextMenu(EntityComponent<?> comp) {
-    return new ContextActions(actions_, comp);
-  }
-
   @Override
   public JComponent createToolbarComponent(Supplier<EntityComponent<?>> sourceSupplier, Supplier<List<?>> entitiesSupplier) {
     final JPanel toolbar = new JPanel(new FormLayout(
@@ -62,10 +58,8 @@ public class ActionGroup implements Action {
   }
 
   @Override
-  public JComponent createPopupmenuItem(Consumer<JMenuItem> parentAdder, EntityComponent<?> comp, List<?> selection, Action primaryAction) {
+  public void createPopupmenuItem(Consumer<JMenuItem> parentAdder, EntityComponent<?> comp, List<?> selection, Action primaryAction) {
     actions_.stream().forEach(action -> action.createPopupmenuItem(parentAdder, comp, selection, primaryAction));
-    // TODO Auto-generated method stub
-    return null;
   }
 
   public void triggerPrimaryAction(EntityComponent<?> focusedComp, List<?> selection) {
