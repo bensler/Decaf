@@ -3,7 +3,9 @@ package com.bensler.decaf.swing.action;
 import static java.util.Objects.requireNonNull;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
@@ -44,6 +46,11 @@ public class EntityAction<E> implements Action {
     action_ = requireNonNull(action);
   }
 
+  @Override
+  public Optional<EntityAction<?>> isEntityAction() {
+    return Optional.of(this);
+  }
+
   public ActionState getActionState(List<?> entities) {
     return filter_.getActionState(filterTypeFittingEntities(entities));
   }
@@ -55,7 +62,6 @@ public class EntityAction<E> implements Action {
       .collect(Collectors.toList());
   }
 
-  @Override
   public void doAction(EntityComponent<?> comp, List<?> selection) {
     if (entityClass_.isAssignableFrom(comp.getEntityClass())) {
       action_.doAction((EntityComponent<E>)comp, filterTypeFittingEntities(selection));
@@ -63,11 +69,12 @@ public class EntityAction<E> implements Action {
   }
 
   @Override
-  public JMenuItem createPopupmenuItem(EntityComponent<?> comp, List<?> selection, boolean primary) {
-    final JMenuItem menuitem = appearance_.createPopupmenuItem(primary);
+  public JMenuItem createPopupmenuItem(Consumer<JMenuItem> parentAdder, EntityComponent<?> comp, List<?> selection, Action primaryAction) {
+    final JMenuItem menuItem = appearance_.createPopupmenuItem(primaryAction == this);
 
-    menuitem.addActionListener(evt -> doAction(comp, selection));
-    return menuitem;
+    menuItem.addActionListener(evt -> doAction(comp, selection));
+    parentAdder.accept(menuItem);
+    return menuItem;
   }
 
   @Override
@@ -79,11 +86,14 @@ public class EntityAction<E> implements Action {
   }
 
   @Override
-  public ActionState computeState(List<?> entities) {
-    return filter_.getActionState(entities.stream()
+  public ActionState computeState(List<?> entities, Map<Action, ActionState> target) {
+    final ActionState state = filter_.getActionState(entities.stream()
       .filter(entity -> entityClass_.isAssignableFrom(entity.getClass()))
       .map(entity -> entityClass_.cast(entity)).toList()
     );
+
+    target.put(this, state);
+    return state;
   }
 
 }

@@ -1,9 +1,13 @@
 package com.bensler.decaf.swing.action;
 
+import java.awt.event.MouseEvent;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.swing.JComponent;
+import javax.swing.JPopupMenu;
 
 import com.bensler.decaf.swing.EntityComponent;
 import com.bensler.decaf.swing.EntityComponent.FocusListener;
@@ -13,20 +17,44 @@ import com.bensler.decaf.swing.selection.SelectionHolder;
 public class FocusedComponentActionController implements FocusListener, EntitySelectionListener<Object> {
 
   private final List<EntityComponent<?>> components_;
-  private final Action actions_;
+  private final ActionGroup actions_;
 
   private List<?> currentSelection_;
   private EntityComponent<?> focusedComp_;
 
-  public FocusedComponentActionController(Action actions, Collection<EntityComponent<?>> components) {
+  public FocusedComponentActionController(ActionGroup actions, Collection<EntityComponent<?>> components) {
     components_ = List.copyOf(components);
     actions_ = actions;
     components_.forEach(comp -> comp.addFocusListener(this));
     components_.forEach(comp -> ((EntityComponent<Object>)comp).addSelectionListener(this));
-
-
-
     reevaluate(List.of());
+  }
+
+  public void triggerPrimaryAction() {
+    actions_.triggerPrimaryAction(focusedComp_, currentSelection_);
+  }
+
+  public void showPopupMenu(MouseEvent evt) {
+    final Map<Action, ActionState> states = new HashMap<>();
+    final ActionState state = actions_.computeState(currentSelection_, states);
+
+    if (state != ActionState.HIDDEN) {
+      addItems(new JPopupMenu(), states).show(focusedComp_.getComponent(), evt.getX(), evt.getY());
+    }
+  }
+
+  private JPopupMenu addItems(JPopupMenu menu, Map<Action, ActionState> states) {
+    // TODO primaryAction ---------------------------------------------------vvvv
+    actions_.createPopupmenuItem(menu::add, focusedComp_, currentSelection_, null);
+//
+//    List<Pair<Action, ActionState>> actions;
+//
+//    actions.stream().forEach(pair -> {
+//      menu.add(pair.getRight().applyTo(pair.getLeft().createPopupmenuItem(
+//        focusedComp_, currentSelection_, false //primaryAction_.filter(entityAction -> entityAction.equals(pair.getLeft())).isPresent()
+//      )));
+//    });
+    return menu;
   }
 
   @Override
@@ -53,7 +81,7 @@ public class FocusedComponentActionController implements FocusListener, EntitySe
     if (!newSelection.equals(currentSelection_)) {
       currentSelection_ = List.copyOf(newSelection);
 
-      ActionState state = actions_.computeState(currentSelection_);
+      ActionState state = actions_.computeState(currentSelection_, new HashMap<>());
       System.out.println("##### %s".formatted(currentSelection_));
 // TODO
     }
