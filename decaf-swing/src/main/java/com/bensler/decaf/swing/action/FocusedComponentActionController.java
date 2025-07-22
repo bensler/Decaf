@@ -2,9 +2,7 @@ package com.bensler.decaf.swing.action;
 
 import java.awt.event.MouseEvent;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.swing.JComponent;
 import javax.swing.JPopupMenu;
@@ -31,17 +29,20 @@ public class FocusedComponentActionController implements FocusListener, EntitySe
   }
 
   public void triggerPrimaryAction() {
-    actions_.triggerPrimaryAction(focusedComp_, currentSelection_);
+    final ActionStateMap states = new ActionStateMap();
+
+    actions_.computeState(currentSelection_, states);
+    states.getPrimaryAction().ifPresent(action -> action.doAction(focusedComp_, currentSelection_));
   }
 
   public void showPopupMenu(MouseEvent evt) {
-    final Map<Action, ActionState> states = new HashMap<>();
-    final ActionState state = actions_.computeState(currentSelection_, states);
+    final ActionStateMap states = new ActionStateMap();
 
-    if (state != ActionState.HIDDEN) {
+    actions_.computeState(currentSelection_, states);
+
+    if (states.getState(actions_) != ActionState.HIDDEN) {
       final JPopupMenu menu = new JPopupMenu();
-      // TODO primaryAction -----------------------------------------------------------vvvv
-      actions_.createPopupmenuItem(menu::add, focusedComp_, currentSelection_, states, null);
+      actions_.createPopupmenuItem(menu::add, focusedComp_, currentSelection_, states);
       menu.show(focusedComp_.getComponent(), evt.getX(), evt.getY());
     }
   }
@@ -67,7 +68,6 @@ public class FocusedComponentActionController implements FocusListener, EntitySe
     if (!newSelection.equals(currentSelection_)) {
       currentSelection_ = List.copyOf(newSelection);
 
-      ActionState state = actions_.computeState(currentSelection_, new HashMap<>());
       System.out.println("##### %s".formatted(currentSelection_));
 // TODO
     }

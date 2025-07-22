@@ -1,7 +1,6 @@
 package com.bensler.decaf.swing.action;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -13,13 +12,12 @@ import com.bensler.decaf.swing.EntityComponent;
 
 public interface Action {
 
-  ActionState computeState(List<?> currentSelection, Map<Action, ActionState> target);
+  void computeState(List<?> currentSelection, ActionStateMap target);
 
   JComponent createToolbarComponent(Supplier<EntityComponent<?>> sourceSupplier, Supplier<List<?>> entitiesSupplier);
 
   void createPopupmenuItem(
-    Consumer<JMenuItem> parentAdder, EntityComponent<?> comp, List<?> selection,
-    Map<Action, ActionState> states, Action primaryAction
+    Consumer<JMenuItem> parentAdder, EntityComponent<?> comp, List<?> selection, ActionStateMap states
   );
 
   Optional<EntityAction<?>> isEntityAction();

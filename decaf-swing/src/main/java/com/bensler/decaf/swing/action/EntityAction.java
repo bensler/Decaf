@@ -3,7 +3,6 @@ package com.bensler.decaf.swing.action;
 import static java.util.Objects.requireNonNull;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -70,10 +69,9 @@ public class EntityAction<E> implements Action {
 
   @Override
   public void createPopupmenuItem(
-    Consumer<JMenuItem> parentAdder, EntityComponent<?> comp, List<?> selection,
-    Map<Action, ActionState> states, Action primaryAction
+    Consumer<JMenuItem> parentAdder, EntityComponent<?> comp, List<?> selection, ActionStateMap states
   ) {
-    final JMenuItem menuItem = appearance_.createPopupmenuItem(primaryAction == this);
+    final JMenuItem menuItem = appearance_.createPopupmenuItem(states.isPrimaryAction(this));
 
     menuItem.addActionListener(evt -> doAction(comp, selection));
     parentAdder.accept(menuItem);
@@ -88,14 +86,11 @@ public class EntityAction<E> implements Action {
   }
 
   @Override
-  public ActionState computeState(List<?> entities, Map<Action, ActionState> target) {
-    final ActionState state = filter_.getActionState(entities.stream()
+  public void computeState(List<?> entities, ActionStateMap target){
+    target.put(this, filter_.getActionState(entities.stream()
       .filter(entity -> entityClass_.isAssignableFrom(entity.getClass()))
       .map(entity -> entityClass_.cast(entity)).toList()
-    );
-
-    target.put(this, state);
-    return state;
+    ));
   }
 
 }

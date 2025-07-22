@@ -1,10 +1,9 @@
 package com.bensler.decaf.swing.action;
 
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -15,11 +14,12 @@ import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 
 import com.bensler.decaf.swing.EntityComponent;
-import com.bensler.decaf.util.Pair;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
 public class ActionGroup implements Action {
+
+  public static final Set<ActionState> VISIBLE_STATES = Set.of(ActionState.ENABLED, ActionState.DISABLED);
 
   private final List<Action> actions_;
 
@@ -49,32 +49,21 @@ public class ActionGroup implements Action {
   }
 
   @Override
-  public ActionState computeState(List<?> entities, Map<Action, ActionState> target) {
-    final List<ActionState> subStates = actions_.stream()
-      .map(action -> action.computeState(entities, target)).distinct().toList();
-
-    return (subStates.contains(ActionState.ENABLED) || subStates.contains(ActionState.DISABLED))
-      ? ActionState.ENABLED : ActionState.HIDDEN;
+  public void computeState(List<?> entities, ActionStateMap target) {
+    actions_.forEach(action -> action.computeState(entities, target));
+    target.put(this, actions_.stream().map(target::getState).filter(VISIBLE_STATES::contains).findFirst().isPresent()
+      ? ActionState.ENABLED : ActionState.HIDDEN
+    );
   }
 
   @Override
   public void createPopupmenuItem(
-    Consumer<JMenuItem> parentAdder, EntityComponent<?> comp, List<?> selection,
-    Map<Action, ActionState> states, Action primaryAction
+    Consumer<JMenuItem> parentAdder, EntityComponent<?> comp, List<?> selection, ActionStateMap states
   ) {
-    if (states.get(this) != ActionState.HIDDEN) {
-      actions_.stream().filter(action -> states.get(action) != ActionState.HIDDEN)
-      .forEach(action -> action.createPopupmenuItem(parentAdder, comp, selection, states, primaryAction));
+    if (states.getState(this) != ActionState.HIDDEN) {
+      actions_.stream().filter(action -> states.getState(action) != ActionState.HIDDEN)
+      .forEach(action -> action.createPopupmenuItem(parentAdder, comp, selection, states));
     }
-  }
-
-  public void triggerPrimaryAction(EntityComponent<?> focusedComp, List<?> selection) {
-    final Map<Action, ActionState> states = new HashMap<>();
-
-    actions_.stream().map(action -> new Pair<>(action, action.computeState(selection, states)))
-    .filter(pair -> pair.getLeft().isEntityAction().isPresent() && (pair.getRight() == ActionState.ENABLED))
-    .map(   pair -> pair.getLeft().isEntityAction().get())
-    .findFirst().ifPresent(action -> action.doAction(focusedComp, selection));
   }
 
   @Override
