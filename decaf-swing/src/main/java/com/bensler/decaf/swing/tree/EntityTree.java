@@ -24,6 +24,7 @@ import javax.swing.tree.TreeSelectionModel;
 
 import com.bensler.decaf.swing.EntityComponent;
 import com.bensler.decaf.swing.action.ContextMenuMouseAdapter;
+import com.bensler.decaf.swing.action.DoubleClickMouseAdapter;
 import com.bensler.decaf.swing.action.FocusedComponentActionController;
 import com.bensler.decaf.swing.selection.EntitySelectionListener;
 import com.bensler.decaf.swing.selection.SelectionMode;
@@ -79,6 +80,23 @@ TreeSelectionListener, FocusListener {
     selectionListeners_ = new HashSet<>();
     contextActions_ = Optional.empty();
     tree_.addMouseListener(new ContextMenuMouseAdapter(this::triggerContextMenu));
+    tree_.setToggleClickCount(0);
+    tree_.addMouseListener(new DoubleClickMouseAdapter(evt -> triggerPrimaryContextAction()));
+  }
+
+  public void setContextActions(FocusedComponentActionController contextActions) {
+    contextActions_ = Optional.of(contextActions);
+  }
+
+  void triggerPrimaryContextAction() {
+    contextActions_.ifPresent(ctrl -> ctrl.triggerPrimaryAction());
+  }
+
+  void triggerContextMenu(MouseEvent evt) {
+    final int selRow = tree_.getRowForLocation(evt.getX(), evt.getY());
+
+    tree_.setSelectionRows((selRow > -1) ? new int[] {selRow} : new int[0]);
+    contextActions_.ifPresent(ctrl -> ctrl.showPopupMenu(evt));
   }
 
   @Override
@@ -333,17 +351,6 @@ TreeSelectionListener, FocusListener {
 
   public void removeFocusListener(FocusListener listener) {
     focusListeners_.remove(listener);
-  }
-
-  public void setContextActions(FocusedComponentActionController contextActions) {
-    contextActions_ = Optional.of(contextActions);
-  }
-
-  void triggerContextMenu(MouseEvent evt) {
-    final int selRow = tree_.getRowForLocation(evt.getX(), evt.getY());
-
-    tree_.setSelectionRows((selRow > -1) ? new int[] {selRow} : new int[0]);
-    contextActions_.ifPresent(ctrl -> ctrl.showPopupMenu(evt));
   }
 
 }
