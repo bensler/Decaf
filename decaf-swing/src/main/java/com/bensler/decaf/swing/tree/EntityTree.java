@@ -287,17 +287,6 @@ TreeSelectionListener, FocusListener {
     }
   }
 
-//  public TreeState<H> getState() {
-//    if (!model_.data_.isEmpty()) {
-//      return new TreeState<>(
-//        tree_.getExpandedDescendants(new TreePath(model_.getRoot())),
-//        getSingleSelection()
-//      );
-//    } else {
-//      return null;
-//    }
-//  }
-
   /** repaints the whole tree. Should be called when the SingleView
    * has modified its behavior
    */

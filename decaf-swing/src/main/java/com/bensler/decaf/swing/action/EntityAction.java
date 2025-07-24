@@ -73,6 +73,7 @@ public class EntityAction<E> implements Action {
   ) {
     final JMenuItem menuItem = appearance_.createPopupmenuItem(states.isPrimaryAction(this));
 
+    states.getState(this).applyTo(menuItem);
     menuItem.addActionListener(evt -> doAction(comp, selection));
     parentAdder.accept(menuItem);
   }
