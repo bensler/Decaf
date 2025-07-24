@@ -61,9 +61,6 @@ public class FocusedComponentActionController implements FocusListener, EntitySe
     }
   }
 
-  @Override
-  public void focusLost(EntityComponent<?> component) { }
-
   void reevaluate(List<?> newSelection) {
     if (!newSelection.equals(currentSelection_)) {
       currentSelection_ = List.copyOf(newSelection);

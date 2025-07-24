@@ -339,10 +339,7 @@ TreeSelectionListener, FocusListener {
     repaint();
   }
 
-  public void focusLost() {
-    focusListeners_.forEach(l -> l.focusLost(this));
-    repaint();
-  }
+  public void focusLost() { }
 
   @Override
   public void addFocusListener(FocusListener listener) {

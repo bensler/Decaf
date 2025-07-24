@@ -25,8 +25,6 @@ public interface EntityComponent<E> extends SelectionHolder<E> {
 
     public void focusGained(EntityComponent<?> component);
 
-    public void focusLost(EntityComponent<?> component);
-
   }
 
 }
