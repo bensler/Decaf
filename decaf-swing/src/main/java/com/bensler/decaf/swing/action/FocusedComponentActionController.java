@@ -3,6 +3,7 @@ package com.bensler.decaf.swing.action;
 import java.awt.event.MouseEvent;
 import java.util.Collection;
 import java.util.List;
+import java.util.function.Consumer;
 
 import javax.swing.JComponent;
 import javax.swing.JPopupMenu;
@@ -72,6 +73,19 @@ public class FocusedComponentActionController implements FocusListener, EntitySe
 
   public JComponent createToolbar() {
     return actions_.createToolbarComponent(() -> focusedComp_, () -> currentSelection_);
+  }
+
+  public <E extends EntityComponent<?>> void attachTo(E target, Consumer<E> initializer, Consumer<MouseEvent> onCtxMenuOpen) {
+    final JComponent comp = target.getComponent();
+
+    comp.addMouseListener(new ContextMenuMouseAdapter(evt -> triggerContextMenu(evt, onCtxMenuOpen)));
+    comp.addMouseListener(new DoubleClickMouseAdapter(evt -> triggerPrimaryAction()));
+    initializer.accept(target);
+  }
+
+  void triggerContextMenu(MouseEvent evt, Consumer<MouseEvent> onCtxMenuOpen) {
+    onCtxMenuOpen.accept(evt);
+    showPopupMenu(evt);
   }
 
 }
