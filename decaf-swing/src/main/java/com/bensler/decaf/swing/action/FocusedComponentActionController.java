@@ -88,12 +88,10 @@ public class FocusedComponentActionController implements FocusListener, EntitySe
 
   public JComponent createToolbar() {
     final ToolbarComponentCollector toolbarComponents = new ToolbarComponentCollector();
+    final JPanel toolbar;
 
     actions_.createToolbarComponent(toolbarComponents, () -> focusedComp_, () -> currentSelection_);
-
-    final JPanel toolbar = new JPanel(new FormLayout(toolbarComponents.getColumnSpec(), "f:p"));
-    toolbarComponents.addTo(toolbar);
-
+    toolbarComponents.addTo(toolbar = new JPanel(new FormLayout(toolbarComponents.getColumnSpec(), "f:p")));
     reevaluate();
     return toolbar;
   }
@@ -122,7 +120,7 @@ public class FocusedComponentActionController implements FocusListener, EntitySe
     }
 
     public String getColumnSpec() {
-//    // "[f:p, 3dlu,f:p]*,0dlu:g"
+      // "[f:p, 3dlu,f:p]*,0dlu:g"
       return IntStream.range(0, components.size()).mapToObj(i -> "f:p").collect(Collectors.joining(",3dlu,", "", ",0dlu:g"));
     }
   }
