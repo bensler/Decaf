@@ -6,16 +6,12 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
-import javax.swing.JComponent;
 import javax.swing.JMenuItem;
-import javax.swing.JPanel;
 
 import com.bensler.decaf.swing.EntityComponent;
-import com.jgoodies.forms.layout.CellConstraints;
-import com.jgoodies.forms.layout.FormLayout;
+import com.bensler.decaf.swing.action.FocusedComponentActionController.ToolbarComponentCollector;
+import com.bensler.decaf.util.Pair;
 
 public class ActionGroup implements Action {
 
@@ -36,16 +32,9 @@ public class ActionGroup implements Action {
   }
 
   @Override
-  public JComponent createToolbarComponent(Supplier<EntityComponent<?>> sourceSupplier, Supplier<List<?>> entitiesSupplier) {
-    final JPanel toolbar = new JPanel(new FormLayout(
-      // "[f:p, 3dlu,f:p]*,0dlu:g"
-      IntStream.range(0, actions_.size()).mapToObj(i -> "f:p").collect(Collectors.joining(",3dlu,", "", ",0dlu:g")),
-      "f:p"
-    ));
-    IntStream.range(0, actions_.size()).forEach(i -> toolbar.add(
-      actions_.get(i).createToolbarComponent(sourceSupplier, entitiesSupplier), new CellConstraints((2 * i) + 1, 1)
-    ));
-    return toolbar;
+  public void createToolbarComponent(ToolbarComponentCollector collector, Supplier<EntityComponent<?>> sourceSupplier, Supplier<List<?>> entitiesSupplier) {
+    collector.add(new Pair<>(null, this));
+    actions_.forEach(action -> action.createToolbarComponent(collector, sourceSupplier, entitiesSupplier));
   }
 
   @Override

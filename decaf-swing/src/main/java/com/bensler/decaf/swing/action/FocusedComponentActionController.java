@@ -1,22 +1,30 @@
 package com.bensler.decaf.swing.action;
 
 import java.awt.event.MouseEvent;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import javax.swing.JComponent;
+import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 
 import com.bensler.decaf.swing.EntityComponent;
 import com.bensler.decaf.swing.EntityComponent.FocusListener;
 import com.bensler.decaf.swing.selection.EntitySelectionListener;
 import com.bensler.decaf.swing.selection.SelectionHolder;
+import com.bensler.decaf.util.Pair;
+import com.jgoodies.forms.layout.CellConstraints;
+import com.jgoodies.forms.layout.FormLayout;
 
 public class FocusedComponentActionController implements FocusListener, EntitySelectionListener<Object> {
 
   private final List<EntityComponent<?>> components_;
   private final ActionGroup actions_;
+  private final List<Pair<JComponent, Action>> toolbarComponents_;
 
   private List<?> currentSelection_;
   private EntityComponent<?> focusedComp_;
@@ -24,28 +32,31 @@ public class FocusedComponentActionController implements FocusListener, EntitySe
   public FocusedComponentActionController(ActionGroup actions, Collection<EntityComponent<?>> components) {
     components_ = List.copyOf(components);
     actions_ = actions;
+    toolbarComponents_ = new ArrayList<>();
     components_.forEach(comp -> comp.addFocusListener(this));
     components_.forEach(comp -> ((EntityComponent<Object>)comp).addSelectionListener(this));
     focusGained(components_.iterator().next());
   }
 
   public void triggerPrimaryAction() {
-    final ActionStateMap states = new ActionStateMap();
-
-    actions_.computeState(currentSelection_, states);
-    states.getPrimaryAction().ifPresent(action -> action.doAction(focusedComp_, currentSelection_));
+    computeStates().getPrimaryAction().ifPresent(action -> action.doAction(focusedComp_, currentSelection_));
   }
 
   public void showPopupMenu(MouseEvent evt) {
-    final ActionStateMap states = new ActionStateMap();
-
-    actions_.computeState(currentSelection_, states);
+    final ActionStateMap states = computeStates();
 
     if (states.getState(actions_) != ActionState.HIDDEN) {
       final JPopupMenu menu = new JPopupMenu();
       actions_.createPopupmenuItem(menu::add, focusedComp_, currentSelection_, states);
       menu.show(focusedComp_.getComponent(), evt.getX(), evt.getY());
     }
+  }
+
+  private ActionStateMap computeStates() {
+    final ActionStateMap states = new ActionStateMap();
+
+    actions_.computeState(currentSelection_, states);
+    return states;
   }
 
   @Override
@@ -62,17 +73,58 @@ public class FocusedComponentActionController implements FocusListener, EntitySe
     }
   }
 
-  void reevaluate(List<?> newSelection) {
+  private void reevaluate(List<?> newSelection) {
     if (!newSelection.equals(currentSelection_)) {
       currentSelection_ = List.copyOf(newSelection);
-
-      System.out.println("##### %s".formatted(currentSelection_));
-// TODO
+      reevaluate();
     }
   }
 
+  private void reevaluate() {
+    final ActionStateMap states = computeStates();
+
+    toolbarComponents_.forEach(pair -> states.getState(pair.getRight()).applyTo(pair.getLeft()));
+  }
+
   public JComponent createToolbar() {
-    return actions_.createToolbarComponent(() -> focusedComp_, () -> currentSelection_);
+    final ToolbarComponentCollector toolbarComponents = new ToolbarComponentCollector();
+
+    actions_.createToolbarComponent(toolbarComponents, () -> focusedComp_, () -> currentSelection_);
+
+    final JPanel toolbar = new JPanel(new FormLayout(toolbarComponents.getColumnSpec(), "f:p"));
+    toolbarComponents.addTo(toolbar);
+
+    reevaluate();
+    return toolbar;
+  }
+
+  class ToolbarComponentCollector {
+    private final List<Pair<JComponent, Action>> components = new ArrayList<>();
+
+    public void add(Pair<JComponent, Action> pair) {
+      final JComponent component = pair.getLeft();
+
+      // TODO Auto-generated method stub
+      components.add(pair);
+    }
+
+    public void addTo(JPanel toolbar) {
+      IntStream.range(0, components.size()).forEach(i -> addComponent(toolbar, components.get(i), i));
+    }
+
+    private void addComponent(JPanel toolbar, Pair<JComponent, Action> pair, int index) {
+      final JComponent component = pair.getLeft();
+
+      if (component != null) {
+        toolbarComponents_.add(pair);
+        toolbar.add(component, new CellConstraints((2 * index) + 1, 1));
+      }
+    }
+
+    public String getColumnSpec() {
+//    // "[f:p, 3dlu,f:p]*,0dlu:g"
+      return IntStream.range(0, components.size()).mapToObj(i -> "f:p").collect(Collectors.joining(",3dlu,", "", ",0dlu:g"));
+    }
   }
 
   public <E extends EntityComponent<?>> void attachTo(E target, Consumer<E> initializer, Consumer<MouseEvent> onCtxMenuOpen) {

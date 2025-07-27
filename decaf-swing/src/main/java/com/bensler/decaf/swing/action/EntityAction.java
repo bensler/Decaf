@@ -12,6 +12,8 @@ import javax.swing.JButton;
 import javax.swing.JMenuItem;
 
 import com.bensler.decaf.swing.EntityComponent;
+import com.bensler.decaf.swing.action.FocusedComponentActionController.ToolbarComponentCollector;
+import com.bensler.decaf.util.Pair;
 
 /** A bundle of
  * <ul>
@@ -79,11 +81,11 @@ public class EntityAction<E> implements Action {
   }
 
   @Override
-  public JButton createToolbarComponent(Supplier<EntityComponent<?>> sourceSupplier, Supplier<List<?>> entitiesSupplier) {
+  public void createToolbarComponent(ToolbarComponentCollector collector, Supplier<EntityComponent<?>> sourceSupplier, Supplier<List<?>> entitiesSupplier) {
     final JButton button = appearance_.createToolbarButton();
 
     button.addActionListener(evt -> action_.doAction((EntityComponent<E>)sourceSupplier.get(), (List<E>)entitiesSupplier.get()));
-    return button;
+    collector.add(new Pair<>(button, this));
   }
 
   @Override

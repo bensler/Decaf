@@ -5,16 +5,16 @@ import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-import javax.swing.JComponent;
 import javax.swing.JMenuItem;
 
 import com.bensler.decaf.swing.EntityComponent;
+import com.bensler.decaf.swing.action.FocusedComponentActionController.ToolbarComponentCollector;
 
 public interface Action {
 
   void computeState(List<?> currentSelection, ActionStateMap target);
 
-  JComponent createToolbarComponent(Supplier<EntityComponent<?>> sourceSupplier, Supplier<List<?>> entitiesSupplier);
+  void createToolbarComponent(ToolbarComponentCollector collector, Supplier<EntityComponent<?>> sourceSupplier, Supplier<List<?>> entitiesSupplier);
 
   void createPopupmenuItem(
     Consumer<JMenuItem> parentAdder, EntityComponent<?> comp, List<?> selection, ActionStateMap states
