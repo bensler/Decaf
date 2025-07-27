@@ -3,6 +3,7 @@ package com.bensler.decaf.swing.action;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
@@ -22,7 +23,7 @@ import com.jgoodies.forms.layout.FormLayout;
 
 public class FocusedComponentActionController implements FocusListener, EntitySelectionListener<Object> {
 
-  private final List<EntityComponent<?>> components_;
+  private final List<EntityComponent<?>> entityComponents_;
   private final ActionGroup actions_;
   private final List<Pair<JComponent, Action>> toolbarComponents_;
 
@@ -30,12 +31,12 @@ public class FocusedComponentActionController implements FocusListener, EntitySe
   private EntityComponent<?> focusedComp_;
 
   public FocusedComponentActionController(ActionGroup actions, Collection<EntityComponent<?>> components) {
-    components_ = List.copyOf(components);
+    entityComponents_ = List.copyOf(components);
     actions_ = actions;
     toolbarComponents_ = new ArrayList<>();
-    components_.forEach(comp -> comp.addFocusListener(this));
-    components_.forEach(comp -> ((EntityComponent<Object>)comp).addSelectionListener(this));
-    focusGained(components_.iterator().next());
+    entityComponents_.forEach(comp -> comp.addFocusListener(this));
+    entityComponents_.forEach(comp -> ((EntityComponent<Object>)comp).addSelectionListener(this));
+    focusGained(entityComponents_.iterator().next());
   }
 
   public void triggerPrimaryAction() {
@@ -68,7 +69,7 @@ public class FocusedComponentActionController implements FocusListener, EntitySe
 
   @Override
   public void focusGained(EntityComponent<?> component) {
-    if (components_.contains(component)) {
+    if (entityComponents_.contains(component)) {
       reevaluate((focusedComp_ = component).getSelection());
     }
   }
@@ -97,16 +98,22 @@ public class FocusedComponentActionController implements FocusListener, EntitySe
   }
 
   class ToolbarComponentCollector {
-    private final List<Pair<JComponent, Action>> components = new ArrayList<>();
+    private final LinkedList<Pair<JComponent, Action>> components = new LinkedList<>();
 
     public void add(Pair<JComponent, Action> pair) {
-      final JComponent component = pair.getLeft();
-
-      // TODO Auto-generated method stub
-      components.add(pair);
+      // avoid subsequent null component pairs
+      if (components.isEmpty() || (pair.getLeft() != null) || (components.getLast().getLeft() != null)) {
+        components.add(pair);
+      }
     }
 
     public void addTo(JPanel toolbar) {
+      while ((!components.isEmpty() && (components.getFirst().getLeft() == null))) {
+        components.removeFirst();
+      }
+      while ((!components.isEmpty() && (components.getLast().getLeft() == null))) {
+        components.removeLast();
+      }
       IntStream.range(0, components.size()).forEach(i -> addComponent(toolbar, components.get(i), i));
     }
 
@@ -121,7 +128,7 @@ public class FocusedComponentActionController implements FocusListener, EntitySe
 
     public String getColumnSpec() {
       // "[f:p, 3dlu,f:p]*,0dlu:g"
-      return IntStream.range(0, components.size()).mapToObj(i -> "f:p").collect(Collectors.joining(",3dlu,", "", ",0dlu:g"));
+      return IntStream.range(0, components.size()).mapToObj(i -> "f:p").collect(Collectors.joining(",4dlu,", "", ",0dlu:g"));
     }
   }
 
