@@ -41,6 +41,22 @@ public class AbstractHierarchy<H extends Hierarchical<H>, C extends Collection<H
     children_.put(null, childCollectionMaintainer_.createEmptyCollection());
   }
 
+  /** @return if a node was replaced */
+  public boolean replace(H newNode) {
+    requireNonNull(newNode, "Cannot add null");
+
+    final boolean replace = members_.containsKey(newNode)
+        && Objects.equals(newNode.getParent(), members_.get(newNode).getParent());
+
+    if (replace) {
+      members_.put(newNode, newNode);
+      children_.put(newNode, children_.get(newNode));
+    } else {
+      add(newNode);
+    }
+    return replace;
+  }
+
   /**
    * Adds a new member to this Hierarchy. If node is already a part of this hierarchy, it will be removed silently
    * before adding again. If this hierarchy has a null root the new node may be the new parent of formerly
