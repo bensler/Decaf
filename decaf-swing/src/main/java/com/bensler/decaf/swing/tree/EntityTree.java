@@ -211,6 +211,10 @@ TreeSelectionListener, FocusListener {
     return List.copyOf(selection_);
   }
 
+  public boolean replaceNode(H newNode) {
+    return model_.replaceNode(newNode);
+  }
+
   public void addData(H entity, boolean select) {
     model_.addNode(entity);
     if (select) {

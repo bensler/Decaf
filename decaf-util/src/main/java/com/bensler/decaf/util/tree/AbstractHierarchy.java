@@ -192,7 +192,7 @@ public class AbstractHierarchy<H extends Hierarchical<H>, C extends Collection<H
    * Checks if a node is a member of this hierarchy.
    */
   public Optional<H> contains(final Object node) {
-    return Optional.ofNullable(members_.get(node));
+    return Optional.ofNullable(members_.get(requireNonNull(node)));
   }
 
   /**
