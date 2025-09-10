@@ -73,7 +73,7 @@ public class EntityTreeModel<H extends Hierarchical<H>> implements TreeModel {
   }
 
   /** @return if a node was replaced */
-  public boolean replaceNode(H newNode) {
+  boolean replaceNode(H newNode) {
     final Optional<H> oldNode = data_.contains(newNode);
 
     oldNode.ifPresent(lOldNode -> {
