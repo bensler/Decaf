@@ -75,13 +75,7 @@ public class DefaultTreeCellRenderComponent implements TreeRenderComponent<Rende
     component_.setForeground(
       selected_ ? tree.getForegroundSelectionColor() : tree.getForeground()
     );
-    // There needs to be a way to specify disabled icons.
     component_.setEnabled(tree.isEnabled());
-//    if (tree.isEnabled()) {
-//      component_.setIcon(icon_);
-//    } else {
-//      component_.setDisabledIcon(icon_);
-//    }
     component_.setComponentOrientation(tree.getComponentOrientation());
     if (selected_) {
       component_.setBackground(tree.hasFocus() ? tree.getBackgroundSelectionColor() : tree.getBackgroundSelectionColorUnfocused());

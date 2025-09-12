@@ -1,7 +1,6 @@
 package com.bensler.decaf.swing.tree;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
@@ -11,19 +10,20 @@ import javax.swing.event.TreeModelListener;
 import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
 
+import com.bensler.decaf.swing.view.PropertyView;
 import com.bensler.decaf.util.tree.Hierarchical;
 import com.bensler.decaf.util.tree.Hierarchy;
 
 public class EntityTreeModel<H extends Hierarchical<H>> implements TreeModel {
 
   private final List<TreeModelListener> modelListeners_;
-
+  private final PropertyView<H, ?> view_;
   private final ListHierarchy<H> data_;
   private final SynthRoot<H> invisibleRoot_;
 
-  public EntityTreeModel(Comparator<? super H> comparator) {
+  public EntityTreeModel(PropertyView<H, ?> view) {
     modelListeners_ = new ArrayList<>();
-    data_ = new ListHierarchy<H>(comparator);
+    data_ = new ListHierarchy<>(view_ = view);
     invisibleRoot_ = new SynthRoot<>();
   }
 
@@ -77,7 +77,7 @@ public class EntityTreeModel<H extends Hierarchical<H>> implements TreeModel {
     final Optional<H> oldNode = data_.contains(newNode);
 
     oldNode.ifPresent(lOldNode -> {
-
+      final boolean unchangedProperty = view_.compare(lOldNode, newNode) == 0;
       data_.replace(newNode);
     });
     return oldNode.isPresent();
