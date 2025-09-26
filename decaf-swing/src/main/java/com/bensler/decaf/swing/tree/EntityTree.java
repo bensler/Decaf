@@ -211,8 +211,9 @@ TreeSelectionListener, FocusListener {
     return List.copyOf(selection_);
   }
 
-  public boolean replaceNode(H newNode) {
-    return model_.replaceNode(newNode);
+  public boolean replaceOrAdd(H newNode) {
+    // TODO handle (keep!) selection. Should not be done by callers
+    return model_.replaceOrAdd(newNode);
   }
 
   public void addData(H entity, boolean select) {

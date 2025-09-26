@@ -72,14 +72,15 @@ public class EntityTreeModel<H extends Hierarchical<H>> implements TreeModel {
     return data_.getChildrenNoCopy((parent == invisibleRoot_) ? null : parent);
   }
 
-  /** @return if a node was replaced */
-  boolean replaceNode(H newNode) {
+  /** @return if a node was replaced (contained before) */
+  boolean replaceOrAdd(H newNode) {
     final Optional<H> oldNode = data_.contains(newNode);
 
-    oldNode.ifPresent(lOldNode -> {
-      final boolean unchangedProperty = view_.compare(lOldNode, newNode) == 0;
+    if (oldNode.isPresent() && (view_.compare(oldNode.get(), newNode) == 0)) {
       data_.replace(newNode);
-    });
+    } else {
+      addNode(newNode);
+    }
     return oldNode.isPresent();
   }
 

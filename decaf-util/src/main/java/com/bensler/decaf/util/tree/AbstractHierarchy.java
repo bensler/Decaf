@@ -188,8 +188,9 @@ public class AbstractHierarchy<H extends Hierarchical<H>, C extends Collection<H
   }
 
   /**
-   * used by TreeModel <p>
    * Checks if a node is a member of this hierarchy.
+   *
+   * @return internal {@link #equals(Object)} node or empty {@link Optional} otherwise.
    */
   public Optional<H> contains(final Object node) {
     return Optional.ofNullable(members_.get(requireNonNull(node)));
