@@ -193,14 +193,14 @@ TreeSelectionListener, FocusListener {
   }
 
   /** updates selection_ silently (no events are fired) */
-  @SuppressWarnings("unchecked")
   private void updateSelection() {
     final TreePath[]  paths     = tree_.getSelectionPaths();
 
     selection_.clear();
     if (paths != null) {
       for (int i = 0; i < paths.length; i++) {
-        selection_.add((H)paths[i].getLastPathComponent());
+        // paths contains outdated entities -> resolve selection against model
+        model_.contains(paths[i].getLastPathComponent()).ifPresent(selection_::add);
       }
     }
     fireSelectionChanged();
@@ -212,8 +212,14 @@ TreeSelectionListener, FocusListener {
   }
 
   public boolean replaceOrAdd(H newNode) {
-    // TODO handle (keep!) selection. Should not be done by callers
-    return model_.replaceOrAdd(newNode);
+    final boolean replaced = model_.replaceOrAdd(newNode);
+    final int selectionIndex;
+
+    if (replaced && ((selectionIndex = selection_.indexOf(newNode)) >= 0)) {
+      selection_.set(selectionIndex, newNode);
+      fireSelectionChanged();
+    }
+    return replaced;
   }
 
   public void addData(H entity, boolean select) {
