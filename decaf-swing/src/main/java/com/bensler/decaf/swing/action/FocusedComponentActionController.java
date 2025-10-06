@@ -11,7 +11,6 @@ import java.util.stream.IntStream;
 
 import javax.swing.JComponent;
 import javax.swing.JPanel;
-import javax.swing.JPopupMenu;
 
 import com.bensler.decaf.swing.EntityComponent;
 import com.bensler.decaf.swing.EntityComponent.FocusListener;
@@ -47,9 +46,8 @@ public class FocusedComponentActionController implements FocusListener, EntitySe
     final ActionStateMap states = computeStates();
 
     if (states.getState(actions_) != ActionState.HIDDEN) {
-      final JPopupMenu menu = new JPopupMenu();
-      actions_.createPopupmenuItem(menu::add, focusedComp_, currentSelection_, states);
-      menu.show(focusedComp_.getComponent(), evt.getX(), evt.getY());
+      actions_.createPopupmenu(focusedComp_, currentSelection_, states)
+      .ifPresent(popup -> popup.show(focusedComp_.getComponent(), evt.getX(), evt.getY()));
     }
   }
 

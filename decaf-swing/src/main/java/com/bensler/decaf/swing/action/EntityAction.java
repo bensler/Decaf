@@ -4,7 +4,6 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
@@ -71,13 +70,15 @@ public class EntityAction<E> implements Action {
 
   @Override
   public void createPopupmenuItem(
-    Consumer<JMenuItem> parentAdder, EntityComponent<?> comp, List<?> selection, ActionStateMap states
+      MenuItemCollector collector, EntityComponent<?> comp, List<?> selection, ActionStateMap states
   ) {
-    final JMenuItem menuItem = appearance_.createPopupmenuItem(states.isPrimaryAction(this));
+    if (states.getState(this) != ActionState.HIDDEN) {
+      final JMenuItem menuItem = appearance_.createPopupmenuItem(states.isPrimaryAction(this));
 
-    states.getState(this).applyTo(menuItem);
-    menuItem.addActionListener(evt -> doAction(comp, selection));
-    parentAdder.accept(menuItem);
+      states.getState(this).applyTo(menuItem);
+      menuItem.addActionListener(evt -> doAction(comp, selection));
+      collector.add(Optional.of(menuItem));
+    }
   }
 
   @Override

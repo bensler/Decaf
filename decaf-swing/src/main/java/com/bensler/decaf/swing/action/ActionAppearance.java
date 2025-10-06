@@ -6,6 +6,7 @@ import java.util.stream.Stream;
 
 import javax.swing.Icon;
 import javax.swing.JButton;
+import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 
 /** Encapsulates all information of an action needed to let an user
@@ -43,6 +44,13 @@ public class ActionAppearance {
 
   public Optional<String> getDescription() {
     return description_;
+  }
+
+  public JMenu createMenu() {
+    final JMenu menu = new JMenu(label_.orElse(null));
+
+    icon_.ifPresent(menu::setIcon);
+    return menu;
   }
 
   public JMenuItem createPopupmenuItem(boolean primary) {

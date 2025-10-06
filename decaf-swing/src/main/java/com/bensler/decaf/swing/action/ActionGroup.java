@@ -4,10 +4,10 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-import javax.swing.JMenuItem;
+import javax.swing.JMenu;
+import javax.swing.JPopupMenu;
 
 import com.bensler.decaf.swing.EntityComponent;
 import com.bensler.decaf.swing.action.FocusedComponentActionController.ToolbarComponentCollector;
@@ -17,13 +17,15 @@ public class ActionGroup implements Action {
 
   public static final Set<ActionState> VISIBLE_STATES = Set.of(ActionState.ENABLED, ActionState.DISABLED);
 
+  private final ActionAppearance appearance_;
   private final List<Action> actions_;
 
-  public ActionGroup() {
-    actions_ = List.of();
+  public ActionGroup(Action... actions) {
+    this(null, actions);
   }
 
-  public ActionGroup(Action... actions) {
+  public ActionGroup(ActionAppearance appearance, Action... actions) {
+    appearance_ = appearance;
     actions_= Arrays.asList(actions);
   }
 
@@ -45,13 +47,38 @@ public class ActionGroup implements Action {
     );
   }
 
+  public Optional<JPopupMenu> createPopupmenu(EntityComponent<?> comp, List<?> selection, ActionStateMap states) {
+    if (states.getState(this) != ActionState.HIDDEN) {
+      final MenuItemCollector collector = new MenuItemCollector();
+
+      createPopupmenuItem(collector, comp, selection, states);
+      if (!collector.isEmpty()) {
+        final JPopupMenu popup = new JPopupMenu();
+
+        collector.populateMenu(popup);
+        return Optional.of(popup);
+      }
+    }
+    return Optional.empty();
+  }
+
   @Override
   public void createPopupmenuItem(
-    Consumer<JMenuItem> parentAdder, EntityComponent<?> comp, List<?> selection, ActionStateMap states
+    MenuItemCollector collector, EntityComponent<?> comp, List<?> selection, ActionStateMap states
   ) {
     if (states.getState(this) != ActionState.HIDDEN) {
-      actions_.stream().filter(action -> states.getState(action) != ActionState.HIDDEN)
-      .forEach(action -> action.createPopupmenuItem(parentAdder, comp, selection, states));
+      if (appearance_ != null) {
+        final JMenu menu = appearance_.createMenu();
+        final MenuItemCollector lCollector = new MenuItemCollector();
+
+        actions_.forEach(action -> action.createPopupmenuItem(lCollector, comp, selection, states));
+        lCollector.populateMenu(menu);
+        collector.add(Optional.of(menu));
+      } else {
+        collector.add(Optional.empty());
+        actions_.forEach(action -> action.createPopupmenuItem(collector, comp, selection, states));
+        collector.add(Optional.empty());
+      }
     }
   }
 
