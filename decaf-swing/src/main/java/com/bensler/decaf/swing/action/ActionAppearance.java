@@ -34,8 +34,8 @@ public class ActionAppearance {
     return icon_;
   }
 
-  public Optional<Icon> getIconLarge() {
-    return iconLarge_;
+  public Icon getIconLarge() {
+    return iconLarge_.orElseGet(icon_::get);
   }
 
   public Optional<String> getLabel() {
@@ -63,7 +63,7 @@ public class ActionAppearance {
   }
 
   public JButton createToolbarButton() {
-    final JButton button = new JButton(iconLarge_.orElseGet(icon_::get));
+    final JButton button = new JButton(getIconLarge());
 
     button.setToolTipText(description_.orElseGet(() -> label_.orElse(null)));
     return button;

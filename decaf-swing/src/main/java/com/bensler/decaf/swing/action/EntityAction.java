@@ -70,7 +70,7 @@ public class EntityAction<E> implements Action {
 
   @Override
   public void createPopupmenuItem(
-      MenuItemCollector collector, EntityComponent<?> comp, List<?> selection, ActionStateMap states
+    MenuItemCollector collector, EntityComponent<?> comp, List<?> selection, ActionStateMap states
   ) {
     if (states.getState(this) != ActionState.HIDDEN) {
       final JMenuItem menuItem = appearance_.createPopupmenuItem(states.isPrimaryAction(this));

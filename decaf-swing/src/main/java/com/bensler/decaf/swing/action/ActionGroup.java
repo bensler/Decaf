@@ -6,6 +6,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.Supplier;
 
+import javax.swing.JButton;
 import javax.swing.JMenu;
 import javax.swing.JPopupMenu;
 
@@ -35,8 +36,37 @@ public class ActionGroup implements Action {
 
   @Override
   public void createToolbarComponent(ToolbarComponentCollector collector, Supplier<EntityComponent<?>> sourceSupplier, Supplier<List<?>> entitiesSupplier) {
+    if (appearance_ != null) {
+      final JButton button = appearance_.createToolbarButton();
+
+      button.addActionListener(evt -> {
+        final MenuItemCollector menuCollector = new MenuItemCollector();
+        final ActionStateMap states = new ActionStateMap();
+
+        actions_.forEach(action -> states.put(action, ActionState.ENABLED));
+        // TODO ---------------------------vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
+        createToolbarPopupmenuItems(menuCollector, null, List.of(), states);
+        if (!menuCollector.isEmpty()) {
+          final JPopupMenu popup = new JPopupMenu();
+
+          menuCollector.populateMenu(popup);
+          popup.show(button, 20, 20);
+        }
+      });
+      collector.add(new Pair<>(button, this));
+    } else {
+      actions_.forEach(action -> action.createToolbarComponent(collector, sourceSupplier, entitiesSupplier));
+    }
     collector.add(new Pair<>(null, this));
-    actions_.forEach(action -> action.createToolbarComponent(collector, sourceSupplier, entitiesSupplier));
+  }
+
+  private void createToolbarPopupmenuItems(
+    MenuItemCollector collector, EntityComponent<?> comp, List<?> selection, ActionStateMap states
+  ) {
+    // TODO hacky
+    collector.add(Optional.empty());
+    actions_.forEach(action -> action.createPopupmenuItem(collector, comp, selection, states));
+    collector.add(Optional.empty());
   }
 
   @Override
