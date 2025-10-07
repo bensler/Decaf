@@ -35,7 +35,7 @@ public class MenuItemCollector {
   }
 
   public void populateMenu(Consumer<JMenuItem> menuAdder, Runnable separatorAdder) {
-    while (items_.getLast().isEmpty()) {
+    while (!items_.isEmpty() && items_.getLast().isEmpty()) {
       items_.removeLast();
     }
     items_.forEach(item -> {
