@@ -62,15 +62,17 @@ public class EntityAction<E> implements Action {
       .collect(Collectors.toList());
   }
 
-  public void doAction(EntityComponent<?> comp, List<?> selection) {
+  public void doAction(Supplier<EntityComponent<?>> compSupplier, Supplier<List<?>> selectionSupplier) {
+    final EntityComponent<?> comp = compSupplier.get();
+
     if (entityClass_.isAssignableFrom(comp.getEntityClass())) {
-      action_.doAction((EntityComponent<E>)comp, filterTypeFittingEntities(selection));
+      action_.doAction((EntityComponent<E>)comp, filterTypeFittingEntities(selectionSupplier.get()));
     }
   }
 
   @Override
   public void createPopupmenuItem(
-    MenuItemCollector collector, EntityComponent<?> comp, List<?> selection, ActionStateMap states
+    MenuItemCollector collector, Supplier<EntityComponent<?>> comp, Supplier<List<?>> selection, ActionStateMap states
   ) {
     if (states.getState(this) != ActionState.HIDDEN) {
       final JMenuItem menuItem = appearance_.createPopupmenuItem(states.isPrimaryAction(this));

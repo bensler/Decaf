@@ -44,8 +44,8 @@ public class ActionGroup implements Action {
         final ActionStateMap states = new ActionStateMap();
 
         actions_.forEach(action -> states.put(action, ActionState.ENABLED));
-        // TODO ---------------------------vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
-        createToolbarPopupmenuItems(menuCollector, null, List.of(), states);
+        // TODO ---------------------------------------------------------------------vvvvvv
+        createToolbarPopupmenuItems(menuCollector, sourceSupplier, entitiesSupplier, states);
         if (!menuCollector.isEmpty()) {
           final JPopupMenu popup = new JPopupMenu();
 
@@ -61,11 +61,11 @@ public class ActionGroup implements Action {
   }
 
   private void createToolbarPopupmenuItems(
-    MenuItemCollector collector, EntityComponent<?> comp, List<?> selection, ActionStateMap states
+    MenuItemCollector collector, Supplier<EntityComponent<?>> sourceSupplier, Supplier<List<?>> selectionSupplier, ActionStateMap states
   ) {
     // TODO hacky
     collector.add(Optional.empty());
-    actions_.forEach(action -> action.createPopupmenuItem(collector, comp, selection, states));
+    actions_.forEach(action -> action.createPopupmenuItem(collector, sourceSupplier, selectionSupplier, states));
     collector.add(Optional.empty());
   }
 
@@ -81,7 +81,7 @@ public class ActionGroup implements Action {
     if (states.getState(this) != ActionState.HIDDEN) {
       final MenuItemCollector collector = new MenuItemCollector();
 
-      createPopupmenuItem(collector, comp, selection, states);
+      createPopupmenuItem(collector, () -> comp, () -> selection, states);
       if (!collector.isEmpty()) {
         final JPopupMenu popup = new JPopupMenu();
 
@@ -94,19 +94,19 @@ public class ActionGroup implements Action {
 
   @Override
   public void createPopupmenuItem(
-    MenuItemCollector collector, EntityComponent<?> comp, List<?> selection, ActionStateMap states
+    MenuItemCollector collector, Supplier<EntityComponent<?>> compSupplier, Supplier<List<?>> selectionSupplier, ActionStateMap states
   ) {
     if (states.getState(this) != ActionState.HIDDEN) {
       if (appearance_ != null) {
         final JMenu menu = appearance_.createMenu();
         final MenuItemCollector lCollector = new MenuItemCollector();
 
-        actions_.forEach(action -> action.createPopupmenuItem(lCollector, comp, selection, states));
+        actions_.forEach(action -> action.createPopupmenuItem(lCollector, compSupplier, selectionSupplier, states));
         lCollector.populateMenu(menu);
         collector.add(Optional.of(menu));
       } else {
         collector.add(Optional.empty());
-        actions_.forEach(action -> action.createPopupmenuItem(collector, comp, selection, states));
+        actions_.forEach(action -> action.createPopupmenuItem(collector, compSupplier, selectionSupplier, states));
         collector.add(Optional.empty());
       }
     }

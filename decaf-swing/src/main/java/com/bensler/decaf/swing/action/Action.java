@@ -14,7 +14,7 @@ public interface Action {
   void createToolbarComponent(ToolbarComponentCollector collector, Supplier<EntityComponent<?>> sourceSupplier, Supplier<List<?>> entitiesSupplier);
 
   void createPopupmenuItem(
-    MenuItemCollector collector, EntityComponent<?> comp, List<?> selection, ActionStateMap states
+    MenuItemCollector collector, Supplier<EntityComponent<?>> comp, Supplier<List<?>> selection, ActionStateMap states
   );
 
   Optional<EntityAction<?>> isEntityAction();
