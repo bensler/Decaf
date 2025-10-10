@@ -38,6 +38,14 @@ public class FocusedComponentActionController implements FocusListener, EntitySe
     focusGained(entityComponents_.iterator().next());
   }
 
+  List<?> getCurrentSelection() {
+    return currentSelection_;
+  }
+
+  EntityComponent<?> getFocusedComp() {
+    return focusedComp_;
+  }
+
   public void triggerPrimaryAction() {
     computeStates().getPrimaryAction().ifPresent(action -> action.doAction(() -> focusedComp_, () -> currentSelection_));
   }
@@ -51,7 +59,7 @@ public class FocusedComponentActionController implements FocusListener, EntitySe
     }
   }
 
-  private ActionStateMap computeStates() {
+  ActionStateMap computeStates() {
     final ActionStateMap states = new ActionStateMap();
 
     actions_.computeState(currentSelection_, states);
@@ -89,7 +97,7 @@ public class FocusedComponentActionController implements FocusListener, EntitySe
     final ToolbarComponentCollector toolbarComponents = new ToolbarComponentCollector();
     final JPanel toolbar;
 
-    actions_.createToolbarComponent(toolbarComponents, () -> focusedComp_, () -> currentSelection_);
+    actions_.createToolbarComponent(this, toolbarComponents);
     toolbarComponents.addTo(toolbar = new JPanel(new FormLayout(toolbarComponents.getColumnSpec(), "f:p")));
     reevaluate();
     return toolbar;

@@ -35,17 +35,14 @@ public class ActionGroup implements Action {
   }
 
   @Override
-  public void createToolbarComponent(ToolbarComponentCollector collector, Supplier<EntityComponent<?>> sourceSupplier, Supplier<List<?>> entitiesSupplier) {
+  public void createToolbarComponent(FocusedComponentActionController ctrl, ToolbarComponentCollector collector) {
     if (appearance_ != null) {
       final JButton button = appearance_.createToolbarButton();
 
       button.addActionListener(evt -> {
         final MenuItemCollector menuCollector = new MenuItemCollector();
-        final ActionStateMap states = new ActionStateMap();
 
-        actions_.forEach(action -> states.put(action, ActionState.ENABLED));
-        // TODO ---------------------------------------------------------------------vvvvvv
-        createToolbarPopupmenuItems(menuCollector, sourceSupplier, entitiesSupplier, states);
+        createToolbarPopupmenuItems(ctrl, menuCollector, ctrl.computeStates());
         if (!menuCollector.isEmpty()) {
           final JPopupMenu popup = new JPopupMenu();
 
@@ -55,17 +52,17 @@ public class ActionGroup implements Action {
       });
       collector.add(new Pair<>(button, this));
     } else {
-      actions_.forEach(action -> action.createToolbarComponent(collector, sourceSupplier, entitiesSupplier));
+      actions_.forEach(action -> action.createToolbarComponent(ctrl, collector));
     }
     collector.add(new Pair<>(null, this));
   }
 
   private void createToolbarPopupmenuItems(
-    MenuItemCollector collector, Supplier<EntityComponent<?>> sourceSupplier, Supplier<List<?>> selectionSupplier, ActionStateMap states
+      FocusedComponentActionController ctrl, MenuItemCollector collector, ActionStateMap states
   ) {
     // TODO hacky
     collector.add(Optional.empty());
-    actions_.forEach(action -> action.createPopupmenuItem(collector, sourceSupplier, selectionSupplier, states));
+    actions_.forEach(action -> action.createPopupmenuItem(collector, ctrl::getFocusedComp, ctrl::getCurrentSelection, states));
     collector.add(Optional.empty());
   }
 

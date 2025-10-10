@@ -84,10 +84,10 @@ public class EntityAction<E> implements Action {
   }
 
   @Override
-  public void createToolbarComponent(ToolbarComponentCollector collector, Supplier<EntityComponent<?>> sourceSupplier, Supplier<List<?>> entitiesSupplier) {
+  public void createToolbarComponent(FocusedComponentActionController ctrl, ToolbarComponentCollector collector) {
     final JButton button = appearance_.createToolbarButton();
 
-    button.addActionListener(evt -> action_.doAction((EntityComponent<E>)sourceSupplier.get(), (List<E>)entitiesSupplier.get()));
+    button.addActionListener(evt -> action_.doAction((EntityComponent<E>)ctrl.getFocusedComp(), (List<E>)ctrl.getCurrentSelection()));
     collector.add(new Pair<>(button, this));
   }
 

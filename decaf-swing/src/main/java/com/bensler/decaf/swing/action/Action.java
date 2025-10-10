@@ -11,7 +11,7 @@ public interface Action {
 
   void computeState(List<?> currentSelection, ActionStateMap target);
 
-  void createToolbarComponent(ToolbarComponentCollector collector, Supplier<EntityComponent<?>> sourceSupplier, Supplier<List<?>> entitiesSupplier);
+  void createToolbarComponent(FocusedComponentActionController ctrl, ToolbarComponentCollector collector);
 
   void createPopupmenuItem(
     MenuItemCollector collector, Supplier<EntityComponent<?>> comp, Supplier<List<?>> selection, ActionStateMap states
