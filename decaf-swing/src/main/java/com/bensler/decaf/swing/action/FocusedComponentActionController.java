@@ -60,9 +60,13 @@ public class FocusedComponentActionController implements FocusListener, EntitySe
   }
 
   ActionStateMap computeStates() {
+    return computeStates(actions_);
+  }
+
+  ActionStateMap computeStates(Action action) {
     final ActionStateMap states = new ActionStateMap();
 
-    actions_.computeState(currentSelection_, states);
+    action.computeState(currentSelection_, states);
     return states;
   }
 
@@ -99,7 +103,6 @@ public class FocusedComponentActionController implements FocusListener, EntitySe
 
     actions_.createToolbarComponent(this, toolbarComponents);
     toolbarComponents.addTo(toolbar = new JPanel(new FormLayout(toolbarComponents.getColumnSpec(), "f:p")));
-    reevaluate();
     return toolbar;
   }
 

@@ -42,7 +42,7 @@ public class ActionGroup implements Action {
       button.addActionListener(evt -> {
         final MenuItemCollector menuCollector = new MenuItemCollector();
 
-        createToolbarPopupmenuItems(ctrl, menuCollector, ctrl.computeStates());
+        createToolbarPopupmenuItems(ctrl, menuCollector, ctrl.computeStates(this));
         if (!menuCollector.isEmpty()) {
           final JPopupMenu popup = new JPopupMenu();
 
