@@ -51,10 +51,6 @@ public class EntityAction<E> implements Action {
     return Optional.of(this);
   }
 
-  public ActionState getActionState(List<?> entities) {
-    return filter_.getActionState(filterTypeFittingEntities(entities));
-  }
-
   private List<E> filterTypeFittingEntities(List<?> entities) {
     return entities.stream()
       .filter(entity -> entityClass_.isAssignableFrom(entity.getClass()))
