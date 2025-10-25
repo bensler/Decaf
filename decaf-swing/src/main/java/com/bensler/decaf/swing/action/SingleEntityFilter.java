@@ -10,7 +10,7 @@ public class SingleEntityFilter<E> implements EntitiesActionFilter<E>, EntityAct
   private final EntityActionFilter<E> singleFilter_;
 
   public SingleEntityFilter(ActionState defaultState) {
-    this(defaultState, E -> ActionState.ENABLED);
+    this(defaultState, e -> ActionState.ENABLED);
   }
 
   public SingleEntityFilter(ActionState defaultState, EntityActionFilter<E> singleFilter) {

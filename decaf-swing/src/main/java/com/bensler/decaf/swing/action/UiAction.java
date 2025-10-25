@@ -21,7 +21,7 @@ import com.bensler.decaf.util.Pair;
  *   <li>and the action itself performing an operation on the given entities.</li>
  * </ul>
  */
-public class EntityAction<E> implements Action {
+public class UiAction<E> implements Action {
 
   public static <X> EntitiesActionFilter<X> allwaysOnFilter() {
     return (x -> ActionState.ENABLED);
@@ -37,17 +37,17 @@ public class EntityAction<E> implements Action {
   private final EntityActionListener<E> action_;
 
   /** @param filter <code>null</code> means always on */
-  public EntityAction(
+  public UiAction(
     ActionAppearance appearance, Class<E> entityClass, EntitiesActionFilter<E> filter, EntityActionListener<E> action
   ) {
     appearance_ = requireNonNull(appearance);
     entityClass_ = entityClass;
-    filter_ = Optional.ofNullable(filter).orElseGet(EntityAction::allwaysOnFilter);
+    filter_ = Optional.ofNullable(filter).orElseGet(UiAction::allwaysOnFilter);
     action_ = requireNonNull(action);
   }
 
   @Override
-  public Optional<EntityAction<?>> isEntityAction() {
+  public Optional<UiAction<?>> isEntityAction() {
     return Optional.of(this);
   }
 

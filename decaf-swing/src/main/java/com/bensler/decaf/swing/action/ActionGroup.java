@@ -110,7 +110,7 @@ public class ActionGroup implements Action {
   }
 
   @Override
-  public Optional<EntityAction<?>> isEntityAction() {
+  public Optional<UiAction<?>> isEntityAction() {
     return Optional.empty();
   }
 

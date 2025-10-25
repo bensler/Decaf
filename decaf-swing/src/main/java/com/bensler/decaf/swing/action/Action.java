@@ -17,6 +17,6 @@ public interface Action {
     MenuItemCollector collector, Supplier<EntityComponent<?>> comp, Supplier<List<?>> selection, ActionStateMap states
   );
 
-  Optional<EntityAction<?>> isEntityAction();
+  Optional<UiAction<?>> isEntityAction();
 
 }
