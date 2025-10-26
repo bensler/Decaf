@@ -5,7 +5,6 @@ import static java.util.Objects.requireNonNull;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
 
 import javax.swing.JButton;
 import javax.swing.JMenuItem;
@@ -21,7 +20,7 @@ import com.bensler.decaf.util.Pair;
  *   <li>and the action itself performing an operation on the given entities.</li>
  * </ul>
  */
-public class UiAction<E> implements Action {
+public class UiAction implements Action {
 
   public static <X> EntitiesActionFilter<X> allwaysOnFilter() {
     return (x -> ActionState.ENABLED);
@@ -32,38 +31,20 @@ public class UiAction<E> implements Action {
   }
 
   private final ActionAppearance appearance_;
-  private final Class<E> entityClass_;
-  private final EntitiesActionFilter<E> filter_;
-  private final EntityActionListener<E> action_;
+  private final FilteredAction<?> filteredAction_;
 
-  /** @param filter <code>null</code> means always on */
-  public UiAction(
-    ActionAppearance appearance, Class<E> entityClass, EntitiesActionFilter<E> filter, EntityActionListener<E> action
-  ) {
+  public UiAction(ActionAppearance appearance, FilteredAction<?> filteredAction) {
     appearance_ = requireNonNull(appearance);
-    entityClass_ = entityClass;
-    filter_ = Optional.ofNullable(filter).orElseGet(UiAction::allwaysOnFilter);
-    action_ = requireNonNull(action);
+    filteredAction_ = filteredAction;
   }
 
   @Override
-  public Optional<UiAction<?>> isEntityAction() {
+  public Optional<UiAction> isEntityAction() {
     return Optional.of(this);
   }
 
-  private List<E> filterTypeFittingEntities(List<?> entities) {
-    return entities.stream()
-      .filter(entity -> entityClass_.isAssignableFrom(entity.getClass()))
-      .map(entity -> entityClass_.cast(entity))
-      .collect(Collectors.toList());
-  }
-
   public void doAction(Supplier<EntityComponent<?>> compSupplier, Supplier<List<?>> selectionSupplier) {
-    final EntityComponent<?> comp = compSupplier.get();
-
-    if (entityClass_.isAssignableFrom(comp.getEntityClass())) {
-      action_.doAction((EntityComponent<E>)comp, filterTypeFittingEntities(selectionSupplier.get()));
-    }
+    filteredAction_.doAction(compSupplier.get(), selectionSupplier.get());
   }
 
   @Override
@@ -83,16 +64,13 @@ public class UiAction<E> implements Action {
   public void createToolbarComponent(FocusedComponentActionController ctrl, ToolbarComponentCollector collector) {
     final JButton button = appearance_.createToolbarButton();
 
-    button.addActionListener(evt -> action_.doAction((EntityComponent<E>)ctrl.getFocusedComp(), (List<E>)ctrl.getCurrentSelection()));
+    button.addActionListener(evt -> filteredAction_.doAction(ctrl.getFocusedComp(), ctrl.getCurrentSelection()));
     collector.add(new Pair<>(button, this));
   }
 
   @Override
   public void computeState(List<?> entities, ActionStateMap target){
-    target.put(this, filter_.getActionState(entities.stream()
-      .filter(entity -> entityClass_.isAssignableFrom(entity.getClass()))
-      .map(entity -> entityClass_.cast(entity)).toList()
-    ));
+    target.put(this, filteredAction_.computeState(entities));
   }
 
 }
