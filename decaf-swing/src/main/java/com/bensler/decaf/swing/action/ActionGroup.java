@@ -10,7 +10,6 @@ import javax.swing.JButton;
 import javax.swing.JMenu;
 import javax.swing.JPopupMenu;
 
-import com.bensler.decaf.swing.EntityComponent;
 import com.bensler.decaf.swing.action.FocusedComponentActionController.ToolbarComponentCollector;
 import com.bensler.decaf.util.Pair;
 
@@ -74,7 +73,7 @@ public class ActionGroup implements Action {
     );
   }
 
-  public Optional<JPopupMenu> createPopupmenu(EntityComponent<?> comp, List<?> selection, ActionStateMap states) {
+  public Optional<JPopupMenu> createPopupmenu(List<?> selection, ActionStateMap states) {
     if (states.getState(this) != ActionState.HIDDEN) {
       final MenuItemCollector collector = new MenuItemCollector();
 

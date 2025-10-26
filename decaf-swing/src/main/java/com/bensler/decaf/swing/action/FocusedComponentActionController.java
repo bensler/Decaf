@@ -42,10 +42,6 @@ public class FocusedComponentActionController implements FocusListener, EntitySe
     return currentSelection_;
   }
 
-  EntityComponent<?> getFocusedComp() {
-    return focusedComp_;
-  }
-
   public void triggerPrimaryAction() {
     computeStates().getPrimaryAction().ifPresent(action -> action.doAction(() -> currentSelection_));
   }
@@ -54,7 +50,7 @@ public class FocusedComponentActionController implements FocusListener, EntitySe
     final ActionStateMap states = computeStates();
 
     if (states.getState(actions_) != ActionState.HIDDEN) {
-      actions_.createPopupmenu(focusedComp_, currentSelection_, states)
+      actions_.createPopupmenu(currentSelection_, states)
       .ifPresent(popup -> popup.show(focusedComp_.getComponent(), evt.getX(), evt.getY()));
     }
   }
