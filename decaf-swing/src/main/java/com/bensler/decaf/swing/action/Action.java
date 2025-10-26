@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Supplier;
 
-import com.bensler.decaf.swing.EntityComponent;
 import com.bensler.decaf.swing.action.FocusedComponentActionController.ToolbarComponentCollector;
 
 public interface Action {
@@ -13,9 +12,7 @@ public interface Action {
 
   void createToolbarComponent(FocusedComponentActionController ctrl, ToolbarComponentCollector collector);
 
-  void createPopupmenuItem(
-    MenuItemCollector collector, Supplier<EntityComponent<?>> comp, Supplier<List<?>> selection, ActionStateMap states
-  );
+  void createPopupmenuItem(MenuItemCollector collector, Supplier<List<?>> selection, ActionStateMap states);
 
   Optional<UiAction> isEntityAction();
 

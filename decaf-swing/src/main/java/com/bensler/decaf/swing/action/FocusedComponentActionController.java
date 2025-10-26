@@ -47,7 +47,7 @@ public class FocusedComponentActionController implements FocusListener, EntitySe
   }
 
   public void triggerPrimaryAction() {
-    computeStates().getPrimaryAction().ifPresent(action -> action.doAction(() -> focusedComp_, () -> currentSelection_));
+    computeStates().getPrimaryAction().ifPresent(action -> action.doAction(() -> currentSelection_));
   }
 
   public void showPopupMenu(MouseEvent evt) {

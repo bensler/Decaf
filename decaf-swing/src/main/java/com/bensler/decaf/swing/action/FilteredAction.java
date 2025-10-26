@@ -6,8 +6,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import com.bensler.decaf.swing.EntityComponent;
-
 public class FilteredAction<E> {
 
   private final Class<E> entityClass_;
@@ -30,10 +28,9 @@ public class FilteredAction<E> {
       .collect(Collectors.toList());
   }
 
-  public void doAction(EntityComponent<?> comp, List<?> selection) {
-    if (entityClass_.isAssignableFrom(comp.getEntityClass())) {
-      action_.doAction((EntityComponent<E>)comp, filterTypeFittingEntities(selection));
-    }
+  public void doAction(List<?> selection) {
+    // TODO filter by entityClass
+    action_.doAction(filterTypeFittingEntities(selection));
   }
 
   public ActionState computeState(List<?> entities){

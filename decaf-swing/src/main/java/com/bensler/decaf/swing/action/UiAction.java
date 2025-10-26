@@ -9,7 +9,6 @@ import java.util.function.Supplier;
 import javax.swing.JButton;
 import javax.swing.JMenuItem;
 
-import com.bensler.decaf.swing.EntityComponent;
 import com.bensler.decaf.swing.action.FocusedComponentActionController.ToolbarComponentCollector;
 import com.bensler.decaf.util.Pair;
 
@@ -43,19 +42,17 @@ public class UiAction implements Action {
     return Optional.of(this);
   }
 
-  public void doAction(Supplier<EntityComponent<?>> compSupplier, Supplier<List<?>> selectionSupplier) {
-    filteredAction_.doAction(compSupplier.get(), selectionSupplier.get());
+  public void doAction(Supplier<List<?>> selectionSupplier) {
+    filteredAction_.doAction(selectionSupplier.get());
   }
 
   @Override
-  public void createPopupmenuItem(
-    MenuItemCollector collector, Supplier<EntityComponent<?>> comp, Supplier<List<?>> selection, ActionStateMap states
-  ) {
+  public void createPopupmenuItem(MenuItemCollector collector, Supplier<List<?>> selection, ActionStateMap states) {
     if (states.getState(this) != ActionState.HIDDEN) {
       final JMenuItem menuItem = appearance_.createPopupmenuItem(states.isPrimaryAction(this));
 
       states.getState(this).applyTo(menuItem);
-      menuItem.addActionListener(evt -> doAction(comp, selection));
+      menuItem.addActionListener(evt -> doAction(selection));
       collector.add(Optional.of(menuItem));
     }
   }
@@ -64,7 +61,7 @@ public class UiAction implements Action {
   public void createToolbarComponent(FocusedComponentActionController ctrl, ToolbarComponentCollector collector) {
     final JButton button = appearance_.createToolbarButton();
 
-    button.addActionListener(evt -> filteredAction_.doAction(ctrl.getFocusedComp(), ctrl.getCurrentSelection()));
+    button.addActionListener(evt -> filteredAction_.doAction(ctrl.getCurrentSelection()));
     collector.add(new Pair<>(button, this));
   }
 

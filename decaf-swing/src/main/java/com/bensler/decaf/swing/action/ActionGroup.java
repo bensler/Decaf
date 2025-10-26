@@ -62,7 +62,7 @@ public class ActionGroup implements Action {
   ) {
     // TODO hacky
     collector.add(Optional.empty());
-    actions_.forEach(action -> action.createPopupmenuItem(collector, ctrl::getFocusedComp, ctrl::getCurrentSelection, states));
+    actions_.forEach(action -> action.createPopupmenuItem(collector, ctrl::getCurrentSelection, states));
     collector.add(Optional.empty());
   }
 
@@ -78,7 +78,7 @@ public class ActionGroup implements Action {
     if (states.getState(this) != ActionState.HIDDEN) {
       final MenuItemCollector collector = new MenuItemCollector();
 
-      createPopupmenuItem(collector, () -> comp, () -> selection, states);
+      createPopupmenuItem(collector, () -> selection, states);
       if (!collector.isEmpty()) {
         final JPopupMenu popup = new JPopupMenu();
 
@@ -90,20 +90,18 @@ public class ActionGroup implements Action {
   }
 
   @Override
-  public void createPopupmenuItem(
-    MenuItemCollector collector, Supplier<EntityComponent<?>> compSupplier, Supplier<List<?>> selectionSupplier, ActionStateMap states
-  ) {
+  public void createPopupmenuItem(MenuItemCollector collector, Supplier<List<?>> selectionSupplier, ActionStateMap states) {
     if (states.getState(this) != ActionState.HIDDEN) {
       if (appearance_ != null) {
         final JMenu menu = appearance_.createMenu();
         final MenuItemCollector lCollector = new MenuItemCollector();
 
-        actions_.forEach(action -> action.createPopupmenuItem(lCollector, compSupplier, selectionSupplier, states));
+        actions_.forEach(action -> action.createPopupmenuItem(lCollector, selectionSupplier, states));
         lCollector.populateMenu(menu);
         collector.add(Optional.of(menu));
       } else {
         collector.add(Optional.empty());
-        actions_.forEach(action -> action.createPopupmenuItem(collector, compSupplier, selectionSupplier, states));
+        actions_.forEach(action -> action.createPopupmenuItem(collector, selectionSupplier, states));
         collector.add(Optional.empty());
       }
     }
