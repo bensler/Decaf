@@ -2,11 +2,15 @@ package com.bensler.decaf.swing.action;
 
 import static java.util.Objects.requireNonNull;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 public class FilteredAction<E> {
+
+  public static <X> EntitiesActionFilter<X> allwaysOnFilter() {
+    return (x -> ActionState.ENABLED);
+  }
 
   private final Class<E> entityClass_;
   private final EntitiesActionFilter<E> filter_;
@@ -17,27 +21,23 @@ public class FilteredAction<E> {
     Class<E> entityClass, EntitiesActionFilter<E> filter, EntityActionListener<E> action
   ) {
     entityClass_ = entityClass;
-    filter_ = Optional.ofNullable(filter).orElseGet(UiAction::allwaysOnFilter);
+    filter_ = Optional.ofNullable(filter).orElseGet(FilteredAction::allwaysOnFilter);
     action_ = requireNonNull(action);
   }
 
-  private List<E> filterTypeFittingEntities(List<?> entities) {
-    return entities.stream()
-      .filter(entity -> entityClass_.isAssignableFrom(entity.getClass()))
-      .map(entity -> entityClass_.cast(entity))
-      .collect(Collectors.toList());
-  }
-
   public void doAction(List<?> selection) {
-    // TODO filter by entityClass
     action_.doAction(filterTypeFittingEntities(selection));
   }
 
+  public List<E> filterTypeFittingEntities(Collection<?> source) {
+    return source.stream()
+    .filter(entity -> entityClass_.isAssignableFrom(entity.getClass()))
+    .map(entity -> entityClass_.cast(entity))
+    .toList();
+  }
+
   public ActionState computeState(List<?> entities){
-    return filter_.getActionState(entities.stream()
-      .filter(entity -> entityClass_.isAssignableFrom(entity.getClass()))
-      .map(entity -> entityClass_.cast(entity)).toList()
-    );
+    return filter_.getActionState(filterTypeFittingEntities(entities));
   }
 
 }

@@ -48,13 +48,11 @@ public class UiAction implements Action {
 
   @Override
   public void createPopupmenuItem(MenuItemCollector collector, Supplier<List<?>> selection, ActionStateMap states) {
-    if (states.getState(this) != ActionState.HIDDEN) {
-      final JMenuItem menuItem = appearance_.createPopupmenuItem(states.isPrimaryAction(this));
+    final JMenuItem menuItem = appearance_.createPopupmenuItem(states.isPrimaryAction(this));
 
-      states.getState(this).applyTo(menuItem);
-      menuItem.addActionListener(evt -> doAction(selection));
-      collector.add(Optional.of(menuItem));
-    }
+    states.getState(this).applyTo(menuItem);
+    menuItem.addActionListener(evt -> doAction(selection));
+    collector.add(Optional.of(menuItem));
   }
 
   @Override

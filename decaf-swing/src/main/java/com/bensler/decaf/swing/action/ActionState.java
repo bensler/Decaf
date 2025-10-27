@@ -8,9 +8,7 @@ public enum ActionState {
   /** Ready to be invoked. */
   ENABLED(true),
   /** Visible but disabled. */
-  DISABLED(false),
-  /** Not even visible. */
-  HIDDEN(false);
+  DISABLED(false);
 
   private final boolean enabled_;
 
