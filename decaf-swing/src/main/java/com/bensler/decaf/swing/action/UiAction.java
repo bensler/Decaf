@@ -21,14 +21,6 @@ import com.bensler.decaf.util.Pair;
  */
 public class UiAction implements Action {
 
-  public static <X> EntitiesActionFilter<X> allwaysOnFilter() {
-    return (x -> ActionState.ENABLED);
-  }
-
-  public static <X> EntitiesActionFilter<X> atLeastOneFilter(ActionState zeroElementsState) {
-    return (x -> ((x.size() < 1) ? zeroElementsState : ActionState.ENABLED));
-  }
-
   private final ActionAppearance appearance_;
   private final FilteredAction<?> filteredAction_;
 
@@ -65,7 +57,7 @@ public class UiAction implements Action {
 
   @Override
   public void computeState(List<?> entities, ActionStateMap target){
-    target.put(this, filteredAction_.computeState(entities));
+    target.put(this, filteredAction_.matches(entities));
   }
 
 }

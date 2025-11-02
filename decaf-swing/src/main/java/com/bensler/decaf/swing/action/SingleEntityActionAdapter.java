@@ -4,9 +4,11 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
 
-/** Adapter for {@link EntityActionListener} to make it viable for actions being applicable
+import com.bensler.decaf.swing.action.FilteredAction.ActionMany;
+
+/** Adapter for {@link EntitiesActionListener} to make it viable for actions being applicable
  * for single entity object only. */
-public class SingleEntityActionAdapter<E> implements EntityActionListener<E> {
+public class SingleEntityActionAdapter<E> implements ActionMany<E> {
 
   private final Consumer<Optional<E>> action_;
 

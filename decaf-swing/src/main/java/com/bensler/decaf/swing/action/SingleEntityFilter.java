@@ -4,26 +4,29 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.List;
 
-public class SingleEntityFilter<E> implements EntitiesActionFilter<E>, EntityActionFilter<E> {
+import com.bensler.decaf.swing.action.FilteredAction.FilterMany;
+import com.bensler.decaf.swing.action.FilteredAction.FilterOne;
 
-  private final EntityActionFilter<E> singleFilter_;
+public class SingleEntityFilter<E> implements FilterMany<E>, FilterOne<E> {
+
+  private final FilterOne<E> singleFilter_;
 
   public SingleEntityFilter() {
-    this(e -> ActionState.ENABLED);
+    this(e -> true);
   }
 
-  public SingleEntityFilter(EntityActionFilter<E> singleFilter) {
+  public SingleEntityFilter(FilterOne<E> singleFilter) {
     singleFilter_ = requireNonNull(singleFilter);
   }
 
   @Override
-  public ActionState getActionState(List<E> entities) {
-    return ((entities.size() == 1) ? getActionState(entities.get(0)) : ActionState.DISABLED);
+  public boolean match(List<E> entities) {
+    return (entities.size() == 1) && matches(entities.get(0));
   }
 
   @Override
-  public ActionState getActionState(E entity) {
-    return singleFilter_.getActionState(entity);
+  public boolean matches(E entity) {
+    return singleFilter_.matches(entity);
   }
 
 }

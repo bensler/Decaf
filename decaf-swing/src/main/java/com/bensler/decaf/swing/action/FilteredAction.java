@@ -4,24 +4,62 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.Optional;
 
 public class FilteredAction<E> {
 
-  public static <X> EntitiesActionFilter<X> allwaysOnFilter() {
-    return (x -> ActionState.ENABLED);
+  @FunctionalInterface
+  public interface FilterMany<E> {
+
+    boolean match(List<E> entities);
+
+  }
+
+  /** The actual action itself performing some functionality on a list
+   * of entities. */
+  @FunctionalInterface
+  public interface ActionMany<E> {
+
+    public void doAction(List<E> entities);
+
+  }
+
+  @FunctionalInterface
+  public interface FilterOne<E> {
+
+    boolean matches(E entity);
+
+  }
+
+  @FunctionalInterface
+  public interface ActionOne<E> {
+
+    public void doAction(List<E> entities);
+
+  }
+
+  public static <X> FilterMany<X> allwaysOnFilter() {
+    return (x -> true);
+  }
+
+  public static <X> FilterMany<X> atLeastOneFilter() {
+    return (x -> (x.size() >= 1));
+  }
+
+//  static <E> FilteredAction<E> many(Class<E> entityClass, FilterOne<E> filter, ActionMany<E> action) {
+//    return new FilteredAction<>(entityClass, entities -> entities.stream().map(filter::getActionState), action);
+//  }
+
+  static <E> FilteredAction<E> many(Class<E> entityClass, FilterMany<E> filter, ActionMany<E> action) {
+    return new FilteredAction<>(entityClass, filter, action);
   }
 
   private final Class<E> entityClass_;
-  private final EntitiesActionFilter<E> filter_;
-  private final EntityActionListener<E> action_;
+  private final FilterMany<E> filter_;
+  private final ActionMany<E> action_;
 
-  /** @param filter <code>null</code> means always on */
-  public FilteredAction(
-    Class<E> entityClass, EntitiesActionFilter<E> filter, EntityActionListener<E> action
-  ) {
-    entityClass_ = entityClass;
-    filter_ = Optional.ofNullable(filter).orElseGet(FilteredAction::allwaysOnFilter);
+  public FilteredAction(Class<E> entityClass, FilterMany<E> filter, ActionMany<E> action) {
+    entityClass_ = requireNonNull(entityClass);
+    filter_ = requireNonNull(filter);
     action_ = requireNonNull(action);
   }
 
@@ -36,8 +74,8 @@ public class FilteredAction<E> {
     .toList();
   }
 
-  public ActionState computeState(List<?> entities){
-    return filter_.getActionState(filterTypeFittingEntities(entities));
+  public boolean matches(List<?> entities){
+    return filter_.match(filterTypeFittingEntities(entities));
   }
 
 }

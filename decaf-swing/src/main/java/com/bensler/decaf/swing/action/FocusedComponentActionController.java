@@ -49,7 +49,7 @@ public class FocusedComponentActionController implements FocusListener, EntitySe
   public void showPopupMenu(MouseEvent evt) {
     final ActionStateMap states = computeStates();
 
-    if (states.getState(actions_) == ActionState.ENABLED) {
+    if (states.isEnabled(actions_)) {
       actions_.createPopupmenu(currentSelection_, states)
       .ifPresent(popup -> popup.show(focusedComp_.getComponent(), evt.getX(), evt.getY()));
     }

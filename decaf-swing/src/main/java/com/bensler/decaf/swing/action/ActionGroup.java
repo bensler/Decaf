@@ -1,8 +1,5 @@
 package com.bensler.decaf.swing.action;
 
-import static com.bensler.decaf.swing.action.ActionState.DISABLED;
-import static com.bensler.decaf.swing.action.ActionState.ENABLED;
-
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -68,9 +65,7 @@ public class ActionGroup implements Action {
   @Override
   public void computeState(List<?> entities, ActionStateMap target) {
     actions_.forEach(action -> action.computeState(entities, target));
-    target.put(this, actions_.stream().map(target::getState).filter(ENABLED::equals).findFirst().isPresent()
-      ? ENABLED : DISABLED
-    );
+    target.put(this, actions_.stream().anyMatch(target::isEnabled));
   }
 
   public Optional<JPopupMenu> createPopupmenu(List<?> selection, ActionStateMap states) {
