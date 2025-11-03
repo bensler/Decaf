@@ -13,7 +13,7 @@ public class EntityReference<E extends Entity<E>> extends AbstractEntity<E> {
     return collector;
   }
 
-  public static <E extends Entity<E>> Optional<E> resolve(AbstractEntity<E> sample, Collection<E> source) {
+  public static <E extends Entity<E>> Optional<E> resolve(Object sample, Collection<E> source) {
     return source.stream().filter(blob -> (blob.hashCode() == sample.hashCode()) && blob.equals(sample)).findFirst();
   }
 

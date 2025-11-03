@@ -246,7 +246,7 @@ TreeSelectionListener, FocusListener {
   }
 
   @Override
-  public void select(H subject) {
+  public void select(Object subject) {
     select(((subject != null) ? Arrays.asList(subject) : Collections.emptyList()));
   }
 
@@ -261,7 +261,7 @@ TreeSelectionListener, FocusListener {
   }
 
   @Override
-  public void select(Collection<H> entities) {
+  public void select(Collection<?> entities) {
     try {
       silentSelectionChange_ = true;
       tree_.clearSelection();

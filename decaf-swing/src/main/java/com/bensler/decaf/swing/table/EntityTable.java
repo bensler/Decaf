@@ -142,7 +142,7 @@ public class EntityTable<E> extends Object implements FocusListener, EntityCompo
   }
 
   @Override
-  public void select(Collection<E> subject) {
+  public void select(Collection<?> subject) {
     throw new UnsupportedOperationException();    // TODO
 //    table_.setSelectedValues(subject);
 //    fireSelectionChanged();

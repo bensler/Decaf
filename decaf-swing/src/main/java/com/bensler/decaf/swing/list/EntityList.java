@@ -195,20 +195,22 @@ public class EntityList<E> extends Object implements ListSelectionListener, Enti
   }
 
   @Override
-  public void select(E subject) {
+  public void select(Object subject) {
     select(Arrays.asList(subject));
   }
 
   @Override
-  public void select(Collection<E> subject) {
+  public void select(Collection<?> subject) {
     silentSelectionChange_ = true;
 
     try {
       list_.clearSelection();
       for (Object entity : subject) {
-        final int     index   = model_.indexOf(entity);
+        final int index = model_.indexOf(entity);
 
-        list_.addSelectionInterval(index, index);
+        if (index >= 0) {
+          list_.addSelectionInterval(index, index);
+        }
       }
     } finally {
       silentSelectionChange_ = false;

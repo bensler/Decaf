@@ -17,8 +17,8 @@ public interface SelectionHolder<E> {
 
   public void clearSelection();
 
-  public void select(Collection<E> entities);
+  public void select(Collection<?> entities);
 
-  public void select(E entity);
+  public void select(Object entity);
 
 }
