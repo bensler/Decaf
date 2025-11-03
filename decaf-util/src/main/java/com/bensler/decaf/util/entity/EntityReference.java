@@ -2,6 +2,7 @@ package com.bensler.decaf.util.entity;
 
 import java.util.Collection;
 import java.util.Objects;
+import java.util.Optional;
 
 public class EntityReference<E extends Entity<E>> extends AbstractEntity<E> {
 
@@ -10,6 +11,10 @@ public class EntityReference<E extends Entity<E>> extends AbstractEntity<E> {
   ) {
     entities.stream().forEach(entity -> collector.add(new EntityReference<>(entity)));
     return collector;
+  }
+
+  public static <E extends Entity<E>> Optional<E> resolve(AbstractEntity<E> sample, Collection<E> source) {
+    return source.stream().filter(blob -> (blob.hashCode() == sample.hashCode()) && blob.equals(sample)).findFirst();
   }
 
   public EntityReference(E entity) {
