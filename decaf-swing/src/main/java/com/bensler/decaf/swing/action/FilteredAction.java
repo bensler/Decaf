@@ -4,6 +4,7 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
 public class FilteredAction<E> {
 
@@ -33,7 +34,7 @@ public class FilteredAction<E> {
   @FunctionalInterface
   public interface ActionOne<E> {
 
-    public void doAction(List<E> entities);
+    public void doAction(E entities);
 
   }
 
@@ -45,19 +46,35 @@ public class FilteredAction<E> {
     return (x -> (x.size() >= 1));
   }
 
-//  static <E> FilteredAction<E> many(Class<E> entityClass, FilterOne<E> filter, ActionMany<E> action) {
-//    return new FilteredAction<>(entityClass, entities -> entities.stream().map(filter::getActionState), action);
-//  }
-
-  static <E> FilteredAction<E> many(Class<E> entityClass, FilterMany<E> filter, ActionMany<E> action) {
+  public static <E> FilteredAction<E> many(Class<E> entityClass, FilterMany<E> filter, ActionMany<E> action) {
     return new FilteredAction<>(entityClass, filter, action);
+  }
+
+  public static <E> FilteredAction<E> one(Class<E> entityClass, ActionOne<E> action) {
+    return one(entityClass, entity -> true, action);
+  }
+
+  public static <E> FilteredAction<E> oneOrNone(Class<E> entityClass, FilterOne<E> filter, ActionOne<Optional<E>> action) {
+    return new FilteredAction<>(
+      entityClass,
+      entities -> entities.isEmpty() || filter.matches(entities.get(0)),
+      entities -> action.doAction(entities.isEmpty() ? Optional.empty() : Optional.of(entities.get(0)))
+    );
+  }
+
+  public static <E> FilteredAction<E> one(Class<E> entityClass, FilterOne<E> filter, ActionOne<E> action) {
+    return new FilteredAction<>(
+      entityClass,
+      entities -> (entities.size() == 1) && filter.matches(entities.get(0)),
+      entities -> action.doAction(entities.get(0))
+    );
   }
 
   private final Class<E> entityClass_;
   private final FilterMany<E> filter_;
   private final ActionMany<E> action_;
 
-  public FilteredAction(Class<E> entityClass, FilterMany<E> filter, ActionMany<E> action) {
+  private FilteredAction(Class<E> entityClass, FilterMany<E> filter, ActionMany<E> action) {
     entityClass_ = requireNonNull(entityClass);
     filter_ = requireNonNull(filter);
     action_ = requireNonNull(action);
