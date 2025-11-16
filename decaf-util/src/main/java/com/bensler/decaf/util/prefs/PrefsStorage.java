@@ -34,7 +34,7 @@ import org.xml.sax.SAXParseException;
 
 import com.bensler.decaf.util.tree.Hierarchy;
 
-public class Prefs {
+public class PrefsStorage {
 
   public static final String DTD_SYSTEM_ID_1_0 = "com.bensler.decaf.Prefs.1.0";
 
@@ -53,7 +53,7 @@ public class Prefs {
 
   private final Map<PrefKey, String> prefs_;
 
-  public Prefs(File storageLocation) throws PrefsReadException {
+  public PrefsStorage(File storageLocation) throws PrefsReadException {
     storageLocation_ = storageLocation;
     prefs_ = new HashMap<>();
 
@@ -166,7 +166,7 @@ public class Prefs {
     final Transformer transformer = transformerFactory.newTransformer();
     transformer.setOutputProperty(OutputKeys.INDENT, "yes");
     transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");
-    transformer.setOutputProperty(OutputKeys.DOCTYPE_PUBLIC, Prefs.DTD_SYSTEM_ID_1_0);
+    transformer.setOutputProperty(OutputKeys.DOCTYPE_PUBLIC, PrefsStorage.DTD_SYSTEM_ID_1_0);
     transformer.setOutputProperty(OutputKeys.DOCTYPE_SYSTEM, "");
     transformer.transform(new DOMSource(document), new StreamResult(storageLocation_));
   }
@@ -190,8 +190,8 @@ public class Prefs {
 
     @Override
     public InputSource resolveEntity(String publicId, String systemId) throws SAXException, IOException {
-      return (Prefs.DTD_SYSTEM_ID_1_0.equals(publicId)
-        ? new InputSource(getClass().getResourceAsStream(Prefs.DTD_RESOURCE_1_0))
+      return (PrefsStorage.DTD_SYSTEM_ID_1_0.equals(publicId)
+        ? new InputSource(getClass().getResourceAsStream(PrefsStorage.DTD_RESOURCE_1_0))
         : null
       );
     }

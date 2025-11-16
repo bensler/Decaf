@@ -2,7 +2,7 @@ package com.bensler.decaf.swing.table;
 
 import com.bensler.decaf.util.prefs.PrefKey;
 import com.bensler.decaf.util.prefs.PrefPersister;
-import com.bensler.decaf.util.prefs.Prefs;
+import com.bensler.decaf.util.prefs.PrefsStorage;
 
 public class TablePrefPersister implements PrefPersister {
 
@@ -20,13 +20,13 @@ public class TablePrefPersister implements PrefPersister {
   }
 
   @Override
-  public void apply(Prefs prefs) {
+  public void apply(PrefsStorage prefs) {
     prefs.get(prefKeySizes_).ifPresent(table_::applyColumnWidthPrefs);
     prefs.get(prefKeySort_).ifPresent(table_::applySortPrefs);
   }
 
   @Override
-  public void store(Prefs prefs) {
+  public void store(PrefsStorage prefs) {
     prefs.put(prefKeySizes_, table_.getColumnWidthPrefs());
     prefs.put(prefKeySort_, table_.getSortPrefs());
   }

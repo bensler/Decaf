@@ -15,7 +15,7 @@ import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableColumn;
 
 import com.bensler.decaf.util.Pair;
-import com.bensler.decaf.util.prefs.Prefs;
+import com.bensler.decaf.util.prefs.PrefsStorage;
 
 /**
  */
@@ -145,7 +145,7 @@ public class TableModel<E> extends AbstractTableModel {
     colCtrl_.applyColumnWidthPrefs(Arrays.stream(widths.split(","))
       .map(str -> str.split(":"))
       .filter(idWidth -> idWidth.length == 2)
-      .map(idWidth -> new Pair<>(idWidth[0], Prefs.tryParseInt(idWidth[1])))
+      .map(idWidth -> new Pair<>(idWidth[0], PrefsStorage.tryParseInt(idWidth[1])))
       .filter(idWidth -> idWidth.getRight().isPresent())
       .collect(com.bensler.decaf.util.stream.Collectors.toMap(Pair::getLeft, idWidth -> idWidth.getRight().get(), LinkedHashMap::new))
     );
@@ -164,7 +164,7 @@ public class TableModel<E> extends AbstractTableModel {
         .map(str -> str.split(":"))
         .filter(idSorting -> idSorting.length == 2)
         .map(idSorting -> new Pair<>(idSorting[0], idSorting[1]))
-        .map(idSorting -> idSorting.map(colCtrl_::getColumn, sortStr -> Prefs.tryParseEnum(Sorting.class, sortStr)))
+        .map(idSorting -> idSorting.map(colCtrl_::getColumn, sortStr -> PrefsStorage.tryParseEnum(Sorting.class, sortStr)))
         .filter(propViewSorting -> propViewSorting.getLeft().isPresent() && propViewSorting.getRight().isPresent())
         .forEach(propViewSorting -> {
           sortByColumn(propViewSorting.getLeft().get(), propViewSorting.getRight().get());

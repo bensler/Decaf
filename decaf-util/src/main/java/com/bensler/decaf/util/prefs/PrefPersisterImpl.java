@@ -5,24 +5,28 @@ import java.util.List;
 
 public class PrefPersisterImpl extends BulkPrefPersister {
 
-  private final Prefs prefs_;
+  private final PrefsStorage storage_;
 
-  public PrefPersisterImpl(Prefs prefs, PrefPersister... persisters) {
-    this(prefs, Arrays.asList(persisters));
+  public PrefPersisterImpl(PrefsStorage storage, PrefPersister... persisters) {
+    this(storage, Arrays.asList(persisters));
   }
 
-  public PrefPersisterImpl(Prefs prefs, List<PrefPersister> persisters) {
+  public PrefPersisterImpl(PrefsStorage storage, List<PrefPersister> persisters) {
     super(persisters);
-    prefs_ = prefs;
+    storage_ = storage;
     apply();
   }
 
   public void apply() {
-    apply(prefs_);
+    apply(storage_);
   }
 
   public void store() {
-    store(prefs_);
+    store(storage_);
+  }
+
+  public PrefsStorage getStorage() {
+    return storage_;
   }
 
 }

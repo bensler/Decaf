@@ -6,7 +6,7 @@ import java.util.Optional;
 
 import com.bensler.decaf.util.prefs.PrefKey;
 import com.bensler.decaf.util.prefs.PrefPersister;
-import com.bensler.decaf.util.prefs.Prefs;
+import com.bensler.decaf.util.prefs.PrefsStorage;
 
 public class WindowPrefsPersister implements PrefPersister {
 
@@ -25,11 +25,11 @@ public class WindowPrefsPersister implements PrefPersister {
   }
 
   @Override
-  public void apply(Prefs prefs) {
-    final Optional<Integer> x = prefs.get(prefKeyX_).flatMap(Prefs::tryParseInt);
-    final Optional<Integer> y = prefs.get(prefKeyY_).flatMap(Prefs::tryParseInt);
-    final Optional<Integer> w = prefs.get(prefKeyW_).flatMap(Prefs::tryParseInt);
-    final Optional<Integer> h = prefs.get(prefKeyH_).flatMap(Prefs::tryParseInt);
+  public void apply(PrefsStorage prefs) {
+    final Optional<Integer> x = prefs.get(prefKeyX_).flatMap(PrefsStorage::tryParseInt);
+    final Optional<Integer> y = prefs.get(prefKeyY_).flatMap(PrefsStorage::tryParseInt);
+    final Optional<Integer> w = prefs.get(prefKeyW_).flatMap(PrefsStorage::tryParseInt);
+    final Optional<Integer> h = prefs.get(prefKeyH_).flatMap(PrefsStorage::tryParseInt);
 
     if (x.flatMap(none -> y).flatMap(none -> w).flatMap(none -> h).isPresent()) {
       window_.setBounds(new Rectangle(x.get(), y.get(), w.get(), h.get()));
@@ -37,7 +37,7 @@ public class WindowPrefsPersister implements PrefPersister {
   }
 
   @Override
-  public void store(Prefs prefs) {
+  public void store(PrefsStorage prefs) {
     final Rectangle bounds = window_.getBounds();
 
     prefs.put(prefKeyX_, String.valueOf(bounds.x));

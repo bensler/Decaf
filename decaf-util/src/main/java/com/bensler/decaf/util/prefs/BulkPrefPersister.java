@@ -16,12 +16,12 @@ public class BulkPrefPersister implements PrefPersister {
   }
 
   @Override
-  public void apply(Prefs prefs) {
+  public void apply(PrefsStorage prefs) {
     persisters_.forEach(persister -> persister.apply(prefs));
   }
 
   @Override
-  public void store(Prefs prefs) {
+  public void store(PrefsStorage prefs) {
     persisters_.forEach(persister -> persister.store(prefs));
   }
 
