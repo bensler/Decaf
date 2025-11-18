@@ -2,6 +2,7 @@ package com.bensler.decaf.swing.tree;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Consumer;
 
@@ -76,7 +77,11 @@ public class EntityTreeModel<H extends Hierarchical<H>> implements TreeModel {
   boolean replaceOrAdd(H newNode) {
     final Optional<H> oldNode = data_.contains(newNode);
 
-    if (oldNode.isPresent() && (view_.compare(oldNode.get(), newNode) == 0)) {
+    if (
+      oldNode.isPresent()
+      && (view_.compare(oldNode.get(), newNode) == 0)
+      && Objects.equals(oldNode.get().getParent(), newNode.getParent())
+    ) {
       data_.replace(newNode);
     } else {
       addNode(newNode);
