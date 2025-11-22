@@ -44,11 +44,7 @@ public class HeaderPanel {
   }
 
   public void setErrors(ValidationContext validationCtx) {
-    if (validationCtx.isValid()) {
-      errorLabel_.setText(" ");
-    } else {
-      errorLabel_.setText(validationCtx.popFirstErrorMsg());
-    }
+    errorLabel_.setText(validationCtx.isValid() ? " " : validationCtx.popFirstErrorMsg());
   }
 
 }
