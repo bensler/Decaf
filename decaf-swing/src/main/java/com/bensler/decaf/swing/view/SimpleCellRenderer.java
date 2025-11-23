@@ -1,5 +1,8 @@
 package com.bensler.decaf.swing.view;
 
+import java.util.Optional;
+import java.util.function.BiFunction;
+
 import javax.swing.Icon;
 import javax.swing.JLabel;
 import javax.swing.SwingConstants;
@@ -8,24 +11,22 @@ public class SimpleCellRenderer<E, P> extends Object implements CellRenderer<E, 
 
   private static final int TEXT_ICON_GAP = 5;
 
-  protected final Icon icon_;
+  protected final BiFunction<E, P, String> textProducer_;
+  protected final BiFunction<E, P, Icon> iconProducer_;
   protected final int alignment_;
 
-  public SimpleCellRenderer() {
-    this(null);
+  public SimpleCellRenderer(BiFunction<E, P, String> textProducer, BiFunction<E, P, Icon> iconProducer) {
+    this(textProducer, iconProducer, SwingConstants.LEFT);
   }
 
-  public SimpleCellRenderer(Icon icon) {
-    this(icon, SwingConstants.LEFT);
-  }
-
-  public SimpleCellRenderer(Icon icon, int alignment) {
-    icon_ = icon;
+  public SimpleCellRenderer(BiFunction<E, P, String> textProducer, BiFunction<E, P, Icon> iconProducer, int alignment) {
+    textProducer_ = Optional.ofNullable(textProducer).orElse((_, property) -> (property != null) ? property.toString() : " ");
+    iconProducer_ = Optional.ofNullable(iconProducer).orElse((_, _) -> null);
     alignment_ = alignment;
   }
 
   protected String getText(E entity, P property) {
-    return (property != null) ? property.toString() : " ";
+    return textProducer_.apply(entity, property);
   }
 
   @Override
@@ -39,8 +40,8 @@ public class SimpleCellRenderer<E, P> extends Object implements CellRenderer<E, 
     return label;
   }
 
-  protected Icon getIcon(E entity, P property) {
-    return icon_;
+  protected final Icon getIcon(E entity, P property) {
+    return iconProducer_.apply(entity, property);
   }
 
 }

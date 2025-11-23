@@ -39,13 +39,13 @@ public class PropertyViewImpl<E, P> extends Object implements PropertyView<E, P>
   public PropertyViewImpl(
     PropertyGetter<E, P> getter
   ) {
-    this(new SimpleCellRenderer<>(), getter);
+    this(new SimpleCellRenderer<>(null, null), getter);
   }
 
   public PropertyViewImpl(
     Icon icon, PropertyGetter<E, P> getter
   ) {
-    this(new SimpleCellRenderer<>(icon), getter);
+    this(new SimpleCellRenderer<>(null, (_, _) -> icon), getter);
   }
 
   public PropertyViewImpl(
@@ -61,7 +61,7 @@ public class PropertyViewImpl<E, P> extends Object implements PropertyView<E, P>
     renderer_ = cellRenderer;
     getter_ = propertyGetter;
     listComp_ = renderComponent;
-    nullRenderer_ = new SimpleCellRenderer<>();
+    nullRenderer_ = new SimpleCellRenderer<>(null, null);
   }
 
   @Override
