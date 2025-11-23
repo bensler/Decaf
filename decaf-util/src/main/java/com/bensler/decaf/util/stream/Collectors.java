@@ -14,7 +14,7 @@ public class Collectors {
   ) {
     return java.util.stream.Collectors.toMap(
       keyMapper, valueMapper,
-      (u1, u2) -> {
+      (_, _) -> {
         throw new IllegalStateException("duplicate mapping");
       },
       mapSupplier

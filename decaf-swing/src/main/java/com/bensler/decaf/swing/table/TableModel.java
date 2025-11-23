@@ -62,13 +62,13 @@ public class TableModel<E> extends AbstractTableModel {
   }
 
   void removeColumnFromSorting(TableColumn column) {
-    try (var notifier = new SortingChangedNotifier(false)) {
+    try (var _ = new SortingChangedNotifier(false)) {
       comparator_.removeColumnFromSorting(column);
     }
   }
 
   void sortByColumn(TableColumn column, Sorting sorting) {
-    try (var notifier = new SortingChangedNotifier(false)) {
+    try (var _ = new SortingChangedNotifier(false)) {
       if (colCtrl_.getColumnModel().containsColumn(column)) {
         comparator_.sortByColumn(column, colCtrl_.getView(column), sorting);
       }
@@ -76,7 +76,7 @@ public class TableModel<E> extends AbstractTableModel {
   }
 
   void clearSorting() {
-    try (var notifier = new SortingChangedNotifier(false)) {
+    try (var _ = new SortingChangedNotifier(false)) {
       comparator_.clear();
     }
   }
@@ -86,7 +86,7 @@ public class TableModel<E> extends AbstractTableModel {
   }
 
   void addOrUpdateData(Collection<? extends E> data) {
-    try (var notifier = new SortingChangedNotifier(true)) {
+    try (var _ = new SortingChangedNotifier(true)) {
       data.forEach(entity -> {
         final int index = entityList_.indexOf(entity);
 
@@ -159,7 +159,7 @@ public class TableModel<E> extends AbstractTableModel {
   }
 
   void applySortPrefs(String sortings) {
-    try (var notifier = new SortingChangedNotifier(false)) {
+    try (var _ = new SortingChangedNotifier(false)) {
       List.of(sortings.split(",")).reversed().stream()
         .map(str -> str.split(":"))
         .filter(idSorting -> idSorting.length == 2)

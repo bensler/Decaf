@@ -97,13 +97,13 @@ public class EntityTable<E> extends Object implements FocusListener, EntityCompo
   }
 
   public void addOrUpdateData(Collection<E> entities) {
-    try (var s = table_.selectionCtrl_.new SelectionKeeper()) {
+    try (var _ = table_.selectionCtrl_.new SelectionKeeper()) {
       model_.addOrUpdateData(entities);
     }
   }
 
   public void removeData(Collection<?> entities) {
-    try (var s = table_.selectionCtrl_.new SelectionKeeper()) {
+    try (var _ = table_.selectionCtrl_.new SelectionKeeper()) {
       model_.removeData(entities);
     }
   }

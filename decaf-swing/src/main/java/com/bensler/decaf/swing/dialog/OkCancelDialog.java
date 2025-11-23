@@ -61,7 +61,7 @@ public class OkCancelDialog<IN, OUT> extends JDialog implements ContentPanel.Con
     WindowHelper.centerOnParent(this);
     contentPanel_.setContext(this);
     rootPane.setDefaultButton(okButton_);
-    rootPane.registerKeyboardAction(evt -> setVisible(false), KeyStroke.getKeyStroke(VK_ESCAPE, 0), WHEN_IN_FOCUSED_WINDOW);
+    rootPane.registerKeyboardAction(_ -> setVisible(false), KeyStroke.getKeyStroke(VK_ESCAPE, 0), WHEN_IN_FOCUSED_WINDOW);
     setMinimumSize(getPreferredSize());
   }
 
@@ -75,17 +75,17 @@ public class OkCancelDialog<IN, OUT> extends JDialog implements ContentPanel.Con
 
     buttonLayout.setColumnGroup(3, 5);
     buttonPanel.add(cancelButton, cc.xy(3,  1));
-    okButton.addActionListener(evt -> {
+    okButton.addActionListener(_ -> {
       outData_ = Optional.ofNullable(contentPanel_.getData());
       setVisible(false);
     });
-    cancelButton.addActionListener(evt -> setVisible(false));
+    cancelButton.addActionListener(_ -> setVisible(false));
     buttonPanel.add(okButton, cc.xy(5,  1));
     return buttonPanel;
   }
 
   public Optional<Optional<OUT>> show(IN input) {
-    show(input, none -> {});
+    show(input, _ -> {});
     return Optional.ofNullable(outData_);
   }
 

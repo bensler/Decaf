@@ -2,15 +2,13 @@ package com.bensler.decaf.testutil;
 
 import java.awt.AWTException;
 
-import javax.swing.UnsupportedLookAndFeelException;
-
 import org.junit.jupiter.api.Test;
 
 class SimpleTest {
 
   private final Bender bender_;
 
-  SimpleTest() throws UnsupportedLookAndFeelException, AWTException {
+  SimpleTest() throws AWTException {
     bender_ = new Bender("target/surefire-reports");
   }
 

@@ -39,7 +39,7 @@ public class FilteredAction<E> {
   }
 
   public static <X> FilterMany<X> allwaysOnFilter() {
-    return (x -> true);
+    return (_ -> true);
   }
 
   public static <X> FilterMany<X> atLeastOneFilter() {
@@ -51,7 +51,7 @@ public class FilteredAction<E> {
   }
 
   public static <E> FilteredAction<E> one(Class<E> entityClass, ActionOne<E> action) {
-    return one(entityClass, entity -> true, action);
+    return one(entityClass, _ -> true, action);
   }
 
   public static <E> FilteredAction<E> oneOrNone(Class<E> entityClass, FilterOne<E> filter, ActionOne<Optional<E>> action) {

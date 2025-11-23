@@ -79,7 +79,7 @@ class SampleTreeDialog {
     panel.add(list_.getScrollPane(), new CellConstraints(2, 4));
     panel.add(table_.getScrollPane(), new CellConstraints(2, 6));
     button_ = new JButton("Close");
-    button_.addActionListener(evt -> dialog_.setVisible(false));
+    button_.addActionListener(_ -> dialog_.setVisible(false));
     panel.add(button_, new CellConstraints(2, 8, CellConstraints.RIGHT, CellConstraints.CENTER));
     panel.setPreferredSize(new Dimension(500, 750));
 

@@ -317,7 +317,7 @@ public class AbstractHierarchy<H extends Hierarchical<H>, C extends Collection<H
    */
   public List<H> getSubHierarchyMembers(final H subRoot) {
     return contains(subRoot)
-      .map(node -> visitDown(new Collector<H>(), subRoot).getList())
+      .map(_ -> visitDown(new Collector<H>(), subRoot).getList())
       .orElseThrow(() -> new IllegalArgumentException(subRoot + " is not member of this Hierarchy"));
   }
 

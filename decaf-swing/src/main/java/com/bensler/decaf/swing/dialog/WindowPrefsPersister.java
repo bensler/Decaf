@@ -31,7 +31,7 @@ public class WindowPrefsPersister implements PrefPersister {
     final Optional<Integer> w = prefs.get(prefKeyW_).flatMap(PrefsStorage::tryParseInt);
     final Optional<Integer> h = prefs.get(prefKeyH_).flatMap(PrefsStorage::tryParseInt);
 
-    if (x.flatMap(none -> y).flatMap(none -> w).flatMap(none -> h).isPresent()) {
+    if (x.flatMap(_ -> y).flatMap(_ -> w).flatMap(_ -> h).isPresent()) {
       window_.setBounds(new Rectangle(x.get(), y.get(), w.get(), h.get()));
     };
   }

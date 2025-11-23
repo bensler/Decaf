@@ -51,7 +51,7 @@ public abstract class BasicContentPanel<IN, OUT> extends JPanel implements Conte
   protected void validateContent(ValidationContext ctx, Object eventSource) { /* noop */ }
 
   protected void addValidationSource(EntityComponent<?> entityComponent) {
-    entityComponent.addSelectionListener((source, selection) -> validate(entityComponent));
+    entityComponent.addSelectionListener((_, _) -> validate(entityComponent));
   }
 
   protected void addValidationSource(JTextField textfield) {

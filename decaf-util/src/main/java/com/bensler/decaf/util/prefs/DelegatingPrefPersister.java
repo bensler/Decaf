@@ -22,7 +22,7 @@ public class DelegatingPrefPersister implements PrefPersister {
   protected final PrefKey prefKey_;
 
   public DelegatingPrefPersister(PrefKey prefKey) {
-    this(prefKey, () -> Optional.empty(), str -> {});
+    this(prefKey, () -> Optional.empty(), _ -> {});
   }
 
   public DelegatingPrefPersister(PrefKey prefKey, Supplier<Optional<String>> prefValueProvider, Consumer<String> prefValueApplier) {

@@ -43,7 +43,7 @@ public class UiAction implements Action {
     final JMenuItem menuItem = appearance_.createPopupmenuItem(states.isPrimaryAction(this));
 
     states.getState(this).applyTo(menuItem);
-    menuItem.addActionListener(evt -> doAction(selection));
+    menuItem.addActionListener(_ -> doAction(selection));
     collector.add(Optional.of(menuItem));
   }
 
@@ -51,7 +51,7 @@ public class UiAction implements Action {
   public void createToolbarComponent(FocusedComponentActionController ctrl, ToolbarComponentCollector collector) {
     final JButton button = appearance_.createToolbarButton();
 
-    button.addActionListener(evt -> filteredAction_.doAction(ctrl.getCurrentSelection()));
+    button.addActionListener(_ -> filteredAction_.doAction(ctrl.getCurrentSelection()));
     collector.add(new Pair<>(button, this));
   }
 

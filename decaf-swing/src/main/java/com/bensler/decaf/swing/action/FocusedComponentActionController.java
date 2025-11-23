@@ -133,7 +133,7 @@ public class FocusedComponentActionController implements FocusListener, EntitySe
 
     public String getColumnSpec() {
       // "[f:p, 3dlu,f:p]*,0dlu:g"
-      return IntStream.range(0, components.size()).mapToObj(i -> "f:p").collect(Collectors.joining(",4dlu,", "", ",0dlu:g"));
+      return IntStream.range(0, components.size()).mapToObj(_ -> "f:p").collect(Collectors.joining(",4dlu,", "", ",0dlu:g"));
     }
   }
 
@@ -141,7 +141,7 @@ public class FocusedComponentActionController implements FocusListener, EntitySe
     final JComponent comp = target.getComponent();
 
     comp.addMouseListener(new ContextMenuMouseAdapter(evt -> triggerContextMenu(evt, onCtxMenuOpen)));
-    comp.addMouseListener(new DoubleClickMouseAdapter(evt -> triggerPrimaryAction()));
+    comp.addMouseListener(new DoubleClickMouseAdapter(_ -> triggerPrimaryAction()));
     initializer.accept(target);
   }
 

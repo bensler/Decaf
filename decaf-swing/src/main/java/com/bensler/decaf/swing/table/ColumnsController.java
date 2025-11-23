@@ -133,7 +133,7 @@ public class ColumnsController<E> {
     }
 
     private void sortByColumn(TableColumn column) {
-      try (var s = selectionCtrl_.createSelectionKeeper()) {
+      try (var _ = selectionCtrl_.createSelectionKeeper()) {
         final TablePropertyView<E, ?> propertyView = columnViewMap_.get(column);
 
         if (propertyView.isSortable()) {
@@ -191,7 +191,7 @@ public class ColumnsController<E> {
     visibleCols.stream().forEach(column -> {
       var menuItem = new JCheckBoxMenuItem(columnViewMap_.get(column).getName(), true);
 
-      menuItem.addActionListener(evt -> {
+      menuItem.addActionListener(_ -> {
         tableModel_.removeColumnFromSorting(column);
         columnModel_.removeColumn(column);
       });
@@ -205,7 +205,7 @@ public class ColumnsController<E> {
       .forEach(column -> {
         var menuItem = new JCheckBoxMenuItem(columnViewMap_.get(column).getName(), false);
 
-        menuItem.addActionListener(evt -> columnModel_.addColumn(column));
+        menuItem.addActionListener(_ -> columnModel_.addColumn(column));
         menu.add(menuItem);
       });
     return menu;

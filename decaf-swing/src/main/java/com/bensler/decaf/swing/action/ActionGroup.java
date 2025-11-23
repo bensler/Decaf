@@ -35,7 +35,7 @@ public class ActionGroup implements Action {
     if (appearance_ != null) {
       final JButton button = appearance_.createToolbarButton();
 
-      button.addActionListener(evt -> {
+      button.addActionListener(_ -> {
         final MenuItemCollector menuCollector = new MenuItemCollector();
 
         createToolbarPopupmenuItems(ctrl, menuCollector, ctrl.computeStates(this));

@@ -40,7 +40,7 @@ public class TimerTrap implements AutoCloseable {
       statistics = new HashMap<>();
     }
     public Consumer<Long> getNamedCollector(String collectorName) {
-      return statistics.computeIfAbsent(collectorName, key -> new ArrayList<>())::add;
+      return statistics.computeIfAbsent(collectorName, _ -> new ArrayList<>())::add;
     }
 
   }
