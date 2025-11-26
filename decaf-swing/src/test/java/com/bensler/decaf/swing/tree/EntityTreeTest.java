@@ -32,9 +32,7 @@ class EntityTreeTest {
     bender_.clickOn(table,                      new Point(410, 10)); // sort
     bender_.clickOn(table,                      new Point(270, 10)); // sort
     bender_.clickOn(table,                      new Point( 90, 10)); // sort
-    bender_.waitForAllTasksCompleted();
-    bender_.assertEqualsVisually(app.dialog_.getContentPane(), new TestImageSample());
-    bender_.clickOn(app.button_);
+    bender_.finish(app.dialog_.getContentPane(), new TestImageSample(), app.button_);
   }
 
 }

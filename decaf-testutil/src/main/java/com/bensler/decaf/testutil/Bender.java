@@ -2,6 +2,7 @@ package com.bensler.decaf.testutil;
 
 import java.awt.AWTException;
 import java.awt.Component;
+import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
@@ -11,13 +12,12 @@ import java.awt.Robot;
 import java.awt.event.InputEvent;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
-import java.util.concurrent.ScheduledThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.locks.Condition;
-import java.util.concurrent.locks.ReentrantLock;
+import java.util.concurrent.CountDownLatch;
 
-import javax.swing.SwingUtilities;
+import javax.swing.JButton;
+import javax.swing.Timer;
 
 import org.opentest4j.AssertionFailedError;
 
@@ -28,26 +28,17 @@ public class Bender extends Object {
   public final static int DELAY = 300;
 
   private final File reportsDir_;
-  private final ReentrantLock lock_;
-  private final Condition allTasksDone_;
+  private final LinkedList<Runnable> tasks_;
   private final List<AssertionFailedError> failures_;
-  private int taskCount_;
 
-  private final ScheduledThreadPoolExecutor scheduler_;
   private final Robot robot_;
-
-  private int currentDelay_;
 
   public Bender(String reportsDirRelativePath) throws AWTException {
     reportsDir_ = new File(System.getProperty("user.dir"), reportsDirRelativePath);
     reportsDir_.mkdirs();
-    lock_ = new ReentrantLock();
-    allTasksDone_ = lock_.newCondition();
+    tasks_ = new LinkedList<>();
     failures_ = new ArrayList<>();
-    taskCount_ = 0;
-    scheduler_ = new ScheduledThreadPoolExecutor(1);
     robot_ = new Robot();
-    currentDelay_ = 0;
   }
 
   public Point getLargestScreensOrigin() {
@@ -68,13 +59,7 @@ public class Bender extends Object {
   }
 
   private void runDelayedInEventDispatcher(final Runnable runnable) {
-    scheduler_.schedule(new Runnable() {
-      @Override
-      public void run() {
-        SwingUtilities.invokeLater(new RunnableWrapper(runnable));
-      }
-    }, (currentDelay_ += DELAY), TimeUnit.MILLISECONDS);
-    taskCount_++;
+    tasks_.add(runnable);
   }
 
   public File getReportsDir() {
@@ -83,10 +68,6 @@ public class Bender extends Object {
 
   void addFailure(AssertionFailedError failure) {
     failures_.add(failure);
-  }
-
-  public void clickOn(final Component component) {
-    clickOn(component, null);
   }
 
   public void clickOn(final Component component, Point position) {
@@ -101,42 +82,30 @@ public class Bender extends Object {
     runDelayedInEventDispatcher(new Snapshooter(this, component, sample));
   }
 
-  public void waitForAllTasksCompleted() {
-    lock_.lock();
-    try {
-      if (taskCount_ > 0) {
-        allTasksDone_.awaitUninterruptibly();
-      }
-      if (!failures_.isEmpty()) {
-        throw failures_.get(0);
-      }
-    } finally {
-      lock_.unlock();
+  public void finish(Container contentPane, TestImageSample testImageSample, JButton button) throws InterruptedException {
+    assertEqualsVisually(contentPane, testImageSample);
+    if (button != null) {
+      clickOn(button, null);
     }
+    execute();
   }
 
-  final class RunnableWrapper implements Runnable {
+  private void execute() throws InterruptedException {
+    final Timer timer = new Timer(DELAY, null);
+    final CountDownLatch latch = new CountDownLatch(1);
 
-    private final Runnable delegate_;
-
-    RunnableWrapper(Runnable delegate) {
-      delegate_ = delegate;
-    }
-
-    @Override
-    public void run() {
-      lock_.lock();
-      try {
-        delegate_.run();
-      } finally {
-        taskCount_--;
-        if (taskCount_ <= 0) {
-          allTasksDone_.signalAll();
-        }
-        lock_.unlock();
+    timer.addActionListener(_ -> {
+      tasks_.removeFirst().run();
+      if (tasks_.isEmpty()) {
+        timer.stop();
+        latch.countDown();
       }
+    });
+    timer.start();
+    latch.await();
+    if (!failures_.isEmpty()) {
+      throw failures_.get(0);
     }
-
   }
 
   final class Clicker implements Runnable {

@@ -26,8 +26,7 @@ class CheckboxTreeTest {
     bender_.clickOn(app.cbTree_.getScrollPane(), new Point(68,  244));
     bender_.clickOn(app.cbTree_.getScrollPane(), new Point(49,  229));
     bender_.clickOn(app.cbTree_.getScrollPane(), new Point(28,  196));
-    bender_.assertEqualsVisually(app.dialog_.getContentPane(), new TestImageSample());
-    bender_.waitForAllTasksCompleted();
+    bender_.finish(app.dialog_.getContentPane(), new TestImageSample(), null);
   }
 
 }

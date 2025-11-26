@@ -13,6 +13,7 @@ import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import javax.swing.SwingConstants;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
@@ -22,6 +23,7 @@ import com.bensler.decaf.swing.table.EntityTable;
 import com.bensler.decaf.swing.table.TablePropertyView;
 import com.bensler.decaf.swing.table.TableView;
 import com.bensler.decaf.swing.view.PropertyViewImpl;
+import com.bensler.decaf.swing.view.SimpleCellRenderer;
 import com.bensler.decaf.util.tree.Folder;
 import com.bensler.decaf.util.tree.Hierarchy;
 import com.jgoodies.forms.layout.CellConstraints;
@@ -59,7 +61,7 @@ class SampleTreeDialog {
     );
 
     final PropertyViewImpl<Folder, Integer> sizeView = new PropertyViewImpl<>(
-      createComparableGetter(this::getFolderSize)
+      new SimpleCellRenderer<>(null, null, SwingConstants.RIGHT), createComparableGetter(Folder::getSize)
     );
 
     tree_ = new EntityTree<>(nameView, Folder.class);
@@ -86,10 +88,6 @@ class SampleTreeDialog {
     dialog_.setContentPane(panel);
     dialog_.pack();
     tree_.expandCollapseAll(true);
-  }
-
-  Integer getFolderSize(Folder folder) {
-    return folder.getSize();
   }
 
   private Hierarchy<Folder> createFolderData() {

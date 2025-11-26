@@ -18,10 +18,8 @@ class SimpleTest {
 
     app.dialog_.setLocation(bender_.getLargestScreensOrigin());
     app.dialog_.setVisible(true);
-    bender_.clickOn(app.checkBox_);
-    bender_.assertEqualsVisually(app.dialog_.getContentPane(), new TestImageSample());
-    bender_.clickOn(app.button_);
-    bender_.waitForAllTasksCompleted();
+    bender_.clickOn(app.checkBox_, null);
+    bender_.finish(app.dialog_.getContentPane(), new TestImageSample(), app.button_);
   }
 
 }
