@@ -16,7 +16,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
-import javax.swing.JButton;
 import javax.swing.Timer;
 
 import org.opentest4j.AssertionFailedError;
@@ -82,11 +81,8 @@ public class Bender extends Object {
     runDelayedInEventDispatcher(new Snapshooter(this, component, sample));
   }
 
-  public void finish(Container contentPane, TestImageSample testImageSample, JButton button) throws InterruptedException {
+  public void finish(Container contentPane, TestImageSample testImageSample) throws InterruptedException {
     assertEqualsVisually(contentPane, testImageSample);
-    if (button != null) {
-      clickOn(button, null);
-    }
     execute();
   }
 

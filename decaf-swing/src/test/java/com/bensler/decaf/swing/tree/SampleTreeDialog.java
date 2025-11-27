@@ -9,7 +9,6 @@ import java.awt.Dialog.ModalityType;
 import java.awt.Dimension;
 import java.util.List;
 
-import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -41,7 +40,6 @@ class SampleTreeDialog {
   final EntityTree<Folder> tree_;
   final EntityList<Folder> list_;
   final EntityTable<Folder> table_;
-  final JButton button_;
 
    SampleTreeDialog() throws UnsupportedLookAndFeelException {
     final Hierarchy<Folder> data = createFolderData();
@@ -51,7 +49,7 @@ class SampleTreeDialog {
     dialog_ = new JDialog(null, "Decaf Swing Test", ModalityType.MODELESS);
     final JPanel panel = new JPanel(new FormLayout(
       "3dlu, f:p:g, 3dlu",
-      "3dlu, f:p:g, 3dlu, f:p:g, 3dlu, f:p:g, 3dlu, p, 3dlu"
+      "3dlu, f:p:g, 3dlu, f:p:g, 3dlu, f:p:g, 3dlu"
     ));
     final PropertyViewImpl<Folder, String> nameView = new PropertyViewImpl<>(
       createGetterComparator(Folder::getName, COLLATOR_COMPARATOR)
@@ -82,9 +80,6 @@ class SampleTreeDialog {
     panel.add(tree_.getScrollPane(), new CellConstraints(2, 2));
     panel.add(list_.getScrollPane(), new CellConstraints(2, 4));
     panel.add(table_.getScrollPane(), new CellConstraints(2, 6));
-    button_ = new JButton("Close");
-    button_.addActionListener(_ -> dialog_.setVisible(false));
-    panel.add(button_, new CellConstraints(2, 8, CellConstraints.RIGHT, CellConstraints.CENTER));
     panel.setPreferredSize(new Dimension(500, 750));
 
     dialog_.setContentPane(panel);
