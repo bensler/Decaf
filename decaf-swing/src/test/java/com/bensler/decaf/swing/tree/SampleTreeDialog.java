@@ -67,11 +67,13 @@ class SampleTreeDialog {
     tree_ = new EntityTree<>(nameView, Folder.class);
     tree_.setVisibleRowCount(15, 1);
     list_ = new EntityList<>(nameView, Folder.class);
+    final TablePropertyView<Folder, Integer> sizeColumn = new TablePropertyView<>("size", "Size", sizeView);
     table_ = new EntityTable<>(new TableView<>(
       new TablePropertyView<>("parentName", "Parent", parentNameView),
       new TablePropertyView<>("name", "Name", nameView),
-      new TablePropertyView<>("size", "Size", sizeView)
+      sizeColumn
     ), Folder.class);
+    table_.sortByColumn(sizeColumn);
     table_.setSelectionMode(SelectionMode.MULTIPLE_INTERVAL);
     dialog_.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
     tree_.setData(data);
