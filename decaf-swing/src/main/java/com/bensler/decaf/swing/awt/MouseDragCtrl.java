@@ -10,10 +10,12 @@ import java.util.function.BiConsumer;
 public class MouseDragCtrl extends MouseAdapter {
 
   private final BiConsumer<Point, Point> dragListener_;
+  private final BiConsumer<Point, Point> draggedListener_;
   private Optional<Point> origin_;
 
-  public MouseDragCtrl(Component target, BiConsumer<Point, Point> dragListener) {
+  public MouseDragCtrl(Component target, BiConsumer<Point, Point> dragListener, BiConsumer<Point, Point> draggedListener) {
     dragListener_ = dragListener;
+    draggedListener_ = draggedListener;
     origin_ = Optional.empty();
     target.addMouseListener(this);
     target.addMouseMotionListener(this);
@@ -26,6 +28,7 @@ public class MouseDragCtrl extends MouseAdapter {
 
   @Override
   public void mouseReleased(MouseEvent evt) {
+    origin_.ifPresent(origin -> draggedListener_.accept(origin, evt.getPoint()));
     origin_ = Optional.empty();
   }
 
