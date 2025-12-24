@@ -6,14 +6,15 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.Optional;
 import java.util.function.BiConsumer;
+import java.util.function.BiFunction;
 
 public class MouseDragCtrl extends MouseAdapter {
 
-  private final BiConsumer<Point, Point> dragListener_;
+  private final BiFunction<Point, Point, Boolean> dragListener_;
   private final BiConsumer<Point, Point> draggedListener_;
   private Optional<Point> origin_;
 
-  public MouseDragCtrl(Component target, BiConsumer<Point, Point> dragListener, BiConsumer<Point, Point> draggedListener) {
+  public MouseDragCtrl(Component target, BiFunction<Point, Point, Boolean> dragListener, BiConsumer<Point, Point> draggedListener) {
     dragListener_ = dragListener;
     draggedListener_ = draggedListener;
     origin_ = Optional.empty();
@@ -34,7 +35,9 @@ public class MouseDragCtrl extends MouseAdapter {
 
   @Override
   public void mouseDragged(MouseEvent evt) {
-    origin_.ifPresent(origin -> dragListener_.accept(origin, evt.getPoint()));
+    final boolean conTinue = origin_.map(origin -> dragListener_.apply(origin, evt.getPoint())).orElse(false);
+
+    origin_ = (conTinue ? origin_ : Optional.empty());
   }
 
 }
