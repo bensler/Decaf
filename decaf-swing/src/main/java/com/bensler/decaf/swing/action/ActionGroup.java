@@ -35,17 +35,7 @@ public class ActionGroup implements Action {
     if (appearance_ != null) {
       final JButton button = appearance_.createToolbarButton();
 
-      button.addActionListener(_ -> {
-        final MenuItemCollector menuCollector = new MenuItemCollector();
-
-        createToolbarPopupmenuItems(ctrl, menuCollector, ctrl.computeStates(this));
-        if (!menuCollector.isEmpty()) {
-          final JPopupMenu popup = new JPopupMenu();
-
-          menuCollector.populateMenu(popup);
-          popup.show(button, 20, 20);
-        }
-      });
+      button.addActionListener(_ -> createToolbarPopupmenu(button, ctrl));
       collector.add(new Pair<>(button, this));
     } else {
       actions_.forEach(action -> action.createToolbarComponent(ctrl, collector));
@@ -53,13 +43,20 @@ public class ActionGroup implements Action {
     collector.add(new Pair<>(null, this));
   }
 
-  private void createToolbarPopupmenuItems(
-      FocusedComponentActionController ctrl, MenuItemCollector collector, ActionStateMap states
-  ) {
-    // TODO hacky
-    collector.add(Optional.empty());
-    actions_.forEach(action -> action.createPopupmenuItem(collector, ctrl::getCurrentSelection, states));
-    collector.add(Optional.empty());
+  private void createToolbarPopupmenu(JButton button, FocusedComponentActionController ctrl) {
+    final MenuItemCollector menuCollector = new MenuItemCollector();
+    final ActionStateMap states = ctrl.computeStates(this);
+
+    states.resetPrimaryAction();
+    actions_.forEach(action -> {
+      action.createPopupmenuItem(menuCollector, ctrl::getCurrentSelection, states);
+    });
+    if (!menuCollector.isEmpty()) {
+      final JPopupMenu popup = new JPopupMenu();
+
+      menuCollector.populateMenu(popup);
+      popup.show(button, 20, 20);
+    }
   }
 
   @Override

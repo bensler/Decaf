@@ -35,6 +35,10 @@ class ActionStateMap {
     return enabledActions_.contains(action);
   }
 
+  void resetPrimaryAction() {
+    primaryAction_ = null;
+  }
+
   boolean isPrimaryAction(Action action) {
     return primaryAction_ == action;
   }
