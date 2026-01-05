@@ -38,23 +38,23 @@ public class ActionAppearance {
     return iconLarge_.orElseGet(icon_::get);
   }
 
-  public Optional<String> getLabel() {
-    return label_;
+  public String getLabel() {
+    return label_.orElseGet(() -> description_.orElse(null));
   }
 
-  public Optional<String> getDescription() {
-    return description_;
+  public String getDescription() {
+    return description_.orElseGet(() -> label_.orElse(null));
   }
 
   public JMenu createMenu() {
-    final JMenu menu = new JMenu(label_.orElse(null));
+    final JMenu menu = new JMenu(getLabel());
 
     icon_.ifPresent(menu::setIcon);
     return menu;
   }
 
   public JMenuItem createPopupmenuItem(boolean primary) {
-    final JMenuItem menuItem = new JMenuItem(label_.orElse(null), icon_.orElse(null));
+    final JMenuItem menuItem = new JMenuItem(getLabel(), icon_.orElse(null));
 
     if (primary) {
       menuItem.setFont(menuItem.getFont().deriveFont(Font.BOLD));
@@ -65,7 +65,7 @@ public class ActionAppearance {
   public JButton createToolbarButton() {
     final JButton button = new JButton(getIconLarge());
 
-    button.setToolTipText(description_.orElseGet(() -> label_.orElse(null)));
+    button.setToolTipText(getDescription());
     return button;
   }
 
