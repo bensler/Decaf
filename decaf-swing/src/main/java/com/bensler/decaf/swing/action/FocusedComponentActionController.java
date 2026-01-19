@@ -69,25 +69,19 @@ public class FocusedComponentActionController implements FocusListener, EntitySe
   @Override
   public void selectionChanged(SelectionHolder<Object> selectionSource, List<Object> selection) {
     if (selectionSource == focusedComp_) {
-      reevaluate(selection);
+      setSelection(selection);
     }
   }
 
   @Override
   public void focusGained(EntityComponent<?> component) {
     if (entityComponents_.contains(component)) {
-      reevaluate((focusedComp_ = component).getSelection());
+      setSelection((focusedComp_ = component).getSelection());
     }
   }
 
-  private void reevaluate(List<?> newSelection) {
-    if (!newSelection.equals(currentSelection_)) {
-      currentSelection_ = List.copyOf(newSelection);
-      reevaluate();
-    }
-  }
-
-  private void reevaluate() {
+  private void setSelection(List<?> newSelection) {
+    currentSelection_ = List.copyOf(newSelection);
     final ActionStateMap states = computeStates();
 
     toolbarComponents_.forEach(pair -> states.getState(pair.getRight()).applyTo(pair.getLeft()));
