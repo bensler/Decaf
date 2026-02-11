@@ -8,7 +8,6 @@ import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
-import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.Collection;
 import java.util.HashSet;
@@ -22,6 +21,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JViewport;
 
 import com.bensler.decaf.swing.EntityComponent;
+import com.bensler.decaf.swing.awt.SimpleMouseAdapter;
 import com.bensler.decaf.swing.selection.EntitySelectionListener;
 import com.bensler.decaf.swing.selection.SelectionMode;
 import com.jgoodies.forms.layout.CellConstraints;
@@ -54,12 +54,7 @@ public class EntityTable<E> extends Object implements FocusListener, EntityCompo
     table_.addFocusListener(this);
     scrollPane_ = new JScrollPane(table_);
     scrollPane_.getViewport().setBackground(table_.getBackground());
-    scrollPane_.getViewport().addMouseListener(new MouseAdapter() {
-      @Override
-      public void mousePressed(MouseEvent e) {
-        table_.requestFocus();
-      }
-    });
+    scrollPane_.getViewport().addMouseListener(SimpleMouseAdapter.pressed(_ -> table_.requestFocus()));
     setSelectionMode(SelectionMode.SINGLE);
   }
 

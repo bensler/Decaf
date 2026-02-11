@@ -14,6 +14,7 @@ import javax.swing.JPanel;
 
 import com.bensler.decaf.swing.EntityComponent;
 import com.bensler.decaf.swing.EntityComponent.FocusListener;
+import com.bensler.decaf.swing.awt.SimpleMouseAdapter;
 import com.bensler.decaf.swing.selection.EntitySelectionListener;
 import com.bensler.decaf.swing.selection.SelectionHolder;
 import com.bensler.decaf.util.Pair;
@@ -135,7 +136,7 @@ public class FocusedComponentActionController implements FocusListener, EntitySe
     final JComponent comp = target.getComponent();
 
     comp.addMouseListener(new ContextMenuMouseAdapter(evt -> triggerContextMenu(evt, onCtxMenuOpen)));
-    comp.addMouseListener(new DoubleClickMouseAdapter(_ -> triggerPrimaryAction()));
+    comp.addMouseListener(SimpleMouseAdapter.doubleClicked(_ -> triggerPrimaryAction()));
     initializer.accept(target);
   }
 

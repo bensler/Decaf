@@ -7,8 +7,6 @@ import java.awt.Font;
 import java.awt.Rectangle;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
@@ -19,6 +17,7 @@ import javax.swing.JTree;
 import javax.swing.tree.TreeCellRenderer;
 import javax.swing.tree.TreePath;
 
+import com.bensler.decaf.swing.awt.SimpleMouseAdapter;
 import com.bensler.decaf.swing.tree.CheckboxTree.CheckedListener;
 import com.bensler.decaf.swing.view.PropertyView;
 import com.bensler.decaf.util.tree.Hierarchical;
@@ -54,36 +53,33 @@ public class CheckboxTreeComponent<H extends Hierarchical<H>> extends TreeCompon
         }
       }
     });
-    addMouseListener(new MouseAdapter() {
-      @Override
-      public void mouseClicked(MouseEvent e) {
-        final TreePath path = getPathForLocation(e.getX(), e.getY());
+    addMouseListener(SimpleMouseAdapter.clicked(evt -> {
+      final TreePath path = getPathForLocation(evt.getX(), evt.getY());
 
-        if (path != null) {
-          final H node = (H)path.getLastPathComponent();
-          final Rectangle bounds = getPathBounds(path);
-          final CheckboxRendererComponent rendererComp = (CheckboxRendererComponent)getCellRenderer().getTreeCellRendererComponent(
-            CheckboxTreeComponent.this, node, true,
-            isExpanded(path),
-            getModel().isLeaf(node),
-            getRowForPath(path),
-            true
-          );
+      if (path != null) {
+        final H node = (H)path.getLastPathComponent();
+        final Rectangle bounds = getPathBounds(path);
+        final CheckboxRendererComponent rendererComp = (CheckboxRendererComponent)getCellRenderer().getTreeCellRendererComponent(
+          CheckboxTreeComponent.this, node, true,
+          isExpanded(path),
+          getModel().isLeaf(node),
+          getRowForPath(path),
+          true
+        );
 
-          rendererComp.setBounds(bounds);
-          if (rendererComp.checkboxHit(e.getX(), e.getY())) {
-            alterCheckedNodes(() -> {
-              if (checkedNodes_.contains(node)) {
-                checkedNodes_.remove(node);
-              } else {
-                checkedNodes_.add(node);
-              }
-            });
-            model_.fireNodeChanged(node);
-          };
-        }
+        rendererComp.setBounds(bounds);
+        if (rendererComp.checkboxHit(evt.getX(), evt.getY())) {
+          alterCheckedNodes(() -> {
+            if (checkedNodes_.contains(node)) {
+              checkedNodes_.remove(node);
+            } else {
+              checkedNodes_.add(node);
+            }
+          });
+          model_.fireNodeChanged(node);
+        };
       }
-    });
+    }));
   }
 
   class CheckboxNodeRenderer implements TreeCellRenderer {
