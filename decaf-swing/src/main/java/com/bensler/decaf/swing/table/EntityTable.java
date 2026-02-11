@@ -8,6 +8,7 @@ import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
+import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.Collection;
 import java.util.HashSet;
@@ -51,18 +52,20 @@ public class EntityTable<E> extends Object implements FocusListener, EntityCompo
     focusListeners_ = new HashSet<>();
     table_ = new TableComponent<>(this, model_ = new TableModel<>(view_), view_);
     table_.addFocusListener(this);
-    scrollPane_ = createScrollPane(table_);
+    scrollPane_ = new JScrollPane(table_);
     scrollPane_.getViewport().setBackground(table_.getBackground());
+    scrollPane_.getViewport().addMouseListener(new MouseAdapter() {
+      @Override
+      public void mousePressed(MouseEvent e) {
+        table_.requestFocus();
+      }
+    });
     setSelectionMode(SelectionMode.SINGLE);
   }
 
   @Override
   public Class<E> getEntityClass() {
     return entityClass_;
-  }
-
-  protected JScrollPane createScrollPane(TableComponent<E> tableComponent) {
-    return new JScrollPane(tableComponent);
   }
 
   @Override
@@ -142,11 +145,9 @@ public class EntityTable<E> extends Object implements FocusListener, EntityCompo
   }
 
   @Override
-  public void select(Collection<?> subject) {
-    throw new UnsupportedOperationException();    // TODO
-//    table_.setSelectedValues(subject);
-//    fireSelectionChanged();
-//    scrollSelectionVisible();
+  public void select(Collection<?> subjects) {
+    table_.setSelectedValues(subjects.stream().flatMap(value -> contains(value).stream()).toList());
+//    scrollSelectionVisible();    TODO
   }
 
   /** Works only if there is one entry is selected */
