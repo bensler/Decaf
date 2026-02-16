@@ -26,13 +26,19 @@ public class FocusedComponentActionController implements FocusListener, EntitySe
   private final List<EntityComponent<?>> entityComponents_;
   private final ActionGroup actions_;
   private final List<Pair<JComponent, Action>> toolbarComponents_;
+  private final boolean primaryActionEnabled_;
 
   private List<?> currentSelection_;
   private EntityComponent<?> focusedComp_;
 
   public FocusedComponentActionController(ActionGroup actions, Collection<EntityComponent<?>> components) {
+    this(actions, components, true);
+  }
+
+  public FocusedComponentActionController(ActionGroup actions, Collection<EntityComponent<?>> components, boolean primaryActionEnabled) {
     entityComponents_ = List.copyOf(components);
     actions_ = actions;
+    primaryActionEnabled_ = primaryActionEnabled;
     toolbarComponents_ = new ArrayList<>();
     entityComponents_.forEach(comp -> comp.addFocusListener(this));
     entityComponents_.forEach(comp -> ((EntityComponent<Object>)comp).addSelectionListener(this));
@@ -64,6 +70,9 @@ public class FocusedComponentActionController implements FocusListener, EntitySe
     final ActionStateMap states = new ActionStateMap();
 
     action.computeState(currentSelection_, states);
+    if (!primaryActionEnabled_) {
+      states.resetPrimaryAction();
+    }
     return states;
   }
 
