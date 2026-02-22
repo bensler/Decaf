@@ -287,7 +287,7 @@ TreeSelectionListener, FocusListener {
   }
 
   /** Expands the given node and expand all nodes of its parent path.
-   * Collapses the given node.  */
+   * Collapses the given node. */
   public void expandCollapse(H node, boolean expand) {
     final TreePath path = model_.getTreePath(node).getParentPath();
 
