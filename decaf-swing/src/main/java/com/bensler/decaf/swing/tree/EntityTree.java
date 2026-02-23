@@ -237,8 +237,12 @@ TreeSelectionListener, FocusListener {
     model_.removeTree(ref);
   }
 
+  public void setData(Collection<H> nodes) {
+    model_.setData(nodes);
+  }
+
   public void setData(Hierarchy<H> hierarchy) {
-    model_.setData(hierarchy);
+    setData(hierarchy.getMembers());
   }
 
   public Hierarchy<H> getData() {

@@ -5,7 +5,7 @@ import static com.bensler.decaf.util.cmp.CollatorComparator.COLLATOR_COMPARATOR;
 
 import java.awt.Dialog.ModalityType;
 import java.awt.Dimension;
-import java.util.Arrays;
+import java.util.List;
 
 import javax.swing.JDialog;
 import javax.swing.JFrame;
@@ -15,7 +15,6 @@ import javax.swing.UnsupportedLookAndFeelException;
 
 import com.bensler.decaf.swing.view.PropertyViewImpl;
 import com.bensler.decaf.util.tree.Folder;
-import com.bensler.decaf.util.tree.Hierarchy;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 import com.jgoodies.looks.plastic.Plastic3DLookAndFeel;
@@ -32,8 +31,6 @@ class CheckboxTreeDialog {
   final EntityTree<Folder> resultTree_;
 
   CheckboxTreeDialog() throws UnsupportedLookAndFeelException {
-    final Hierarchy<Folder> data = createFolderData();
-
     Plastic3DLookAndFeel.setCurrentTheme(new DesertYellow());
     UIManager.setLookAndFeel(new Plastic3DLookAndFeel());
     dialog_ = new JDialog(null, "Decaf Swing Test", ModalityType.MODELESS);
@@ -48,11 +45,11 @@ class CheckboxTreeDialog {
     cbTree_ = new CheckboxTree<>(nameView, Folder.class);
     resultTree_ = new EntityTree<>(nameView, Folder.class);
     cbTree_.addCheckedListener(checkedFolders -> {
-      resultTree_.setData(new Hierarchy<>(checkedFolders));
+      resultTree_.setData(checkedFolders);
       resultTree_.expandCollapseAll(true);
     });
     dialog_.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-    cbTree_.setData(data);
+    cbTree_.setData(createFolderData());
     panel.add(cbTree_.getScrollPane(), new CellConstraints(2, 2));
     panel.add(resultTree_.getScrollPane(), new CellConstraints(2, 4));
     panel.setPreferredSize(new Dimension(500, 750));
@@ -62,7 +59,7 @@ class CheckboxTreeDialog {
     cbTree_.expandCollapseAll(true);
   }
 
-  private Hierarchy<Folder> createFolderData() {
+  private List<Folder> createFolderData() {
     final Folder a = new Folder(null, "a", 0);
     final Folder aa = new Folder(a, "aa", 0);
     final Folder ab = new Folder(a, "ab", 0);
@@ -80,9 +77,9 @@ class CheckboxTreeDialog {
     final Folder cbb = new Folder(cb, "cbb", 0);
     final Folder cc = new Folder(c, "cc", 0);
 
-    return new Hierarchy<>(Arrays.asList(
+    return List.of(
       a, aa, ab, aba, abb, abba, ac, b, ba, bb, bc, c, ca, cb, cbb, cc
-    ));
+    );
   }
 
 }

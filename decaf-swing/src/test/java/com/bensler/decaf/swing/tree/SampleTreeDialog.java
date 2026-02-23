@@ -24,7 +24,6 @@ import com.bensler.decaf.swing.table.TableView;
 import com.bensler.decaf.swing.view.PropertyViewImpl;
 import com.bensler.decaf.swing.view.SimpleCellRenderer;
 import com.bensler.decaf.util.tree.Folder;
-import com.bensler.decaf.util.tree.Hierarchy;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 import com.jgoodies.looks.plastic.Plastic3DLookAndFeel;
@@ -42,7 +41,7 @@ class SampleTreeDialog {
   final EntityTable<Folder> table_;
 
    SampleTreeDialog() throws UnsupportedLookAndFeelException {
-    final Hierarchy<Folder> data = createFolderData();
+    final List<Folder> data = createFolderData();
 
     Plastic3DLookAndFeel.setCurrentTheme(new DesertYellow());
     UIManager.setLookAndFeel(new Plastic3DLookAndFeel());
@@ -75,8 +74,8 @@ class SampleTreeDialog {
     table_.setSelectionMode(SelectionMode.MULTIPLE_INTERVAL);
     dialog_.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
     tree_.setData(data);
-    list_.setData(data.getMembers());
-    table_.addOrUpdateData(data.getMembers());
+    list_.setData(data);
+    table_.addOrUpdateData(data);
     panel.add(tree_.getScrollPane(), new CellConstraints(2, 2));
     panel.add(list_.getScrollPane(), new CellConstraints(2, 4));
     panel.add(table_.getScrollPane(), new CellConstraints(2, 6));
@@ -87,9 +86,7 @@ class SampleTreeDialog {
     tree_.expandCollapseAll(true);
   }
 
-  private Hierarchy<Folder> createFolderData() {
-    final Hierarchy<Folder> tree = new Hierarchy<>();
-
+  private List<Folder> createFolderData() {
     final Folder root = new Folder(null, "/", 0);
     final Folder home = new Folder(root, "home", 10);
     final Folder bobsHome = new Folder(home, "bob", 1000);
@@ -99,8 +96,7 @@ class SampleTreeDialog {
     final Folder winBobsHome = new Folder(winHome, "bob", 3000);
     final Folder winAlicesHHome = new Folder(winHome, "alice", 4000);
 
-    tree.addAll(List.of(alicesHome, bobsHome, home, root, winRoot, winHome, winBobsHome, winAlicesHHome));
-    return tree;
+    return List.of(alicesHome, bobsHome, home, root, winRoot, winHome, winBobsHome, winAlicesHHome);
   }
 
 }

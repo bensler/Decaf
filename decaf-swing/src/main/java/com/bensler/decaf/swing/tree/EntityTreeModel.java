@@ -1,6 +1,7 @@
 package com.bensler.decaf.swing.tree;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -63,9 +64,9 @@ public class EntityTreeModel<H extends Hierarchical<H>> implements TreeModel {
     return data_.contains(entity);
   }
 
-  public void setData(Hierarchy<H> data) {
+  public void setData(Collection<H> data) {
     data_.clear();
-    data_.addAll(data.getMembers());
+    data_.addAll(data);
     fireStructureChanged(new TreeModelEvent(this, new TreePath(getRoot()),  null, null));
   }
 
