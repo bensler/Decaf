@@ -238,7 +238,10 @@ TreeSelectionListener, FocusListener {
   }
 
   public void setData(Collection<H> nodes) {
+    final List<H> oldSelection = new ArrayList<>(selection_);
+
     model_.setData(nodes);
+    select(oldSelection);
   }
 
   public void setData(Hierarchy<H> hierarchy) {
