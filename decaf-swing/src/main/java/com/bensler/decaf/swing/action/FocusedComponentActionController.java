@@ -1,10 +1,10 @@
 package com.bensler.decaf.swing.action;
 
 import java.awt.event.MouseEvent;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.WeakHashMap;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -25,7 +25,7 @@ public class FocusedComponentActionController implements FocusListener, EntitySe
 
   private final List<EntityComponent<?>> entityComponents_;
   private final ActionGroup actions_;
-  private final List<Pair<JComponent, Action>> toolbarComponents_;
+  private final WeakHashMap<JComponent, Action> actionComponents_;
   private final boolean primaryActionEnabled_;
 
   private List<?> currentSelection_;
@@ -39,7 +39,7 @@ public class FocusedComponentActionController implements FocusListener, EntitySe
     entityComponents_ = List.copyOf(components);
     actions_ = actions;
     primaryActionEnabled_ = primaryActionEnabled;
-    toolbarComponents_ = new ArrayList<>();
+    actionComponents_ = new WeakHashMap<>();
     entityComponents_.forEach(comp -> comp.addFocusListener(this));
     entityComponents_.forEach(comp -> ((EntityComponent<Object>)comp).addSelectionListener(this));
     focusGained(entityComponents_.iterator().next());
@@ -94,7 +94,7 @@ public class FocusedComponentActionController implements FocusListener, EntitySe
     currentSelection_ = List.copyOf(newSelection);
     final ActionStateMap states = computeStates();
 
-    toolbarComponents_.forEach(pair -> states.getState(pair.getRight()).applyTo(pair.getLeft()));
+    actionComponents_.entrySet().forEach(entry -> states.getState(entry.getValue()).applyTo(entry.getKey()));
   }
 
   public JComponent createToolbar() {
@@ -130,7 +130,7 @@ public class FocusedComponentActionController implements FocusListener, EntitySe
       final JComponent component = pair.getLeft();
 
       if (component != null) {
-        toolbarComponents_.add(pair);
+        actionComponents_.put(pair.getLeft(), pair.getRight());
         toolbar.add(component, new CellConstraints((2 * index) + 1, 1));
       }
     }
