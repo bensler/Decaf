@@ -1,5 +1,7 @@
 package com.bensler.decaf.swing.action;
 
+import static java.util.function.Predicate.not;
+
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -9,6 +11,7 @@ import javax.swing.JButton;
 import javax.swing.JMenu;
 import javax.swing.JPopupMenu;
 
+import com.bensler.decaf.swing.action.FocusedComponentActionController.Selection;
 import com.bensler.decaf.swing.action.FocusedComponentActionController.ToolbarComponentCollector;
 import com.bensler.decaf.util.Pair;
 
@@ -52,34 +55,24 @@ public class ActionGroup implements Action {
       action.createPopupmenuItem(menuCollector, ctrl::getCurrentSelection, states);
     });
     if (!menuCollector.isEmpty()) {
-      final JPopupMenu popup = new JPopupMenu();
-
-      menuCollector.populateMenu(popup);
-      popup.show(button, 20, 20);
+      menuCollector.populatePopupMenu().show(button, 20, 20);
     }
   }
 
   @Override
-  public void computeState(List<?> entities, ActionStateMap target) {
+  public void computeState(Selection entities, ActionStateMap target) {
     actions_.forEach(action -> action.computeState(entities, target));
     target.put(this, actions_.stream().anyMatch(target::isEnabled));
   }
 
   public Optional<JPopupMenu> createPopupmenu(List<?> selection, ActionStateMap states) {
-    final MenuItemCollector collector = new MenuItemCollector();
-
-    createPopupmenuItem(collector, () -> selection, states);
-    if (!collector.isEmpty()) {
-      final JPopupMenu popup = new JPopupMenu();
-
-      collector.populateMenu(popup);
-      return Optional.of(popup);
-    }
-    return Optional.empty();
+    return Optional.of(createPopupmenuItem(new MenuItemCollector(), () -> selection, states))
+      .filter(not(MenuItemCollector::isEmpty))
+      .map(lCollector -> lCollector.populatePopupMenu());
   }
 
   @Override
-  public void createPopupmenuItem(MenuItemCollector collector, Supplier<List<?>> selectionSupplier, ActionStateMap states) {
+  public MenuItemCollector createPopupmenuItem(MenuItemCollector collector, Supplier<List<?>> selectionSupplier, ActionStateMap states) {
     if (appearance_ != null) {
       final JMenu menu = appearance_.createMenu();
       final MenuItemCollector lCollector = new MenuItemCollector();
@@ -92,6 +85,7 @@ public class ActionGroup implements Action {
       actions_.forEach(action -> action.createPopupmenuItem(collector, selectionSupplier, states));
       collector.add(Optional.empty());
     }
+    return collector;
   }
 
   @Override

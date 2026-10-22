@@ -5,6 +5,7 @@ import java.util.Optional;
 import java.util.function.Consumer;
 
 import javax.swing.JMenu;
+import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 
@@ -26,15 +27,25 @@ public class MenuItemCollector {
     }
   }
 
-  public void populateMenu(JPopupMenu menu) {
+  JMenuBar populateMenubar() {
+    final JMenuBar menu = new JMenuBar();
+
+    populateMenu(menu::add, () -> {});
+    return menu;
+  }
+
+  JPopupMenu populatePopupMenu() {
+    final JPopupMenu menu = new JPopupMenu();
+
+    populateMenu(menu::add, menu::addSeparator);
+    return menu;
+  }
+
+  void populateMenu(JMenu menu) {
     populateMenu(menu::add, menu::addSeparator);
   }
 
-  public void populateMenu(JMenu menu) {
-    populateMenu(menu::add, menu::addSeparator);
-  }
-
-  public void populateMenu(Consumer<JMenuItem> menuAdder, Runnable separatorAdder) {
+  private void populateMenu(Consumer<JMenuItem> menuAdder, Runnable separatorAdder) {
     while (!items_.isEmpty() && items_.getLast().isEmpty()) {
       items_.removeLast();
     }

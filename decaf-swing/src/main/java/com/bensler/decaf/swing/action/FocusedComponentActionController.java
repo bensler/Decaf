@@ -10,18 +10,17 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import javax.swing.JComponent;
+import javax.swing.JMenuBar;
 import javax.swing.JPanel;
 
 import com.bensler.decaf.swing.EntityComponent;
-import com.bensler.decaf.swing.EntityComponent.FocusListener;
 import com.bensler.decaf.swing.awt.SimpleMouseAdapter;
-import com.bensler.decaf.swing.selection.EntitySelectionListener;
 import com.bensler.decaf.swing.selection.SelectionHolder;
 import com.bensler.decaf.util.Pair;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
-public class FocusedComponentActionController implements FocusListener, EntitySelectionListener<Object> {
+public class FocusedComponentActionController {
 
   private final List<EntityComponent<?>> entityComponents_;
   private final ActionGroup actions_;
@@ -40,9 +39,15 @@ public class FocusedComponentActionController implements FocusListener, EntitySe
     actions_ = actions;
     primaryActionEnabled_ = primaryActionEnabled;
     actionComponents_ = new WeakHashMap<>();
-    entityComponents_.forEach(comp -> comp.addFocusListener(this));
-    entityComponents_.forEach(comp -> ((EntityComponent<Object>)comp).addSelectionListener(this));
+    entityComponents_.forEach(comp -> comp.addFocusListener(this::focusGained));
+    entityComponents_.forEach(comp -> comp.addSelectionListener(this::selectionChanged));
     focusGained(entityComponents_.iterator().next());
+  }
+
+  private void selectionChanged(SelectionHolder<? extends Object> selectionSource, List<? extends Object> selection) {
+    if (selectionSource == focusedComp_) {
+      setSelection(selection);
+    }
   }
 
   List<?> getCurrentSelection() {
@@ -69,22 +74,14 @@ public class FocusedComponentActionController implements FocusListener, EntitySe
   ActionStateMap computeStates(Action action) {
     final ActionStateMap states = new ActionStateMap();
 
-    action.computeState(currentSelection_, states);
+    action.computeState(new Selection(focusedComp_.getEntityClass(), currentSelection_), states);
     if (!primaryActionEnabled_) {
       states.resetPrimaryAction();
     }
     return states;
   }
 
-  @Override
-  public void selectionChanged(SelectionHolder<Object> selectionSource, List<Object> selection) {
-    if (selectionSource == focusedComp_) {
-      setSelection(selection);
-    }
-  }
-
-  @Override
-  public void focusGained(EntityComponent<?> component) {
+  private void focusGained(EntityComponent<?> component) {
     if (entityComponents_.contains(component)) {
       setSelection((focusedComp_ = component).getSelection());
     }
@@ -99,14 +96,29 @@ public class FocusedComponentActionController implements FocusListener, EntitySe
 
   public JComponent createToolbar() {
     final ToolbarComponentCollector toolbarComponents = new ToolbarComponentCollector();
-    final JPanel toolbar;
 
     actions_.createToolbarComponent(this, toolbarComponents);
-    toolbarComponents.addTo(toolbar = new JPanel(new FormLayout(toolbarComponents.getColumnSpec(), "f:p")));
-    return toolbar;
+    return toolbarComponents.addToToolbar(new JPanel(new FormLayout(toolbarComponents.getColumnSpec(), "f:p")));
+  }
+
+  public JMenuBar createMenuBar() {
+    return actions_.createPopupmenuItem(new MenuItemCollector(), () -> getCurrentSelection(), computeStates()).populateMenubar();
+  }
+
+  static class Selection {
+
+    final Class<?> entityClass_;
+    final List<?> entities_;
+
+    private Selection(Class<?> entityClass, List<?> entities) {
+      entityClass_ = entityClass;
+      entities_ = entities;
+    }
+
   }
 
   class ToolbarComponentCollector {
+
     private final LinkedList<Pair<JComponent, Action>> components = new LinkedList<>();
 
     public void add(Pair<JComponent, Action> pair) {
@@ -116,7 +128,7 @@ public class FocusedComponentActionController implements FocusListener, EntitySe
       }
     }
 
-    public void addTo(JPanel toolbar) {
+    public JPanel addToToolbar(JPanel toolbar) {
       while ((!components.isEmpty() && (components.getFirst().getLeft() == null))) {
         components.removeFirst();
       }
@@ -124,13 +136,14 @@ public class FocusedComponentActionController implements FocusListener, EntitySe
         components.removeLast();
       }
       IntStream.range(0, components.size()).forEach(i -> addComponent(toolbar, components.get(i), i));
+      return toolbar;
     }
 
     private void addComponent(JPanel toolbar, Pair<JComponent, Action> pair, int index) {
       final JComponent component = pair.getLeft();
 
       if (component != null) {
-        actionComponents_.put(pair.getLeft(), pair.getRight());
+        actionComponents_.put(component, pair.getRight());
         toolbar.add(component, new CellConstraints((2 * index) + 1, 1));
       }
     }

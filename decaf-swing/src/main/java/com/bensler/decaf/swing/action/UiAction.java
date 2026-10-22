@@ -9,6 +9,7 @@ import java.util.function.Supplier;
 import javax.swing.JButton;
 import javax.swing.JMenuItem;
 
+import com.bensler.decaf.swing.action.FocusedComponentActionController.Selection;
 import com.bensler.decaf.swing.action.FocusedComponentActionController.ToolbarComponentCollector;
 import com.bensler.decaf.util.Pair;
 
@@ -39,12 +40,13 @@ public class UiAction implements Action {
   }
 
   @Override
-  public void createPopupmenuItem(MenuItemCollector collector, Supplier<List<?>> selection, ActionStateMap states) {
+  public MenuItemCollector createPopupmenuItem(MenuItemCollector collector, Supplier<List<?>> selection, ActionStateMap states) {
     final JMenuItem menuItem = appearance_.createPopupmenuItem(states.isPrimaryAction(this));
 
     states.getState(this).applyTo(menuItem);
     menuItem.addActionListener(_ -> doAction(selection));
     collector.add(Optional.of(menuItem));
+    return collector;
   }
 
   @Override
@@ -56,7 +58,7 @@ public class UiAction implements Action {
   }
 
   @Override
-  public void computeState(List<?> entities, ActionStateMap target){
+  public void computeState(Selection entities, ActionStateMap target) {
     target.put(this, filteredAction_.matches(entities));
   }
 

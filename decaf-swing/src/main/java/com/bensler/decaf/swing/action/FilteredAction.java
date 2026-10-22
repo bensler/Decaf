@@ -6,6 +6,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
+import com.bensler.decaf.swing.action.FocusedComponentActionController.Selection;
+
 public class FilteredAction<E> {
 
   @FunctionalInterface
@@ -91,8 +93,8 @@ public class FilteredAction<E> {
     .toList();
   }
 
-  public boolean matches(List<?> entities){
-    return filter_.match(filterTypeFittingEntities(entities));
+  public boolean matches(Selection selection){
+    return selection.entityClass_.equals(entityClass_) && filter_.match(filterTypeFittingEntities(selection.entities_));
   }
 
 }
