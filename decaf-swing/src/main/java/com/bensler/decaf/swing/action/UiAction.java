@@ -10,7 +10,6 @@ import javax.swing.JButton;
 import javax.swing.JMenuItem;
 
 import com.bensler.decaf.swing.action.FocusedComponentActionController.Selection;
-import com.bensler.decaf.swing.action.FocusedComponentActionController.ToolbarComponentCollector;
 import com.bensler.decaf.util.Pair;
 
 /** A bundle of
@@ -45,7 +44,7 @@ public class UiAction implements Action {
 
     states.getState(this).applyTo(menuItem);
     menuItem.addActionListener(_ -> doAction(selection));
-    collector.add(Optional.of(menuItem));
+    collector.add(this, Optional.of(menuItem));
     return collector;
   }
 

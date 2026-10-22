@@ -2,23 +2,36 @@ package com.bensler.decaf.swing.action;
 
 import java.util.LinkedList;
 import java.util.Optional;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
+import javax.swing.JComponent;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 
-public class MenuItemCollector {
+class MenuItemCollector {
 
   private final LinkedList<Optional<JMenuItem>> items_;
+          final BiConsumer<JComponent, Action> componentCollector_;
 
-  public MenuItemCollector() {
-    items_ = new LinkedList<>();
+  MenuItemCollector() {
+    this((_, _) -> {});
   }
 
-  public void add(Optional<JMenuItem> menuItem) {
-    // avoid subsequent null component pairs
+  MenuItemCollector(BiConsumer<JComponent, Action> componentCollector) {
+    items_ = new LinkedList<>();
+    componentCollector_ = componentCollector;
+  }
+
+  void add(Action action, Optional<JMenuItem> menuItem) {
+    menuItem.ifPresent(lMenuItem -> componentCollector_.accept(lMenuItem, action));
+    add(menuItem);
+  }
+
+  void add(Optional<JMenuItem> menuItem) {
+      // avoid subsequent null component pairs
     if (
       menuItem.isPresent()
       || (!items_.isEmpty() && !items_.getLast().isEmpty())
@@ -58,7 +71,7 @@ public class MenuItemCollector {
     });
   }
 
-  public boolean isEmpty() {
+  boolean isEmpty() {
     while (items_.getLast().isEmpty()) {
       items_.removeLast();
     }

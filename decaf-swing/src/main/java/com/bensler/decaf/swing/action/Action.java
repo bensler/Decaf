@@ -5,7 +5,6 @@ import java.util.Optional;
 import java.util.function.Supplier;
 
 import com.bensler.decaf.swing.action.FocusedComponentActionController.Selection;
-import com.bensler.decaf.swing.action.FocusedComponentActionController.ToolbarComponentCollector;
 
 public interface Action {
 

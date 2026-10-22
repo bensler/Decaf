@@ -12,7 +12,6 @@ import javax.swing.JMenu;
 import javax.swing.JPopupMenu;
 
 import com.bensler.decaf.swing.action.FocusedComponentActionController.Selection;
-import com.bensler.decaf.swing.action.FocusedComponentActionController.ToolbarComponentCollector;
 import com.bensler.decaf.util.Pair;
 
 public class ActionGroup implements Action {
@@ -75,11 +74,11 @@ public class ActionGroup implements Action {
   public MenuItemCollector createPopupmenuItem(MenuItemCollector collector, Supplier<List<?>> selectionSupplier, ActionStateMap states) {
     if (appearance_ != null) {
       final JMenu menu = appearance_.createMenu();
-      final MenuItemCollector lCollector = new MenuItemCollector();
+      final MenuItemCollector lCollector = new MenuItemCollector(collector.componentCollector_);
 
       actions_.forEach(action -> action.createPopupmenuItem(lCollector, selectionSupplier, states));
       lCollector.populateMenu(menu);
-      collector.add(Optional.of(menu));
+      collector.add(this, Optional.of(menu));
     } else {
       collector.add(Optional.empty());
       actions_.forEach(action -> action.createPopupmenuItem(collector, selectionSupplier, states));

@@ -40,10 +40,6 @@ public class FilteredAction<E> {
 
   }
 
-  public static <X> FilterMany<X> allwaysOnFilter() {
-    return (_ -> true);
-  }
-
   public static <X> FilterMany<X> atLeastOneFilter() {
     return (x -> (x.size() >= 1));
   }
@@ -70,6 +66,15 @@ public class FilteredAction<E> {
       entities -> (entities.size() == 1) && filter.matches(entities.get(0)),
       entities -> action.doAction(entities.get(0))
     );
+  }
+
+  public static FilteredAction<Void> allwaysOn(Runnable action) {
+    return new FilteredAction<>(Void.class, _ -> true, _ -> action.run()) {
+      @Override
+      public boolean matches(Selection selection){
+        return true;
+      }
+    };
   }
 
   private final Class<E> entityClass_;

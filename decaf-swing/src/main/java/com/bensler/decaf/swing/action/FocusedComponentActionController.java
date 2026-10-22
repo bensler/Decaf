@@ -2,12 +2,9 @@ package com.bensler.decaf.swing.action;
 
 import java.awt.event.MouseEvent;
 import java.util.Collection;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.WeakHashMap;
 import java.util.function.Consumer;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 import javax.swing.JComponent;
 import javax.swing.JMenuBar;
@@ -16,8 +13,6 @@ import javax.swing.JPanel;
 import com.bensler.decaf.swing.EntityComponent;
 import com.bensler.decaf.swing.awt.SimpleMouseAdapter;
 import com.bensler.decaf.swing.selection.SelectionHolder;
-import com.bensler.decaf.util.Pair;
-import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
 public class FocusedComponentActionController {
@@ -95,14 +90,14 @@ public class FocusedComponentActionController {
   }
 
   public JComponent createToolbar() {
-    final ToolbarComponentCollector toolbarComponents = new ToolbarComponentCollector();
+    final ToolbarComponentCollector toolbarComponents = new ToolbarComponentCollector(actionComponents_::put);
 
     actions_.createToolbarComponent(this, toolbarComponents);
     return toolbarComponents.addToToolbar(new JPanel(new FormLayout(toolbarComponents.getColumnSpec(), "f:p")));
   }
 
   public JMenuBar createMenuBar() {
-    return actions_.createPopupmenuItem(new MenuItemCollector(), () -> getCurrentSelection(), computeStates()).populateMenubar();
+    return actions_.createPopupmenuItem(new MenuItemCollector(actionComponents_::put), () -> getCurrentSelection(), computeStates()).populateMenubar();
   }
 
   static class Selection {
@@ -115,43 +110,6 @@ public class FocusedComponentActionController {
       entities_ = entities;
     }
 
-  }
-
-  class ToolbarComponentCollector {
-
-    private final LinkedList<Pair<JComponent, Action>> components = new LinkedList<>();
-
-    public void add(Pair<JComponent, Action> pair) {
-      // avoid subsequent null component pairs
-      if (components.isEmpty() || (pair.getLeft() != null) || (components.getLast().getLeft() != null)) {
-        components.add(pair);
-      }
-    }
-
-    public JPanel addToToolbar(JPanel toolbar) {
-      while ((!components.isEmpty() && (components.getFirst().getLeft() == null))) {
-        components.removeFirst();
-      }
-      while ((!components.isEmpty() && (components.getLast().getLeft() == null))) {
-        components.removeLast();
-      }
-      IntStream.range(0, components.size()).forEach(i -> addComponent(toolbar, components.get(i), i));
-      return toolbar;
-    }
-
-    private void addComponent(JPanel toolbar, Pair<JComponent, Action> pair, int index) {
-      final JComponent component = pair.getLeft();
-
-      if (component != null) {
-        actionComponents_.put(component, pair.getRight());
-        toolbar.add(component, new CellConstraints((2 * index) + 1, 1));
-      }
-    }
-
-    public String getColumnSpec() {
-      // "[f:p, 3dlu,f:p]*,0dlu:g"
-      return IntStream.range(0, components.size()).mapToObj(_ -> "f:p").collect(Collectors.joining(",4dlu,", "", ",0dlu:g"));
-    }
   }
 
   public <E extends EntityComponent<?>> void attachTo(E target, Consumer<E> initializer, Consumer<MouseEvent> onCtxMenuOpen) {
