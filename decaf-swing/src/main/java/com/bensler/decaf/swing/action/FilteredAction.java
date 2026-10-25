@@ -1,10 +1,13 @@
 package com.bensler.decaf.swing.action;
 
+import static com.bensler.decaf.swing.action.ActionUiContext.ActionUiContext;
 import static java.util.Objects.requireNonNull;
 
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+
+import javax.swing.JComponent;
 
 import com.bensler.decaf.swing.action.FocusedComponentActionController.Selection;
 
@@ -87,8 +90,8 @@ public class FilteredAction<E> {
     action_ = requireNonNull(action);
   }
 
-  public void doAction(List<?> selection) {
-    action_.doAction(filterTypeFittingEntities(selection));
+  void doAction(List<?> selection, JComponent uiContext) {
+    ActionUiContext.wrap(uiContext, () -> action_.doAction(filterTypeFittingEntities(selection)));
   }
 
   public List<E> filterTypeFittingEntities(Collection<?> source) {

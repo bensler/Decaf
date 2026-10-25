@@ -41,17 +41,17 @@ class MenuItemCollector {
   }
 
   JMenuBar populateMenubar() {
-    final JMenuBar menu = new JMenuBar();
+    final JMenuBar menuBar = new JMenuBar();
 
-    populateMenu(menu::add, () -> {});
-    return menu;
+    populateMenu(menuBar::add, () -> {});
+    return menuBar;
   }
 
   JPopupMenu populatePopupMenu() {
-    final JPopupMenu menu = new JPopupMenu();
+    final JPopupMenu popupMenu = new JPopupMenu();
 
-    populateMenu(menu::add, menu::addSeparator);
-    return menu;
+    populateMenu(popupMenu::add, popupMenu::addSeparator);
+    return popupMenu;
   }
 
   void populateMenu(JMenu menu) {

@@ -8,7 +8,6 @@ import java.awt.event.FocusListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
@@ -226,9 +225,13 @@ TreeSelectionListener, FocusListener {
   }
 
   public void addData(H entity, boolean select) {
+    final List<H> oldSelection = (select ? null : getSelection());
+
     model_.addNode(entity);
     if (select) {
       select(entity);
+    } else {
+      select(oldSelection);
     }
   }
 
@@ -257,7 +260,7 @@ TreeSelectionListener, FocusListener {
 
   @Override
   public void select(Object subject) {
-    select(((subject != null) ? Arrays.asList(subject) : Collections.emptyList()));
+    select(((subject != null) ? List.of(subject) : List.of()));
   }
 
   @Override

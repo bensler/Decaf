@@ -49,8 +49,8 @@ public class FocusedComponentActionController {
     return currentSelection_;
   }
 
-  public void triggerPrimaryAction() {
-    computeStates().getPrimaryAction().ifPresent(action -> action.doAction(() -> currentSelection_));
+  void triggerPrimaryAction(JComponent uiContext) {
+    computeStates().getPrimaryAction().ifPresent(action -> action.doAction(() -> currentSelection_, uiContext));
   }
 
   public void showPopupMenu(MouseEvent evt) {
@@ -116,7 +116,7 @@ public class FocusedComponentActionController {
     final JComponent comp = target.getComponent();
 
     comp.addMouseListener(new ContextMenuMouseAdapter(evt -> triggerContextMenu(evt, onCtxMenuOpen)));
-    comp.addMouseListener(SimpleMouseAdapter.doubleClicked(_ -> triggerPrimaryAction()));
+    comp.addMouseListener(SimpleMouseAdapter.doubleClicked(_ -> triggerPrimaryAction(comp)));
     initializer.accept(target);
   }
 

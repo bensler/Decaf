@@ -7,6 +7,7 @@ import java.util.Optional;
 import java.util.function.Supplier;
 
 import javax.swing.JButton;
+import javax.swing.JComponent;
 import javax.swing.JMenuItem;
 
 import com.bensler.decaf.swing.action.FocusedComponentActionController.Selection;
@@ -34,16 +35,16 @@ public class UiAction implements Action {
     return Optional.of(this);
   }
 
-  public void doAction(Supplier<List<?>> selectionSupplier) {
-    filteredAction_.doAction(selectionSupplier.get());
+  void doAction(Supplier<List<?>> selectionSupplier, JComponent uiContext) {
+    filteredAction_.doAction(selectionSupplier.get(), uiContext);
   }
 
   @Override
   public MenuItemCollector createPopupmenuItem(MenuItemCollector collector, Supplier<List<?>> selection, ActionStateMap states) {
-    final JMenuItem menuItem = appearance_.createPopupmenuItem(states.isPrimaryAction(this));
+    final JMenuItem menuItem = appearance_.createMenuItem(states.isPrimaryAction(this));
 
     states.getState(this).applyTo(menuItem);
-    menuItem.addActionListener(_ -> doAction(selection));
+    menuItem.addActionListener(_ -> doAction(selection, menuItem));
     collector.add(this, Optional.of(menuItem));
     return collector;
   }
@@ -52,7 +53,7 @@ public class UiAction implements Action {
   public void createToolbarComponent(FocusedComponentActionController ctrl, ToolbarComponentCollector collector) {
     final JButton button = appearance_.createToolbarButton();
 
-    button.addActionListener(_ -> filteredAction_.doAction(ctrl.getCurrentSelection()));
+    button.addActionListener(_ -> filteredAction_.doAction(ctrl.getCurrentSelection(), button));
     collector.add(new Pair<>(button, this));
   }
 

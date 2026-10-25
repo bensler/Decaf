@@ -64,7 +64,7 @@ public class ActionAppearance {
     return menu;
   }
 
-  public JMenuItem createPopupmenuItem(boolean primary) {
+  public JMenuItem createMenuItem(boolean primary) {
     final JMenuItem menuItem = new JMenuItem(getLabel(), icon_.orElse(null));
 
     if (primary) {
