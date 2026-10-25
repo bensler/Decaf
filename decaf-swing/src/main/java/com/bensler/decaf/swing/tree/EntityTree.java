@@ -5,6 +5,7 @@ import static java.util.Objects.requireNonNull;
 import java.awt.Color;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -15,7 +16,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
+import javax.swing.JComponent;
 import javax.swing.JScrollPane;
+import javax.swing.KeyStroke;
 import javax.swing.UIManager;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
@@ -67,7 +70,7 @@ TreeSelectionListener, FocusListener {
     tree_.setShowsRootHandles(true);
     tree_.addFocusListener(this);
     tree_.setRowHeight(0); // ask Renderer
-
+    tree_.getInputMap(JComponent.WHEN_FOCUSED).put(KeyStroke.getKeyStroke(KeyEvent.VK_F2, 0), "none");
     editable_ = true;
     scrollPane_ = new JScrollPane(tree_);
     selection_ = new ArrayList<>(1);
