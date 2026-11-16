@@ -40,7 +40,7 @@ public class UiAction implements Action {
   }
 
   @Override
-  public MenuItemCollector createPopupmenuItem(MenuItemCollector collector, Supplier<List<?>> selection, ActionStateMap states) {
+  public MenuItemCollector createMenuItem(MenuItemCollector collector, Supplier<List<?>> selection, ActionStateMap states) {
     final JMenuItem menuItem = appearance_.createMenuItem(states.isPrimaryAction(this));
 
     states.getState(this).applyTo(menuItem);

@@ -51,7 +51,7 @@ public class ActionGroup implements Action {
 
     states.resetPrimaryAction();
     actions_.forEach(action -> {
-      action.createPopupmenuItem(menuCollector, ctrl::getCurrentSelection, states);
+      action.createMenuItem(menuCollector, ctrl::getCurrentSelection, states);
     });
     if (!menuCollector.isEmpty()) {
       menuCollector.populatePopupMenu().show(button, 20, 20);
@@ -65,23 +65,23 @@ public class ActionGroup implements Action {
   }
 
   public Optional<JPopupMenu> createPopupmenu(List<?> selection, ActionStateMap states) {
-    return Optional.of(createPopupmenuItem(new MenuItemCollector(), () -> selection, states))
+    return Optional.of(createMenuItem(new MenuItemCollector(), () -> selection, states))
       .filter(not(MenuItemCollector::isEmpty))
       .map(lCollector -> lCollector.populatePopupMenu());
   }
 
   @Override
-  public MenuItemCollector createPopupmenuItem(MenuItemCollector collector, Supplier<List<?>> selectionSupplier, ActionStateMap states) {
+  public MenuItemCollector createMenuItem(MenuItemCollector collector, Supplier<List<?>> selectionSupplier, ActionStateMap states) {
     if (appearance_ != null) {
       final JMenu menu = appearance_.createMenu();
       final MenuItemCollector lCollector = new MenuItemCollector(collector.componentCollector_);
 
-      actions_.forEach(action -> action.createPopupmenuItem(lCollector, selectionSupplier, states));
+      actions_.forEach(action -> action.createMenuItem(lCollector, selectionSupplier, states));
       lCollector.populateMenu(menu);
       collector.add(this, Optional.of(menu));
     } else {
       collector.add(Optional.empty());
-      actions_.forEach(action -> action.createPopupmenuItem(collector, selectionSupplier, states));
+      actions_.forEach(action -> action.createMenuItem(collector, selectionSupplier, states));
       collector.add(Optional.empty());
     }
     return collector;

@@ -12,7 +12,7 @@ public interface Action {
 
   void createToolbarComponent(FocusedComponentActionController ctrl, ToolbarComponentCollector collector);
 
-  MenuItemCollector createPopupmenuItem(MenuItemCollector collector, Supplier<List<?>> selection, ActionStateMap states);
+  MenuItemCollector createMenuItem(MenuItemCollector collector, Supplier<List<?>> selection, ActionStateMap states);
 
   Optional<UiAction> isEntityAction();
 

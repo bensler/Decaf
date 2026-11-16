@@ -97,7 +97,7 @@ public class FocusedComponentActionController {
   }
 
   public JMenuBar createMenuBar() {
-    return actions_.createPopupmenuItem(new MenuItemCollector(actionComponents_::put), () -> getCurrentSelection(), computeStates()).populateMenubar();
+    return actions_.createMenuItem(new MenuItemCollector(actionComponents_::put), () -> getCurrentSelection(), computeStates()).populateMenubar();
   }
 
   static class Selection {

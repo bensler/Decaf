@@ -31,7 +31,7 @@ class MenuItemCollector {
   }
 
   void add(Optional<JMenuItem> menuItem) {
-      // avoid subsequent null component pairs
+    // avoid subsequent null component pairs
     if (
       menuItem.isPresent()
       || (!items_.isEmpty() && !items_.getLast().isEmpty())
